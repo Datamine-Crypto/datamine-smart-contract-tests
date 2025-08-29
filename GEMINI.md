@@ -1,6 +1,6 @@
-This is a project to test Datamine Network ecosystem smart contracts.
+Before starting read contents of aiPrompts/deck.md thoroughly to understand how the Datamine ecosystem works. This project is unit testing the smart contracts from Datamine Network ecosystem.
 
-You can learn more about Datamine Network by reading this Gemini AI prompt: https://raw.githubusercontent.com/Datamine-Crypto/dashboard/refs/heads/main/ABOUT/deck.md
+This is a project to test Datamine Network ecosystem smart contracts.
 
 We're using `yarn hardhat` here so use `yarn hardhat test` to run tests
 
