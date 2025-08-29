@@ -1,4 +1,4 @@
-Before starting read contents of aiPrompts/deck.md thoroughly to understand how the Datamine ecosystem works. This project is unit testing the smart contracts from Datamine Network ecosystem.
+Before starting read contents of docs/deck.md thoroughly to understand how the Datamine ecosystem works. This project is unit testing the smart contracts from Datamine Network ecosystem.
 
 This is a project to test Datamine Network ecosystem smart contracts.
 
