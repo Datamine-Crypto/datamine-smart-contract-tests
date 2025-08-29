@@ -76,9 +76,9 @@ describe('FLUX Token Migration Tests', function () {
 
     // Attempting to lock more than the failsafe limit should fail.
     // The lockTokens helper also handles authorization.
-    await expect(
-      lockTokens(fluxTokenWithFailsafe, damToken, damHolder, lockInAmount),
-    ).to.be.revertedWith(RevertMessages.YOU_CAN_ONLY_LOCK_IN_UP_TO_100_DAM_DURING_FAILSAFE);
+    await expect(lockTokens(fluxTokenWithFailsafe, damToken, damHolder, lockInAmount)).to.be.revertedWith(
+      RevertMessages.YOU_CAN_ONLY_LOCK_IN_UP_TO_100_DAM_DURING_FAILSAFE,
+    );
 
     // Locking an amount within the failsafe limit should succeed.
     await lockTokens(fluxTokenWithFailsafe, damToken, damHolder, lockInAmountSafe);
@@ -89,7 +89,7 @@ describe('FLUX Token Migration Tests', function () {
     await expect(lockTokens(fluxTokenWithFailsafe, damToken, damHolder, lockInAmount)).to.not.be.reverted;
   });
 
-    it('ensure FLUX can be minted after DAM lock-in to another address', async () => {
+  it('ensure FLUX can be minted after DAM lock-in to another address', async () => {
     const { damToken, fluxToken, damHolder, fluxMintReceiver } = await loadFixture(deployContractsFixture);
     const lockInAmount = parseUnits('1');
 

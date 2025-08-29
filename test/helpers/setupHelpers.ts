@@ -66,7 +66,13 @@ export async function setupDamAndFluxTokens(
  * @param lockableToken The token contract that will be locking the DAM (e.g., FluxToken or LockquidityToken).
  * @param amount The amount of DAM to transfer and prepare for locking.
  */
-export async function setupHolderForLocking(owner: any, damHolder: any, damToken: any, lockableToken: any, amount: any) {
+export async function setupHolderForLocking(
+  owner: any,
+  damHolder: any,
+  damToken: any,
+  lockableToken: any,
+  amount: any,
+) {
   // Transfer DAM from the owner to the DamHolder contract
   await damToken.connect(owner).transfer(damHolder.target, amount);
   // Authorize the LockableToken contract to spend DAM tokens on behalf of the DamHolder
@@ -116,4 +122,3 @@ export async function mintLockTokens(lockToken: any, minter: any, sourceAddress:
   await lockToken.connect(minter).mintToAddress(sourceAddress, minter.address, mintBlock);
   return mintBlock;
 }
-
