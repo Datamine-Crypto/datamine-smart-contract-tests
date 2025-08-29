@@ -51,8 +51,9 @@ describe('FluxToken Mint', function () {
 
         const futureBlock = (await ethers.provider.getBlockNumber()) + 100;
 
-        // Prevent premature minting: ensure that minting can only occur for blocks that have already passed or are current.
-        // This maintains the integrity of time-based minting calculations.
+        // This test enforces a critical security measure: preventing `mintToAddress` from being called for a future `targetBlock`.
+        // This safeguards against speculative minting based on unconfirmed future states, ensuring that token rewards are only
+        // distributed for verifiable, past activity and maintaining the integrity of the time-based minting schedule.
         await expect(
           fluxToken.connect(owner).mintToAddress(owner.address, owner.address, futureBlock),
         ).to.be.revertedWith(RevertMessages.YOU_CAN_ONLY_MINT_UP_TO_CURRENT_BLOCK);

@@ -25,6 +25,10 @@ describe('LockToken Attack Scenarios', function () {
 
   describe('Attack Scenarios', function () {
     it('should not be possible to mint tokens for a past lock period after re-locking', async () => {
+      // This test simulates an attack scenario where a user attempts to exploit the minting mechanism by re-locking tokens
+      // and then trying to mint for a past block number from a previous lock period. This is crucial to prevent
+      // double-dipping on rewards or manipulating the token supply by re-using historical lock data, thereby ensuring
+      // the integrity and fairness of the minting process.
       const { lockquidityToken, damToken, owner } = await loadFixture(deployLockTokenFixture);
       const lockAmount = parseUnits('100');
 

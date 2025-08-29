@@ -55,8 +55,9 @@ describe('DAM Token Migration Tests', function () {
   it('should ensure supply burns properly via operator', async function () {
     const { damToken, creatorAddress, operatorAddress } = await loadFixture(deployDamTokenFixture);
     const burnAmount = parseUnits('1000');
-    // Test delegated burning functionality to ensure that an authorized operator can
-    // correctly burn tokens, which is important for supply management post-migration.
+    // This test validates the delegated burning functionality, ensuring that an authorized operator can correctly
+    // burn DamTokens. This is crucial for flexible supply management post-migration, allowing for controlled
+    // token reduction as per the ecosystem's design.
     await testTokenBurn(damToken, creatorAddress, operatorAddress, burnAmount);
   });
 });

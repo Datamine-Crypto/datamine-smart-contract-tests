@@ -30,7 +30,9 @@ describe('DamHolder Deployment', function () {
       const { damToken, owner, damHolder } = await loadFixture(deployLockTokenFixture);
       const amountToSend = parseUnits('100');
 
-      // Expect the transfer to emit a "Transfer" event with the correct arguments
+      // This test verifies that DAM tokens can be successfully sent to the `DamHolder` contract. This is a foundational
+      // step, as the `DamHolder` needs to receive tokens before it can perform any locking operations, confirming its
+      // ability to act as a token recipient.
       await expect(damToken.connect(owner).transfer(damHolder.target, amountToSend))
         .to.emit(damToken, EventNames.Transfer)
         .withArgs(owner.address, damHolder.target, amountToSend);

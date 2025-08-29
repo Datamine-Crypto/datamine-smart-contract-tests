@@ -41,6 +41,9 @@ describe('LockToken Multipliers', function () {
     });
 
     it('Should calculate the burn multiplier correctly', async function () {
+      // This test ensures the accurate calculation of the burn multiplier. This multiplier is designed to reward users
+      // who actively participate in the token ecosystem by burning tokens, thereby influencing their future rewards
+      // and contributing to the token's deflationary mechanics. Its correctness is essential for the intended economic incentives.
       // Lock tokens for otherAccount
       await damToken.connect(owner).transfer(otherAccount.address, lockAmount); // Transfer DAM from owner to otherAccount
       await lockTokens(lockquidityToken, damToken, otherAccount, lockAmount);

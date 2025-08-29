@@ -39,9 +39,9 @@ describe('FluxToken Attack Scenarios', function () {
       await lockTokens(fluxToken, damToken, owner, lockAmount);
 
       // Attempt to mint again using the *old* mint block number (mintBlock1).
-      // This test is crucial to prevent double-minting or exploiting past lock periods
-      // after a user has unlocked and re-locked tokens. It ensures the integrity of the
-      // minting mechanism against time-based manipulation.
+      // This test simulates an attack where a user attempts to mint tokens for a past lock period after re-locking.
+      // This is crucial to prevent double-dipping on rewards or manipulating the token supply by re-using historical
+      // lock data, thereby ensuring the integrity and fairness of the minting process against time-based exploits.
       await expect(fluxToken.connect(owner).mintToAddress(owner.address, owner.address, mintBlock1)).to.be.revertedWith(
         RevertMessages.YOU_CAN_ONLY_MINT_AHEAD_OF_LAST_MINT_BLOCK,
       );

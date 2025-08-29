@@ -1,13 +1,7 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import {
-  parseUnits,
-  RevertMessages,
-  deployDamToken,
-  deployLockquidityContracts,
-  lockTokens,
-} from '../helpers';
+import { parseUnits, RevertMessages, deployDamToken, deployLockquidityContracts, lockTokens } from '../helpers';
 
 describe('LockToken Unlock', function () {
   async function deployLockTokenFixture() {
@@ -35,6 +29,11 @@ describe('LockToken Unlock', function () {
       expect(await damToken.balanceOf(owner.address)).to.equal(parseUnits('25000000')); // Initial balance
     });
 
+    /**
+     * @dev This test validates the access control and state management of the `unlock` function.
+     * It's critical to prevent unauthorized or erroneous unlocks, ensuring that only users with active locked tokens
+     * can perform this action, thus maintaining the integrity of the locking mechanism.
+     */
     it('Should revert if a user tries to unlock without having locked tokens', async function () {
       const { lockquidityToken, owner } = await loadFixture(deployLockTokenFixture);
 

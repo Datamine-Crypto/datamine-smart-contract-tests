@@ -42,6 +42,9 @@ describe('LockToken Mint', function () {
       });
 
       it('Should revert if targetBlock is before lastMintBlockNumber', async function () {
+        // This test verifies that `mintToAddress` enforces a strictly increasing `targetBlock` number.
+        // This prevents users from re-minting for past blocks, which could lead to double-counting rewards
+        // or manipulating the minting history, thereby safeguarding the chronological integrity of token distribution.
         const blockAfterLock = await mintLockTokens(lockquidityToken, owner, owner.address, 1);
         const currentBlock = await mineBlocks(1);
 

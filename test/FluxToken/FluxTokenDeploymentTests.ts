@@ -1,12 +1,7 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import {
-  parseUnits,
-  deployDamToken,
-  deployFluxToken,
-  lockTokens,
-} from '../helpers';
+import { parseUnits, deployDamToken, deployFluxToken, lockTokens } from '../helpers';
 
 describe('FluxToken Deployment', function () {
   async function deployFluxTokenFixture() {
@@ -24,8 +19,9 @@ describe('FluxToken Deployment', function () {
       const { fluxToken, damToken, owner } = await loadFixture(deployFluxTokenFixture);
       const lockAmount = parseUnits('1');
 
-      // Perform the lock operation to test the contract's ability to receive and hold DAM tokens.
-      // This is fundamental for the FluxToken's operation as it mints based on locked DAM.
+      // This test verifies the core functionality of locking DAM tokens within the FluxToken contract.
+      // This is fundamental because Flux tokens are minted based on these locked DAM tokens, making the successful
+      // and secure locking process crucial for the entire ecosystem's operation and the integrity of the token supply.
       await lockTokens(fluxToken, damToken, owner, lockAmount);
 
       // Check if the tokens are correctly locked in the FluxToken contract's balance.

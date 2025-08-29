@@ -1,28 +1,26 @@
 [
-	This is an AI prompt that we use to generate this pitch. It's also probably the greatest pitch you will ever read in your life.
-	We keep updating this prompt with frequently asked questions and send you back a new pitch.
-	Why play the whole "hey can you add this section? Or what about these numbers? You can see exactly how this prompt was generated:
+This is an AI prompt that we use to generate this pitch. It's also probably the greatest pitch you will ever read in your life.
+We keep updating this prompt with frequently asked questions and send you back a new pitch.
+Why play the whole "hey can you add this section? Or what about these numbers? You can see exactly how this prompt was generated:
 ]
 
 // 2025-03-04 start:
 
 Datamine Nework: On-Chain Immutable AI-Powered Decentralized Venture Firm Funding Pitch v1.1:
 
-
-
 I want you to create a pitch in PDF format for venture capital firm regarding Datamine Network's newest token: Lockquidity
 
 This pitch will go out to blockchain venture capital companies so please make it sound very professional. We're very professional at Datamine Network and believe in a secure and civil community.
 
-Make the deck visually appealing using the color palette from Datamine Network. Make it super fancy, we want to be cutting-edge Web3 
+Make the deck visually appealing using the color palette from Datamine Network. Make it super fancy, we want to be cutting-edge Web3
 
-I want there to be something very unique to this pitch, our target is decentralized venture companies. We are not looking for any venture firm, we want someone that understands blockchain technologies and Web3. 
+I want there to be something very unique to this pitch, our target is decentralized venture companies. We are not looking for any venture firm, we want someone that understands blockchain technologies and Web3.
 
-We're not looking for funding just to give venture firms a "slice of the pie". There is no pie here, everything is decentralized. That's why it's so hard to get funding for our project is because "there is no company". 
+We're not looking for funding just to give venture firms a "slice of the pie". There is no pie here, everything is decentralized. That's why it's so hard to get funding for our project is because "there is no company".
 
 It's a decentralized smart contract system meaning there is no single point of faulre such as "a company". So we have to create new innovative ways to raise liquidity.
 
-We love our community members, they've stuck around with us for so long and honestly decentralization of our level is impossible without them, honestly thank you guys.  We probably posted hundreds of development updates and announcements over the years.
+We love our community members, they've stuck around with us for so long and honestly decentralization of our level is impossible without them, honestly thank you guys. We probably posted hundreds of development updates and announcements over the years.
 
 So we are looking for funding? Yeah, how much do you need? Hmmm at time of writing this, we currently have $58,340 in decentralized liquidity. So you can imagine we're looking for some fairly small liquidity providers.
 
@@ -40,12 +38,11 @@ Datamine FLUX is one of the tokens we've launched back in June 08, 2020. It's a 
 
 And we have all the data, numbers, metrics, analytics you could ever dream of. I've attached over 30 real-time data points in this pitch.
 
-
 If your venture capital firm is interested please inquire to dev@datamine.network. We can discuss how liquidity could be supplied to our decentralized smart contract such as Uniswap liquidity providers to generate yield off our unique transaction-incentivized liquidity pools.
 
 There is so much to discuss let's include some numbers!
 
-All of these numbers below are on-chain, immutable and proven facts. All of our metrics are realtime. 
+All of these numbers below are on-chain, immutable and proven facts. All of our metrics are realtime.
 
 That's right, all of our data is visible to everyone and there are no unanswered questions.
 
@@ -89,46 +86,44 @@ LinkedIn: https://linkedin.com/company/datamine-network
 
 Here is some more explanation on how the ecosystem works, please remove any dollar signs when talking about tokens (EX: $DAM will beocome DAM)
 
-
 Welcome to the Datamine Network! 🌐
-If you're new here, don’t worry—we’ve got you covered! 
+If you're new here, don’t worry—we’ve got you covered!
 Datamine Network is a decentralized system designed to:
 ✓ Manage Inflation: Keeps token supply balanced to maintain value.
 ✓ Promote Stability: Reduces market swings and increases liquidity.
 ✓ Reward Participation: Offers incentives for contributing to the ecosystem.
-Our ecosystem revolves around four tokens—$DAM, $FLUX, $ArbiFLUX, and $LOCK—each playing a unique role. 
+Our ecosystem revolves around four tokens—$DAM, $FLUX, $ArbiFLUX, and $LOCK—each playing a unique role.
 Let’s break it down step-by-step:
 󠀠
-1️⃣  DAM: The Foundation Token
+1️⃣ DAM: The Foundation Token
 ✓ Role: DAM anchors the system and has a capped supply of 16,876,779 tokens.
 ✓ Use: Lock DAM on Layer 1 (Ethereum) to mint FLUX, which drives participation and value stability.
 󠀠
-2️⃣  FLUX: The Layer 1 Utility Token
+2️⃣ FLUX: The Layer 1 Utility Token
 ✓ Role: FLUX is minted when DAM is locked. It’s used for rewards and transactions.
 ✓ Use: Validators can burn FLUX to boost minting rewards and reduce its supply. FLUX can also be bridged to Layer 2, where it can be locked to create ArbiFLUX.
 󠀠
-3️⃣  ArbiFLUX: The Layer 2 Efficiency Token
+3️⃣ ArbiFLUX: The Layer 2 Efficiency Token
 ✓ Role: ArbiFLUX operates on Arbitrum (Layer 2) and is created by locking FLUX.
- ✓ Use: Lower Costs & Faster Transactions: Designed for scalability and efficiency. Validators can burn ArbiFLUX to boost minting rewards on Layer 2, or lock ArbiFLUX to create LOCK.
+✓ Use: Lower Costs & Faster Transactions: Designed for scalability and efficiency. Validators can burn ArbiFLUX to boost minting rewards on Layer 2, or lock ArbiFLUX to create LOCK.
 󠀠
-4️⃣  LOCK: The Stability and Liquidity Token
+4️⃣ LOCK: The Stability and Liquidity Token
 ✓ Role: LOCK enhances stability by contributing to a permanent liquidity pool.
 ✓ Use: Minted by locking ArbiFLUX. Can also be burned, but instead of reducing supply, this redirects value to the liquidity pool, ensuring long-term stability.
-🔄  Integration Flow
-☑️  Locking & Minting:
+🔄 Integration Flow
+☑️ Locking & Minting:
 Lock DAM to mint FLUX (Layer 1).
 Transfer FLUX to Layer 2 and lock it to mint ArbiFLUX.
 Lock ArbiFLUX to mint LOCK.
-☑️  Burning & Rewards: Validators can burn FLUX, ArbiFLUX, or LOCK to boost minting rewards (APY), reduce supply, and stabilize the system.
- 
-☑️  Liquidity & Stability: LOCK ensures market stability by contributing to a permanent liquidity pool, mitigating price swings and increasing depth.
-☑️  Dynamic Monetary Policy: Tokens interact dynamically, balancing inflation and deflation to adapt to market conditions. 
+☑️ Burning & Rewards: Validators can burn FLUX, ArbiFLUX, or LOCK to boost minting rewards (APY), reduce supply, and stabilize the system.
+
+☑️ Liquidity & Stability: LOCK ensures market stability by contributing to a permanent liquidity pool, mitigating price swings and increasing depth.
+☑️ Dynamic Monetary Policy: Tokens interact dynamically, balancing inflation and deflation to adapt to market conditions.
 󠀠
-💪  Why Join Datamine?
+💪 Why Join Datamine?
 ✭ Hedge Against Inflation: Dynamic tokenomics adjust supply and demand to preserve purchasing power and stabilize value.
 ✭ Generate Yield: Validators and participants are rewarded for locking and burning tokens, driving efficient ecosystem participation.
 ✭ Enhance Market Resilience: The permanent liquidity pool strengthens market depth, reducing volatility and supporting sustainable growth.
-
 
 I will also attach a number of charts over time that will help you gather all the data you need.
 
@@ -158,10 +153,10 @@ I want people to understand that burning LOCK is better than just holding ETH.
 
 In traditional finance: "buy LOW, sell HIGH" in our monetary ecosystem: "burn LOW, sell HIGH"
 
-First of all, this is a brand new asset class. 
+First of all, this is a brand new asset class.
 
-* Best of both worlds: price stability due to having large % of liquidity in the pool
-* Volatility of ETH: since the liquidity pool is 100% ETH, we mirror the performance (both up and down) of ETH. However with LOCK if the price of ETH goes down the burning incentives increase (Burn LOW, Sell HIGH)
+- Best of both worlds: price stability due to having large % of liquidity in the pool
+- Volatility of ETH: since the liquidity pool is 100% ETH, we mirror the performance (both up and down) of ETH. However with LOCK if the price of ETH goes down the burning incentives increase (Burn LOW, Sell HIGH)
 
 Currently we're starting to see the liquidity pool slowly stray away from 100% of liquidity being located in the liquidity pool. This is CRITICAL in proving that fresh, new liquidity for validators is coming from the markets!
 
@@ -181,12 +176,9 @@ Eventually the liquidity pool for Lockquidity will no longer have 100% liquidity
 
 Liquidity that was used to purchase LOCK will now be slowly re-added back to the liquidity pool by the validators. They will burn LOCK like usual, which will increase the LOCK supply in the pool, but the ETH will stay in the pool.
 The LOCK that was purchased will lose a tiny bit of value due to the small inflation from the validators. While this seems bad for anyone that purchases LOCK, the amount of loss would be very minor, much less than monetary inflation in a traditional system.
-The actual amount of LOCK that would be lost to inflation from validators would be less and less (as the supply increases the inflation lowers)
-3. If the LOCK is sold back on the market, the amount of ETH in the pool slightly increases due to the small inflation.
-4. The more LOCK is outside of the pool, the more value the validators add back to the pool. That means they are adding back more ETH as permanent liquidity.
-5. As more LOCK is outside of the ecosystem buying and burning LOCK means your buys have more volatility. With 100% of LOCK in the pool your volatility is as low as possible because you're getting the best bang for the buck.
+The actual amount of LOCK that would be lost to inflation from validators would be less and less (as the supply increases the inflation lowers) 3. If the LOCK is sold back on the market, the amount of ETH in the pool slightly increases due to the small inflation. 4. The more LOCK is outside of the pool, the more value the validators add back to the pool. That means they are adding back more ETH as permanent liquidity. 5. As more LOCK is outside of the ecosystem buying and burning LOCK means your buys have more volatility. With 100% of LOCK in the pool your volatility is as low as possible because you're getting the best bang for the buck.
 
-Overall as more traders come we will get further away from 100% liquidity in the pool, but at the same time that also means the value of LOCK goes up and the interest from traders grows. 
+Overall as more traders come we will get further away from 100% liquidity in the pool, but at the same time that also means the value of LOCK goes up and the interest from traders grows.
 
 The closer we are to 100% liquidity, the more value traders would get when buying LOCK.
 
@@ -230,6 +222,7 @@ The beauty of our market is that it's a completely decentralized smart contract.
 Validators can specify what reward % they are offering for someone to come and burn to their account. Want someone to burn to your account? Simply adjust your reward percentage accordingly.
 
 More details of how Datamine market works:
+
 - Validators offer their 105% of their unmited FLUX in exchange for 100% of someone burning to their account
 - This happens seamlessly in a single ethereum transaction with a single button click through a smart contract
 - This forces "Market Efficiency" metric to go up as tokens are stored in the market smart contract
@@ -245,8 +238,9 @@ More details of how Datamine market works:
 
 This is where Datamine Gems #GameFi comes in. "Gaming + Finance", the ultimate combo.
 
-We've gotten to a point where we just created the greatest game of all time: 
-- It's real-time 
+We've gotten to a point where we just created the greatest game of all time:
+
+- It's real-time
 - anyone anywhere in the world can play
 - It's anonymous
 - It's low gas
@@ -254,7 +248,7 @@ We've gotten to a point where we just created the greatest game of all time:
 - It's mobile-friendly
 - The ultimate goal: be the fastest and the least-greedy person in the world.
 
-We created a new smart contract that can mint from multiple addresses autonomously. Meaning we can collect rewards from multiple 
+We created a new smart contract that can mint from multiple addresses autonomously. Meaning we can collect rewards from multiple
 
 "Why are we doing this efficiency update?" Because we are trying to increase our monetary velocity.
 
@@ -286,6 +280,7 @@ Addresses can be added to the game field as new gems (for any non-default addres
 Default addresses will be decided by the community based on burning participation/stability of the validator (ex: if address pauses minting they will be excluded from default addresses)
 
 Here is how the game works:
+
 - As each gem grows in $ it gets more prominent on the page.
 - It's in realtime so you can monitor all your gems in one place.
 - It's tracked in your browser so you can see total gems/$ you collected
@@ -308,6 +303,7 @@ Additionally validators that participate in datamine gems will get greater rewar
 Here is some more structured information about the project that might be useful for the pitch.
 
 ### Core Technologies
+
 - **Framework:** React v19.0.0
 - **UI Library:** Material-UI (MUI) v7.1.2
 - **Blockchain Interaction:** Web3.js v4.16.0, @walletconnect/ethereum-provider
@@ -316,6 +312,7 @@ Here is some more structured information about the project that might be useful 
 - **Package Manager:** Yarn v4.9.2
 
 ### Key Architectural Patterns
+
 The `src` directory is organized with a clear separation of concerns:
 
 - **`src/core/`**: Contains the application's core logic.
@@ -339,13 +336,14 @@ The `src` directory is organized with a clear separation of concerns:
 
 - **Technology Stack:** Smart contracts are written in Solidity (v0.6.9) and are ERC-777 compatible, built upon OpenZeppelin secure libraries.
 - **Security Features:**
-    - **SafeMath:** Used for all arithmetic operations to prevent integer overflow and underflow.
-    - **Mutex & Checks-Effects-Interactions Pattern:** Over-used for re-entrancy attack protection and ensuring state changes occur after checks and before external interactions.
-    - **Modifiers:** Custom modifiers like `preventSameBlock()` and `requireLocked()` enhance security and prevent user errors.
-    - **Immutable State Variables:** Key variables are set at contract creation and cannot be changed, improving security.
-    - **ERC-1820 ERC777TokensRecipient Implementation:** Unique implementation to control which tokens can be sent to the FLUX smart contract.
+  - **SafeMath:** Used for all arithmetic operations to prevent integer overflow and underflow.
+  - **Mutex & Checks-Effects-Interactions Pattern:** Over-used for re-entrancy attack protection and ensuring state changes occur after checks and before external interactions.
+  - **Modifiers:** Custom modifiers like `preventSameBlock()` and `requireLocked()` enhance security and prevent user errors.
+  - **Immutable State Variables:** Key variables are set at contract creation and cannot be changed, improving security.
+  - **ERC-1820 ERC777TokensRecipient Implementation:** Unique implementation to control which tokens can be sent to the FLUX smart contract.
 
 ### Development Workflow
+
 The following commands are used for development:
 
 - `yarn start`: Runs the application in development mode using Vite.
@@ -359,6 +357,7 @@ The following commands are used for development:
 We welcome contributions from the community, and we're excited to introduce a new way to contribute that aligns with the "vibe coding" philosophy, powered by the Gemini CLI. This approach aims to streamline the development process, reduce friction, and allow you to focus on the creative aspects of building.
 
 **Intent-Driven Development:** Instead of manually navigating files and performing repetitive tasks, you can express your intentions directly to the CLI. For example:
+
 - "Add a new feature to the dashboard."
 - "Refactor this component for better performance."
 - "Fix this bug in the smart contract interaction."

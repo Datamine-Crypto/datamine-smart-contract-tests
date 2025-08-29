@@ -33,6 +33,11 @@ describe('FluxToken - Attack Scenarios', function () {
 
   describe('Re-entrancy on burnToAddress', function () {
     it('Should prevent re-entrancy on burnToAddress and not burn twice', async function () {
+      // This test rigorously simulates a re-entrancy attack on the `burnToAddress` function using a malicious
+      // `UnlockAttacker` contract. Its primary purpose is to demonstrate that despite attempts at re-entry via
+      // ERC777 hooks, the FluxToken contract's internal mechanisms (e.g., mutexes, state checks) successfully
+      // prevent double-burning or any unintended state manipulation, thereby safeguarding the token's supply
+      // integrity and preventing economic exploits.
       const { fluxToken, damToken, unlockAttacker, owner, attackerAccount } = await loadFixture(deployContractsFixture);
 
       const ownerLockAmount = parseUnits('100');

@@ -1,11 +1,7 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import {
-  parseUnits,
-  ZERO_ADDRESS,
-  deployDamToken,
-} from '../helpers';
+import { parseUnits, ZERO_ADDRESS, deployDamToken } from '../helpers';
 
 describe('DamToken Deployment', function () {
   async function deployDamTokenFixture() {
@@ -27,7 +23,8 @@ describe('DamToken Deployment', function () {
     it('Should assign the total supply of tokens to the owner', async function () {
       const { damToken, owner } = await loadFixture(deployDamTokenFixture);
       const ownerBalance = await damToken.balanceOf(owner.address);
-      // Confirm that the entire initial supply is correctly allocated to the deployer (owner) as per design.
+      // This test confirms that the entire initial token supply is correctly allocated to the deployer (owner) upon
+      // contract creation. This is fundamental for establishing the initial distribution and control of the token supply.
       expect(await damToken.totalSupply()).to.equal(ownerBalance);
     });
 

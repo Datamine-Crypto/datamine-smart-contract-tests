@@ -143,6 +143,10 @@ describe('DamBlockingHolder Contract Test', function () {
      * by combining the initial transaction with a re-entrant one.
      */
     it('Re-Entry Test: Should revert if lock amount + hook send amount is greater than balance', async function () {
+      // This test ensures that the contract correctly reverts if the sum of the primary lock amount
+      // and the amount attempted to be sent during a re-entrant hook call exceeds the available balance.
+      // This prevents a re-entrancy attack where a malicious contract tries to spend more than it holds
+      // by combining the initial transaction with a re-entrant one, thereby safeguarding against token draining.
       await testRevert(parseUnits('101'), parseUnits('100'));
     });
 

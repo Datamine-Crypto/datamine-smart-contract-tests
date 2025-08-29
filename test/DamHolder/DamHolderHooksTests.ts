@@ -30,7 +30,10 @@ describe('DamHolder Hooks', function () {
       // operatorData is empty for send, as per ERC777 standard for `send` function
       const emptyOperatorData = ethers.toUtf8Bytes('');
 
-      // The transfer should trigger the `tokensReceived` hook on the DamHolder
+      // This test verifies that the `tokensReceived` hook on the `DamHolder` contract is correctly triggered
+      // and emits the `TokensReceivedCalled` event with accurate arguments when it receives tokens. This is crucial
+      // for confirming the proper implementation of ERC777 receiver hooks, which are vital for handling incoming
+      // token transfers and enabling custom logic upon receipt.
       await expect(damToken.connect(owner).send(damHolder.target, amountToSend, userData)) // Use send to pass userData
         .to.emit(damHolder, EventNames.TokensReceivedCalled)
         .withArgs(owner.address, owner.address, damHolder.target, amountToSend, userData, emptyOperatorData);

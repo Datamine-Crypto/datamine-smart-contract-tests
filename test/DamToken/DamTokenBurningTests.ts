@@ -1,11 +1,7 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import {
-  parseUnits,
-  deployDamToken,
-  testTokenBurn,
-} from '../helpers';
+import { parseUnits, deployDamToken, testTokenBurn } from '../helpers';
 
 describe('DamToken Burning', function () {
   async function deployDamTokenFixture() {
@@ -20,8 +16,9 @@ describe('DamToken Burning', function () {
     it('should ensure supply burns properly via operator', async function () {
       const { damToken, owner, operatorAddress } = await loadFixture(deployDamTokenFixture);
       const burnAmount = parseUnits('1000');
-      // Test delegated burning: ensure an authorized operator can successfully burn tokens on behalf of the owner.
-      // This is a key ERC777 feature for flexible token management and delegated operations.
+      // This test validates the delegated burning functionality, ensuring that an authorized operator can successfully
+      // burn DamTokens on behalf of the owner. This is a crucial ERC777 feature that enables flexible token management
+      // and delegated operations, which is vital for various ecosystem functionalities.
       await testTokenBurn(damToken, owner, operatorAddress, burnAmount);
     });
   });

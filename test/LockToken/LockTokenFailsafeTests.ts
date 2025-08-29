@@ -1,12 +1,7 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import {
-  parseUnits,
-  RevertMessages,
-  deployDamToken,
-  deployLockquidityContracts,
-} from '../helpers';
+import { parseUnits, RevertMessages, deployDamToken, deployLockquidityContracts } from '../helpers';
 
 describe('LockToken Failsafe', function () {
   async function deployLockTokenFixture() {
@@ -22,6 +17,10 @@ describe('LockToken Failsafe', function () {
 
   describe('Failsafe', function () {
     it('Should prevent locking more than 100 tokens during failsafe period', async function () {
+      // This test is crucial for validating the failsafe mechanism of the LockquidityToken.
+      // The failsafe limits the amount of tokens that can be locked during a specific period, acting as a protective measure
+      // against large, sudden inflows that could destabilize the system or exploit vulnerabilities.
+      // Ensuring this limit is enforced is vital for the overall security and stability of the token ecosystem.
       const { damToken, owner } = await loadFixture(deployLockTokenFixture);
       const LockquidityFactory = await ethers.getContractFactory('LockquidityFactory');
       const lockquidityFactory = await LockquidityFactory.deploy(damToken.target);

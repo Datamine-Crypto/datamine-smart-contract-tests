@@ -1,13 +1,7 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import {
-  parseUnits,
-  EventNames,
-  RevertMessages,
-  EMPTY_BYTES,
-  deployDamToken,
-} from '../helpers';
+import { parseUnits, EventNames, RevertMessages, EMPTY_BYTES, deployDamToken } from '../helpers';
 
 describe('DamToken Operator Operations', function () {
   async function deployDamTokenFixture() {
@@ -72,6 +66,9 @@ describe('DamToken Operator Operations', function () {
 
       await damToken.connect(owner).authorizeOperator(operatorAddress.address);
 
+      // This test validates the `operatorSend` functionality, ensuring that an authorized operator can successfully
+      // transfer tokens on behalf of the token holder. This confirms the delegated control mechanism, which is
+      // essential for applications requiring third-party management of funds.
       await expect(
         damToken
           .connect(operatorAddress)

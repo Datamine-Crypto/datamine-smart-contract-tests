@@ -31,7 +31,9 @@ describe('DamToken Deployment', function () {
 
   it('Should have the correct name and symbol', async function () {
     const { damToken } = await loadFixture(deployDamTokenFixture);
-    // Ensure the token's identifying properties (name and symbol) are correctly set during deployment.
+    // This test ensures the token's identifying properties (name and symbol) are correctly set during deployment.
+    // This is vital for proper token identification and integration within exchanges and wallets, confirming adherence
+    // to ERC-20 standards.
     expect(await damToken.name()).to.equal('Datamine');
     expect(await damToken.symbol()).to.equal('DAM');
   });

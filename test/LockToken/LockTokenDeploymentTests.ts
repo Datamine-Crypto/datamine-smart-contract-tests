@@ -24,6 +24,10 @@ describe('LockToken Deployment', function () {
 
   describe('Deployment', function () {
     it('Should deploy LockquidityFactory and its internal contracts', async function () {
+      // This test verifies the successful deployment of the core LockquidityFactory and its associated contracts
+      // (LockquidityToken and LockquidityVault). This is fundamental to ensure the entire ecosystem's foundational
+      // components are correctly initialized and linked, as their proper deployment is a prerequisite for all
+      // subsequent token operations.
       const { lockquidityFactory } = await loadFixture(deployLockTokenFixture);
 
       const lockquidityTokenAddress = await lockquidityFactory.token();

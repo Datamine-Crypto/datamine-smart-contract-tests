@@ -135,7 +135,9 @@ describe('DamHolder Functionality', function () {
       const nonErc777TokenAddress = addrB.address;
       const operator = addrB.address;
 
-      // The call should revert because the target address is not a contract with an authorizeOperator function
+      // This test ensures that the `DamHolder` cannot authorize an operator for a non-ERC777 token (simulated by an EOA).
+      // This is crucial for preventing misconfigurations and ensuring that operator authorizations are only attempted
+      // with compatible token contracts.
       await expect(damHolder.authorizeOperator(nonErc777TokenAddress, operator)).to.be.reverted;
     });
   });

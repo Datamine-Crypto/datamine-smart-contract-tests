@@ -1,14 +1,7 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import {
-  parseUnits,
-  ZERO_ADDRESS,
-  EventNames,
-  RevertMessages,
-  EMPTY_BYTES,
-  deployDamToken,
-} from '../helpers';
+import { parseUnits, ZERO_ADDRESS, EventNames, RevertMessages, EMPTY_BYTES, deployDamToken } from '../helpers';
 
 describe('DamToken Send Operations', function () {
   async function deployDamTokenFixture() {
@@ -49,7 +42,9 @@ describe('DamToken Send Operations', function () {
 
     it('Should revert when sending more tokens than balance', async function () {
       const amountToSend = initialSupply + parseUnits('1'); // More than owner's balance
-      // Prevent overspending: ensure that a transfer fails if the sender does not have sufficient balance.
+      // This test enforces a critical security measure: preventing users from sending more tokens than their
+      // available balance. This is fundamental for maintaining the integrity of the token supply and preventing
+      // negative balances or unauthorized token creation.
       await expect(damToken.connect(owner).send(otherAccount.address, amountToSend, EMPTY_BYTES)).to.be.revertedWith(
         RevertMessages.ERC777_TRANSFER_AMOUNT_EXCEEDS_BALANCE,
       );

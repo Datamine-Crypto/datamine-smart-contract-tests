@@ -97,8 +97,10 @@ describe('FLUX Token Migration Tests', function () {
     await damToken.connect(owner).transfer(damHolder.address, lockInAmount);
 
     // Attempting to lock more than the failsafe limit should fail.
-    // This verifies that the failsafe mechanism correctly limits lock amounts during its active period,
-    // protecting the system from large, potentially destabilizing inflows.
+    // This test rigorously validates the FluxToken's failsafe mechanism, which is a critical security feature.
+    // It ensures that the contract correctly limits the amount of DAM that can be locked during a specified period,
+    // preventing large, sudden inflows that could destabilize the system or be part of an exploit. It also confirms
+    // that the failsafe is temporary and lifts after its duration, balancing security with usability.
     await expect(lockTokens(fluxTokenWithFailsafe, damToken, damHolder, lockInAmount)).to.be.revertedWith(
       RevertMessages.YOU_CAN_ONLY_LOCK_IN_UP_TO_100_DAM_DURING_FAILSAFE,
     );
