@@ -1,0 +1,67 @@
+import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
+import { expect } from 'chai';
+import { ethers } from 'hardhat';
+import {
+  parseUnits,
+  ZERO_ADDRESS,
+  EventNames,
+  RevertMessages,
+  EMPTY_BYTES,
+  deployDamToken,
+} from './helpers';
+
+describe('DamToken Send Operations', function () {
+  async function deployDamTokenFixture() {
+    const [owner, operatorAddress, otherAccount] = await ethers.getSigners();
+
+    const damToken = await deployDamToken();
+
+    return { damToken, owner, operatorAddress, otherAccount };
+  }
+
+  describe('send function tests', function () {
+    let damToken: any;
+    let owner: any;
+    let otherAccount: any;
+    let initialSupply: any;
+
+    beforeEach(async function () {
+      // Set up a fresh state for each test within this block to ensure test isolation and predictability.
+      ({ damToken, owner, otherAccount } = await loadFixture(deployDamTokenFixture));
+      initialSupply = await damToken.totalSupply();
+    });
+
+    it('Should allow sending tokens to another address', async function () {
+      const amountToSend = parseUnits('100');
+      const ownerBalanceBefore = await damToken.balanceOf(owner.address);
+      const otherAccountBalanceBefore = await damToken.balanceOf(otherAccount.address);
+
+      // Verify that tokens can be successfully transferred from one address to another,
+      // and that the correct ERC777 `Sent` event is emitted.
+      await expect(damToken.connect(owner).send(otherAccount.address, amountToSend, EMPTY_BYTES))
+        .to.emit(damToken, EventNames.Sent)
+        .withArgs(owner.address, owner.address, otherAccount.address, amountToSend, EMPTY_BYTES, EMPTY_BYTES);
+
+      // Confirm that balances are updated correctly after the transfer.
+      expect(await damToken.balanceOf(owner.address)).to.equal(ownerBalanceBefore - amountToSend);
+      expect(await damToken.balanceOf(otherAccount.address)).to.equal(otherAccountBalanceBefore + amountToSend);
+    });
+
+    it('Should revert when sending more tokens than balance', async function () {
+      const amountToSend = initialSupply + parseUnits('1'); // More than owner's balance
+      // Prevent overspending: ensure that a transfer fails if the sender does not have sufficient balance.
+      await expect(damToken.connect(owner).send(otherAccount.address, amountToSend, EMPTY_BYTES)).to.be.revertedWith(
+        RevertMessages.ERC777_TRANSFER_AMOUNT_EXCEEDS_BALANCE,
+      );
+    });
+
+    it('Should revert when sending tokens to the zero address', async function () {
+      const amountToSend = parseUnits('100');
+      // Prevent accidental burning or sending to an unrecoverable address.
+      // Sending to the zero address is typically disallowed in ERC777 to avoid loss of tokens.
+      await expect(damToken.connect(owner).send(ZERO_ADDRESS, amountToSend, EMPTY_BYTES)).to.be.revertedWith(
+        RevertMessages.ERC777_SEND_TO_THE_ZERO_ADDRESS,
+      );
+    });
+  });
+});
