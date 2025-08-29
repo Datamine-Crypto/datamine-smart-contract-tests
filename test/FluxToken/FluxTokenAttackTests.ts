@@ -1,7 +1,7 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { mineBlocks, parseUnits, deployDamToken, deployFluxToken } from './helpers';
+import { mineBlocks, parseUnits, deployDamToken, deployFluxToken } from '../helpers';
 
 /**
  * @dev Test suite specifically designed to verify the FluxToken contract's resilience against

@@ -8,7 +8,7 @@ import {
   deployLockquidityContracts,
   lockTokens,
   mineBlocks,
-} from './helpers';
+} from '../helpers';
 
 describe('LockToken Deployment', function () {
   async function deployLockTokenFixture() {

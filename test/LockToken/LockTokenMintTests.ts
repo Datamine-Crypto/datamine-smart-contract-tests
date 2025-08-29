@@ -9,7 +9,7 @@ import {
   lockTokens,
   mineBlocks,
   mintLockTokens,
-} from './helpers';
+} from '../helpers';
 
 describe('LockToken Mint', function () {
   async function deployLockTokenFixture() {

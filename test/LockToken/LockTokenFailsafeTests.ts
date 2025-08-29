@@ -6,7 +6,7 @@ import {
   RevertMessages,
   deployDamToken,
   deployLockquidityContracts,
-} from './helpers';
+} from '../helpers';
 
 describe('LockToken Failsafe', function () {
   async function deployLockTokenFixture() {

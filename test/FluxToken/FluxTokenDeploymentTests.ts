@@ -6,7 +6,7 @@ import {
   deployDamToken,
   deployFluxToken,
   lockTokens,
-} from './helpers';
+} from '../helpers';
 
 describe('FluxToken Deployment', function () {
   async function deployFluxTokenFixture() {

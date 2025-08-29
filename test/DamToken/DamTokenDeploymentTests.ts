@@ -5,7 +5,7 @@ import {
   parseUnits,
   ZERO_ADDRESS,
   deployDamToken,
-} from './helpers';
+} from '../helpers';
 
 describe('DamToken Deployment', function () {
   async function deployDamTokenFixture() {

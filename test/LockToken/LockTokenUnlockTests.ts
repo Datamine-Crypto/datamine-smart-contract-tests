@@ -7,7 +7,7 @@ import {
   deployDamToken,
   deployLockquidityContracts,
   lockTokens,
-} from './helpers';
+} from '../helpers';
 
 describe('LockToken Unlock', function () {
   async function deployLockTokenFixture() {

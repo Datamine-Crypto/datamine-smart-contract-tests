@@ -12,7 +12,7 @@ import {
   deployDamBlockingHolder,
   deployLockquidityToken,
   setupDamBlockingHolderTest,
-} from './helpers';
+} from '../helpers';
 
 /**
  * @dev This test suite focuses on re-entrancy attack vectors using ERC777 hooks within the DamBlockingHolder contract.

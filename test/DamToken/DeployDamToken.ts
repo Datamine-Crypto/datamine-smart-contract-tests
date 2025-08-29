@@ -1,7 +1,7 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { parseUnits, deployDamToken } from './helpers';
+import { parseUnits, deployDamToken } from '../helpers';
 
 /**
  * @dev Test suite for verifying the successful deployment and initial state of the DamToken contract.

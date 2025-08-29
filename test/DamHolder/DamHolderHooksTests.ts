@@ -9,7 +9,7 @@ import {
   deployLockquidityContracts,
   deployDamHolder,
   setupHolderForLocking,
-} from './helpers';
+} from '../helpers';
 
 describe('DamHolder Hooks', function () {
   async function deployLockTokenFixture() {

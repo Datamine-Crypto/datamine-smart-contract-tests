@@ -9,7 +9,7 @@ import {
   lockTokens,
   mineBlocks,
   mintFluxTokens,
-} from './helpers';
+} from '../helpers';
 
 describe('FluxToken Mint', function () {
   async function deployFluxTokenFixture() {

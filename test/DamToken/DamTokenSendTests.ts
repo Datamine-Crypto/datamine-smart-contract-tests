@@ -8,7 +8,7 @@ import {
   RevertMessages,
   EMPTY_BYTES,
   deployDamToken,
-} from './helpers';
+} from '../helpers';
 
 describe('DamToken Send Operations', function () {
   async function deployDamTokenFixture() {

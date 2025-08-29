@@ -5,7 +5,7 @@ import {
   parseUnits,
   deployDamToken,
   testTokenBurn,
-} from './helpers';
+} from '../helpers';
 
 describe('DamToken Burning', function () {
   async function deployDamTokenFixture() {

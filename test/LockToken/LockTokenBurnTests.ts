@@ -8,7 +8,7 @@ import {
   deployLockquidityContracts,
   lockTokens,
   mintLockTokens,
-} from './helpers';
+} from '../helpers';
 
 describe('LockToken Burn', function () {
   async function deployLockTokenFixture() {
