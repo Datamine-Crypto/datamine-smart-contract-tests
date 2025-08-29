@@ -1,7 +1,16 @@
 import { ethers } from 'hardhat';
 
 /**
+ * @dev This file centralizes common utility functions, constants, and enumerations
+ * used across the Hardhat test suite. Its purpose is to promote code reusability,
+ * maintain consistency in testing practices, and improve readability by abstracting
+ * common operations and values.
+ */
+
+/**
  * Advances the blockchain by a specified number of blocks and returns the new block number.
+ * This is crucial for testing time-dependent logic in smart contracts, such as
+ * block-based rewards, failsafe periods, or time-locked functionalities.
  * @param blockCount The number of blocks to mine.
  * @returns The block number after mining.
  */
@@ -16,6 +25,8 @@ export async function mineBlocks(blockCount: number): Promise<number> {
 
 /**
  * Parses a string amount into a BigInt, considering the specified number of decimals.
+ * This helper ensures consistent and accurate handling of token amounts, especially
+ * when dealing with varying decimal places in different tokens, preventing precision errors in tests.
  * @param amount The string representation of the amount.
  * @param decimals The number of decimals to use for parsing (default is 18).
  * @returns The parsed amount as a BigInt.
@@ -26,6 +37,8 @@ export function parseUnits(amount: string, decimals: number = 18) {
 
 /**
  * Gets an instance of the ERC1820 registry contract.
+ * This is necessary for interacting with ERC777 tokens, as the ERC1820 registry
+ * is used to discover and register interfaces for ERC777 hooks (e.g., `tokensToSend`, `tokensReceived`).
  * @returns A contract instance attached to the ERC1820 registry address.
  */
 export async function getERC1820Registry() {
@@ -38,22 +51,28 @@ export async function getERC1820Registry() {
 // --- Constants ---
 
 /**
- * A constant for the zero address in Ethereum.
+ * A constant for the zero address in Ethereum (`0x0...0`).
+ * Used to represent null addresses or for specific ERC777 transfer scenarios (e.g., burning).
  */
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 /**
- * A constant for empty bytes, often used as default data in transactions.
+ * A constant for empty bytes (`0x`), often used as default data in ERC777 transactions
+ * when no specific user data or operator data is required.
  */
 export const EMPTY_BYTES = '0x';
 
 /**
- * The keccak256 hash of the string 'ERC777TokensSender', used to identify the sender interface in ERC1820.
+ * The keccak256 hash of the string 'ERC777TokensSender'.
+ * This hash is used to identify the `ERC777TokensSender` interface in the ERC1820 registry,
+ * allowing contracts to declare their ability to send ERC777 tokens and trigger `tokensToSend` hooks.
  */
 export const TOKENS_SENDER_INTERFACE_HASH = ethers.keccak256(ethers.toUtf8Bytes('ERC777TokensSender'));
 
 /**
- * The keccak256 hash of the string 'ERC777TokensRecipient', used to identify the recipient interface in ERC1820.
+ * The keccak256 hash of the string 'ERC777TokensRecipient'.
+ * This hash is used to identify the `ERC777TokensRecipient` interface in the ERC1820 registry,
+ * allowing contracts to declare their ability to receive ERC777 tokens and trigger `tokensReceived` hooks.
  */
 export const TOKENS_RECIPIENT_INTERFACE_HASH = ethers.keccak256(ethers.toUtf8Bytes('ERC777TokensRecipient'));
 
@@ -61,6 +80,7 @@ export const TOKENS_RECIPIENT_INTERFACE_HASH = ethers.keccak256(ethers.toUtf8Byt
 
 /**
  * An enumeration of contract names used throughout the test suite for easy referencing.
+ * This improves type safety and reduces the chance of errors from misspelled contract names.
  */
 export enum ContractNames {
   DamToken = 'DamToken',
@@ -75,6 +95,7 @@ export enum ContractNames {
 
 /**
  * An enumeration of event names emitted by the contracts, used for type-safe event testing.
+ * This ensures that event assertions in tests are consistent and accurate, verifying contract behavior.
  */
 export enum EventNames {
   Locked = 'Locked',
@@ -91,7 +112,9 @@ export enum EventNames {
 }
 
 /**
- * An enumeration of revert messages, ensuring consistency in testing for expected failures.
+ * An enumeration of common revert messages, ensuring consistency in testing for expected failures.
+ * Using these constants makes tests more robust to minor changes in error message strings
+ * and improves readability by clearly stating the expected reason for a revert.
  */
 export enum RevertMessages {
   ERC777_TRANSFER_AMOUNT_EXCEEDS_BALANCE = 'ERC777: transfer amount exceeds balance',
@@ -115,6 +138,8 @@ export enum RevertMessages {
 
 /**
  * An enumeration for different unit test cases, used for conditional logic in test contracts.
+ * This allows a single test contract to exhibit different behaviors based on the test scenario,
+ * which is particularly useful for simulating various re-entrancy or hook-related interactions.
  */
 export enum UnitTestCases {
   CallUnlockTokensToSendHook = 0,
