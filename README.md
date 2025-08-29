@@ -78,45 +78,56 @@ This project leverages the following key technologies and frameworks:
 - **OpenZeppelin Contracts**: A library for secure smart contract development (used for ERC777 interfaces, as noted in `GEMINI.md`).
 - **hardhat-erc1820**: A Hardhat plugin for working with the ERC1820 registry, essential for ERC777 hooks.
 
-## 🧪 Test Overview
+## 🧪 Test Coverage and Philosophy
 
-This project includes a comprehensive suite of unit tests to ensure the security, functionality, and intended behavior of the Datamine Network ecosystem smart contracts. The tests cover various aspects, from core token operations to complex re-entrancy attack scenarios.
+This project features a comprehensive suite of unit tests designed to ensure the security, functionality, and intended behavior of the Datamine Network ecosystem smart contracts. Our testing philosophy, which we call "Vibe Unit Testing," emphasizes intuitive, natural language test generation with the help of Gemini.
 
-### 🔒 `DamBlockingHolderContractTests.ts`
+### Vibe Unit Testing with Gemini
 
-This is a crucial test file that focuses on re-entrancy attacks on the `DamBlockingHolder` contract, especially concerning ERC777 hooks. It demonstrates that while re-entry is possible, the contract's mutex protection prevents unwanted side-effects, particularly for the core burning functionality. It also tests scenarios where `lock()` and `send()` amounts exceed balances, ensuring reverts. This test highlights the security measures in place for ERC777 interactions.
+Instead of writing test code manually, you can describe the scenario you want to test, and Gemini will generate the necessary contracts and test files. This approach allows for rapid exploration of edge cases and attack vectors, ensuring robust contract security.
 
-### 🛡️ `DamHolderContractTests.ts`
+**How to Vibe Test:**
 
-This file tests the `DamHolder` contract, which manages DAM tokens. It covers token transfers to the holder, its ability to lock tokens into `LockquidityToken`, and the proper functioning of ERC777 hooks (`tokensToSend` and `tokensReceived`). It also thoroughly verifies ERC1820 interface registration for `tokensSender` and `tokensRecipient`. The tests include various security scenarios such as preventing unauthorized operators, enforcing failsafe limits during locking, handling insufficient balances, and ensuring correct behavior when attempting to lock zero tokens or authorize self as an operator. It also confirms the contract's ability to receive Ether.
+1.  Open the project in your editor.
+2.  Start a chat with the Gemini assistant.
+3.  Provide a clear, descriptive prompt outlining the test you want to add. Be specific about the contracts involved, the actions to be taken, and the expected outcome (e.g., a revert with a specific message, or a change in state).
 
-### 💰 `DamToken.ts`
+**Example Prompt:**
 
-This test suite validates the core functionalities of the `DamToken` (ERC777 token). It checks deployment parameters (name, symbol, total supply), burning mechanisms (both direct and via operator), token sending (including `operatorSend`), operator authorization/revocation, and ensures proper event emissions and revert conditions for invalid operations (e.g., sending to zero address, exceeding balance). It also verifies that `defaultOperators()` returns an empty array.
+Here is an example of a prompt that was used to generate a new "attack" test for this project. You can use it as a template for your own requests:
 
-### 🔄 `DamTokenMigration.ts`
+> Can you add some "attack" tests to show that the contract is behaving as expected. Specfically I want you to add tests that are not covered around the core Locking/burning/minting logic. For example a test that tries to cheat the system somehow to get an unfair advantage by gaming the system. Expect a revert as you should not be able to get an unfair advantage.
+>
+> Before you start changing code let me know what I found and we can discuss further.
 
-This file specifically tests the initial deployment and migration aspects of the `DamToken`. It verifies proper construction parameters (name, symbol, and initial supply of 25 million tokens) and confirms the emission of `Minted` and `Transfer` events upon deployment. It also includes a test for burning tokens via an authorized operator, ensuring correct supply reduction and event emissions.
+Gemini will then analyze the existing codebase, propose a plan, and, upon your approval, generate and add the new test files to the `test/` directory.
 
-### 🚀 `DeployDamToken.ts`
+### Key Areas of Test Coverage:
 
-A simple test file focused solely on the deployment of the `DamToken`. It verifies that the token deploys correctly, assigns the total supply to the owner, and has the expected name, symbol, and initial supply.
+Our tests rigorously cover the following aspects of the Datamine Network smart contracts:
 
-### 🌊 `FluxToken.ts`
+*   **Core Token Functionalities:** Comprehensive testing of DAM, FLUX, and LOCK token operations, including transfers, approvals, and balance management.
+*   **Deployment and Migration:** Verification of correct contract deployment, initial state, and migration parameters.
+*   **Operator Patterns and Delegated Actions:** Thorough checks of ERC777 operator mechanisms, ensuring secure delegated control over tokens.
+*   **ERC777 Hooks and Security:** Extensive testing of `tokensToSend` and `tokensReceived` hooks, with a strong focus on preventing re-entrancy and other vulnerabilities. This includes dedicated attack tests like `DamBlockingHolderContractTests.ts` and `FluxTokenAttackTests.ts`.
+*   **Failsafe Mechanisms:** Validation of protective measures that limit token operations during critical periods, enhancing system stability.
+*   **Minting and Burning Logic:** Detailed testing of FLUX and LOCK token minting based on locked DAM, as well as various burning scenarios and their impact on token supply and multipliers.
+*   **Multipliers and Incentives:** Verification of time and burn multipliers that incentivize participation and contribute to the token's economic model.
+*   **Edge Cases and Revert Conditions:** Robust testing of invalid operations, ensuring contracts revert with appropriate error messages to maintain integrity.
 
-This file tests the `FluxToken` contract, focusing on its core locking and minting functionalities. It verifies that DAM tokens can be locked into the `FluxToken` contract, and that FLUX tokens can be minted to a target address based on the locked DAM. The tests cover various revert conditions for minting, such as invalid target blocks, unauthorized minters, or insufficient locked tokens. It also includes attack scenarios to ensure that tokens cannot be minted for past lock periods after re-locking, reinforcing the contract's security.
+## 📂 Structure of Tests
 
-### ⚔️ `FluxTokenAttackTests.ts`
+The test suite is organized logically within the `test/` directory, mirroring the contract structure to provide clear navigation and understanding of test coverage.
 
-This test file focuses on attack scenarios, specifically re-entrancy on the `FluxToken`'s `burnToAddress` function. It deploys an `UnlockAttacker` contract to attempt to exploit re-entrancy vulnerabilities during the burning process. The test asserts that the `burnToAddress` function correctly prevents re-entrancy, ensuring that tokens are burned exactly once and preventing double-burning or other unintended side effects.
+*   **`test/<ContractName>/`**: Each primary contract (e.g., `DamToken`, `FluxToken`, `LockToken`, `DamHolder`, `DamBlockingHolder`) has its own subdirectory. These directories contain test files (`.ts`) dedicated to that contract's functionalities, deployment, migration, and specific attack scenarios.
+*   **`test/helpers/`**: This directory centralizes reusable code, utility functions, and common test setups. It includes:
+    *   `common.ts`: Defines constants, enums for contract names, event names, and revert messages, along with general utility functions like `mineBlocks` and `parseUnits`.
+    *   `deployHelpers.ts`: Contains functions to deploy various contracts consistently across tests.
+    *   `setupHelpers.ts`: Provides helpers for setting up complex test scenarios, such as authorizing operators, locking tokens, and preparing contracts for re-entrancy tests.
+    *   `commonTests.ts`: Encapsulates common test logic, like `testTokenBurn`, to reduce redundancy.
+    *   `index.ts`: Re-exports all helper modules for simplified imports in test files.
 
-### 📈 `FluxTokenMigration.ts`
-
-This suite covers the core functionalities and migration aspects of the `FLUX` token. It verifies construction parameters (ensuring zero premined coins), tests the process of locking DAM into FLUX, and ensures 100% of DAM can be unlocked. It also validates the failsafe mechanism, and covers minting and target-burning of FLUX tokens to/from specific addresses. This ensures the token behaves as expected in a multi-contract environment.
-
-### 🔐 `LockToken.ts`
-
-This file tests the `LockquidityToken` (referred to as `LockToken` in the file name). It covers the deployment of the `LockquidityFactory` and its associated `LockquidityToken` and `LockquidityVault` contracts. It thoroughly tests the locking of DAM tokens, minting of LOCK tokens (including various revert conditions for invalid target blocks or unauthorized minters), and burning of LOCK tokens (including reverts for insufficient balance). It also includes tests for time and burn multipliers, the failsafe mechanism for locking, and attack scenarios to prevent minting for past lock periods after re-locking.
+This modular structure enhances maintainability, readability, and allows for focused testing of individual contract components while leveraging shared utilities.
 
 ## 🤖 Vibe Testing with Gemini
 
