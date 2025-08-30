@@ -1,14 +1,7 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import {
-  parseUnits,
-  RevertMessages,
-  deployDamToken,
-  deployLockquidityContracts,
-  lockTokens,
-  deployLockTokenFixture,
-} from '../helpers';
+import { parseUnits, RevertMessages, lockTokens, deployLockTokenFixture } from '../helpers';
 
 describe('LockToken Unlock', function () {
   describe('Unlock', function () {

@@ -1,11 +1,6 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import {
-  parseUnits,
-  RevertMessages,
-  deployLockTokenAndMintFixture,
-} from '../helpers';
+import { parseUnits, RevertMessages, deployLockTokenAndMintFixture } from '../helpers';
 
 describe('LockToken Burn', function () {
   describe('burnToAddress', function () {

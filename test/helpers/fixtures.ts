@@ -10,10 +10,16 @@ import {
 import { lockTokens, mintLockTokens } from './setupHelpers';
 import { parseUnits } from './common';
 
-export async function deployDamTokenFixture() {
-  const [owner, operatorAddress, otherAccount] = await ethers.getSigners();
+// Base fixture for deploying DAM token and getting signers
+export async function deployBaseFixture() {
+  const [owner, addr1, addr2, addr3] = await ethers.getSigners();
   const damToken = await deployDamToken();
-  return { damToken, owner, operatorAddress, otherAccount };
+  return { damToken, owner, addr1, addr2, addr3 };
+}
+
+export async function deployDamTokenFixture() {
+  const { damToken, owner, addr1, addr2 } = await deployBaseFixture();
+  return { damToken, owner, operatorAddress: addr1, otherAccount: addr2 };
 }
 
 export async function deployDamTokenMigrationFixture() {
@@ -23,10 +29,9 @@ export async function deployDamTokenMigrationFixture() {
 }
 
 export async function deployFluxTokenFixture() {
-  const [owner, otherAccount] = await ethers.getSigners();
-  const damToken = await deployDamToken();
+  const { damToken, owner, addr1 } = await deployBaseFixture();
   const fluxToken = await deployFluxToken(damToken.target, 5760, 161280, 0);
-  return { fluxToken, damToken, owner, otherAccount };
+  return { fluxToken, damToken, owner, otherAccount: addr1 };
 }
 
 export async function deployFluxTokenAndLockFixture() {
@@ -37,9 +42,8 @@ export async function deployFluxTokenAndLockFixture() {
 }
 
 export async function deployFluxTokenAttackFixture() {
-  const [owner, attackerAccount, otherAccount] = await ethers.getSigners();
+  const { damToken, owner, addr1, addr2 } = await deployBaseFixture();
 
-  const damToken = await deployDamToken();
   // Deploy FluxToken with failsafe disabled (0) to simplify attack scenario setup.
   const fluxToken = await deployFluxToken(damToken.target, 5760, 161280, 0);
 
@@ -48,29 +52,27 @@ export async function deployFluxTokenAttackFixture() {
   const unlockAttacker = await UnlockAttacker.deploy();
 
   // Transfer DAM to attackerAccount for locking, so the attacker has tokens to interact with FluxToken.
-  await damToken.connect(owner).transfer(attackerAccount.address, parseUnits('1000'));
+  await damToken.connect(owner).transfer(addr1.address, parseUnits('1000'));
 
-  return { fluxToken, damToken, unlockAttacker, owner, attackerAccount, otherAccount };
+  return { fluxToken, damToken, unlockAttacker, owner, attackerAccount: addr1, otherAccount: addr2 };
 }
 
 export async function deployFluxTokenMigrationFixture() {
-  const [owner, damHolder, fluxMintReceiver, operator] = await ethers.getSigners();
+  const { damToken, owner, addr1, addr2, addr3 } = await deployBaseFixture();
 
-  const damToken = await deployDamToken();
   // Deploy FluxToken with specific time bonus and failsafe parameters relevant for migration.
   const fluxToken = await deployFluxToken(damToken.target, 5760, 161280, 161280);
 
   // Transfer some DAM to the damHolder to have tokens available for locking tests.
-  await damToken.connect(owner).transfer(damHolder.address, parseUnits('1000'));
+  await damToken.connect(owner).transfer(addr1.address, parseUnits('1000'));
 
-  return { damToken, fluxToken, owner, damHolder, fluxMintReceiver, operator };
+  return { damToken, fluxToken, owner, damHolder: addr1, fluxMintReceiver: addr2, operator: addr3 };
 }
 
 export async function deployLockTokenFixture() {
-  const [owner, addrB] = await ethers.getSigners();
-  const damToken = await deployDamToken();
+  const { damToken, owner, addr1 } = await deployBaseFixture();
   const { lockquidityFactory, lockquidityToken, lockquidityVault } = await deployLockquidityContracts(damToken.target);
-  return { lockquidityFactory, lockquidityToken, lockquidityVault, damToken, owner, addrB };
+  return { lockquidityFactory, lockquidityToken, lockquidityVault, damToken, owner, addrB: addr1 };
 }
 
 export async function deployLockTokenAndLockFixture() {
@@ -87,22 +89,18 @@ export async function deployLockTokenAndMintFixture() {
 }
 
 export async function deployDamHolderFixture() {
-  const [owner, addrB] = await ethers.getSigners();
-
-  const damToken = await deployDamToken();
+  const { damToken, owner, addr1 } = await deployBaseFixture();
   const { lockquidityFactory, lockquidityToken } = await deployLockquidityContracts(damToken.target);
   const damHolder = await deployDamHolder();
 
-  return { lockquidityFactory, lockquidityToken, owner, addrB, damToken, damHolder };
+  return { lockquidityFactory, lockquidityToken, owner, addrB: addr1, damToken, damHolder };
 }
 
-export async function deployLockTokenFixtureNoFailsafe() {
-  const [owner, addrB] = await ethers.getSigners();
-
-  const damToken = await deployDamToken();
+export async function deployReentrancyTestFixture() {
+  const { damToken, owner, addr1 } = await deployBaseFixture();
   // Deploy LockquidityToken with failsafe disabled (failsafeBlock = 0) to allow testing specific re-entrancy conditions
   const lockquidityToken = await deployLockquidityToken(damToken.target, 5760, 161280, 0, owner.address);
   const damBlockingHolder = await deployDamBlockingHolder(lockquidityToken.target);
 
-  return { lockquidityToken, owner, addrB, damToken, damBlockingHolder };
+  return { lockquidityToken, owner, addrB: addr1, damToken, damBlockingHolder };
 }

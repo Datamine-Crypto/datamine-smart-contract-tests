@@ -1,16 +1,11 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
 import {
   parseUnits,
   getERC1820Registry,
   EventNames,
-  ZERO_ADDRESS,
   TOKENS_SENDER_INTERFACE_HASH,
   TOKENS_RECIPIENT_INTERFACE_HASH,
-  deployDamToken,
-  deployLockquidityContracts,
-  deployDamHolder,
   setupHolderForLocking,
   deployDamHolderFixture,
 } from '../helpers';

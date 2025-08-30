@@ -1,19 +1,12 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
-import { ethers } from 'hardhat'; // Added explicit ethers import
 import {
   parseUnits,
-  ContractNames,
   EventNames,
   RevertMessages,
   UnitTestCases,
-  deployDamToken,
-  deployLockquidityContracts,
-  deployDamBlockingHolder,
-  deployLockquidityToken,
   setupDamBlockingHolderTest,
-  deployLockTokenFixtureNoFailsafe,
-  deployLockTokenFixture,
+  deployReentrancyTestFixture,
 } from '../helpers';
 
 /**
@@ -32,9 +25,7 @@ describe('DamBlockingHolder Contract Test', function () {
      * This confirms that the contract can safely handle re-entrant calls without leading to unintended state changes.
      */
     it('Re-Entry Test: DamBlockingHolder should prevent unlock() inside lock() with mutex AND allow send() before lock() finishes', async function () {
-      const { owner, damBlockingHolder, lockquidityToken, damToken } = await loadFixture(
-        deployLockTokenFixtureNoFailsafe,
-      );
+      const { owner, damBlockingHolder, lockquidityToken, damToken } = await loadFixture(deployReentrancyTestFixture);
 
       const initialAmount = parseUnits('200');
       const lockAmount = parseUnits('100');
@@ -85,9 +76,7 @@ describe('DamBlockingHolder Contract Test', function () {
      * This promotes code reusability and clarity for similar revert scenarios.
      */
     async function testRevert(lockAmount: any, hookSendAmount: any) {
-      const { lockquidityToken, owner, damBlockingHolder, damToken } = await loadFixture(
-        deployLockTokenFixtureNoFailsafe,
-      );
+      const { lockquidityToken, owner, damBlockingHolder, damToken } = await loadFixture(deployReentrancyTestFixture);
 
       const initialAmount = parseUnits('200');
 

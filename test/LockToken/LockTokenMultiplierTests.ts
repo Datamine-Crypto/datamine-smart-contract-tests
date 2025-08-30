@@ -1,12 +1,6 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import {
-  mineBlocks,
-  mintLockTokens,
-  deployLockTokenAndLockFixture,
-  lockTokens,
-} from '../helpers';
+import { mineBlocks, mintLockTokens, deployLockTokenAndLockFixture, lockTokens } from '../helpers';
 
 describe('LockToken Multipliers', function () {
   describe('Multipliers', function () {
@@ -21,9 +15,7 @@ describe('LockToken Multipliers', function () {
     });
 
     it('Should calculate the burn multiplier correctly', async function () {
-      const { lockquidityToken, damToken, owner, addrB, lockAmount } = await loadFixture(
-        deployLockTokenAndLockFixture,
-      );
+      const { lockquidityToken, damToken, owner, addrB, lockAmount } = await loadFixture(deployLockTokenAndLockFixture);
       // This test ensures the accurate calculation of the burn multiplier. This multiplier is designed to reward users
       // who actively participate in the token ecosystem by burning tokens, thereby influencing their future rewards
       // and contributing to the token's deflationary mechanics. Its correctness is essential for the intended economic incentives.

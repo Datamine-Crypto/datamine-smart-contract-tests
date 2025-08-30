@@ -1,16 +1,6 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import {
-  parseUnits,
-  RevertMessages,
-  deployDamToken,
-  deployLockquidityContracts,
-  lockTokens,
-  mineBlocks,
-  mintLockTokens,
-  deployLockTokenFixture,
-} from '../helpers';
+import { parseUnits, RevertMessages, lockTokens, mineBlocks, mintLockTokens, deployLockTokenFixture } from '../helpers';
 
 describe('LockToken Attack Scenarios', function () {
   describe('Attack Scenarios', function () {

@@ -1,6 +1,5 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
 import { mineBlocks, parseUnits, deployFluxTokenAttackFixture } from '../helpers';
 
 /**
@@ -16,9 +15,8 @@ describe('FluxToken - Attack Scenarios', function () {
       // ERC777 hooks, the FluxToken contract's internal mechanisms (e.g., mutexes, state checks) successfully
       // prevent double-burning or any unintended state manipulation, thereby safeguarding the token's supply
       // integrity and preventing economic exploits.
-      const { fluxToken, damToken, unlockAttacker, owner, attackerAccount } = await loadFixture(
-        deployFluxTokenAttackFixture,
-      );
+      const { fluxToken, damToken, unlockAttacker, owner, attackerAccount } =
+        await loadFixture(deployFluxTokenAttackFixture);
 
       const ownerLockAmount = parseUnits('100');
       const attackerLockAmount = parseUnits('100');

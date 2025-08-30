@@ -1,16 +1,7 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import {
-  mineBlocks,
-  parseUnits,
-  RevertMessages,
-  deployDamToken,
-  deployLockquidityContracts,
-  deployDamHolder,
-  setupHolderForLocking,
-  deployDamHolderFixture,
-} from '../helpers';
+import { mineBlocks, parseUnits, RevertMessages, setupHolderForLocking, deployDamHolderFixture } from '../helpers';
 
 describe('DamHolder Functionality', function () {
   describe('Functionality', function () {

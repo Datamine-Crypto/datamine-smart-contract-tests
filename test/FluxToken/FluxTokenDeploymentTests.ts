@@ -1,7 +1,6 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { parseUnits, deployDamToken, deployFluxToken, lockTokens, deployFluxTokenFixture } from '../helpers';
+import { parseUnits, lockTokens, deployFluxTokenFixture } from '../helpers';
 
 describe('FluxToken Deployment', function () {
   describe('Deployment', function () {

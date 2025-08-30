@@ -1,16 +1,7 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import {
-  parseUnits,
-  EventNames,
-  EMPTY_BYTES,
-  deployDamToken,
-  deployLockquidityContracts,
-  deployDamHolder,
-  setupHolderForLocking,
-  deployDamHolderFixture,
-} from '../helpers';
+import { parseUnits, EventNames, EMPTY_BYTES, setupHolderForLocking, deployDamHolderFixture } from '../helpers';
 
 describe('DamHolder Hooks', function () {
   describe('Hooks', function () {
