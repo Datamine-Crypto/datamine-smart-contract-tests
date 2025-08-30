@@ -4,25 +4,13 @@ import { ethers } from 'hardhat';
 import {
   parseUnits,
   RevertMessages,
-  deployDamToken,
-  deployLockquidityContracts,
-  lockTokens,
-  mintLockTokens,
-  deployLockTokenFixture,
+  deployLockTokenAndMintFixture,
 } from '../helpers';
 
 describe('LockToken Burn', function () {
   describe('burnToAddress', function () {
-    let lockquidityToken: any, damToken: any, owner: any;
-
-    beforeEach(async function () {
-      ({ lockquidityToken, damToken, owner } = await loadFixture(deployLockTokenFixture));
-      const lockAmount = ethers.parseUnits('100', 18);
-      await lockTokens(lockquidityToken, damToken, owner, lockAmount);
-      await mintLockTokens(lockquidityToken, owner, owner.address, 1);
-    });
-
     it('Should revert if a user tries to burn more tokens than they have', async function () {
+      const { lockquidityToken, owner } = await loadFixture(deployLockTokenAndMintFixture);
       // This test is critical for enforcing token supply integrity and preventing malicious burning.
       // It ensures that users cannot burn more LOCK tokens than they currently possess, which is a fundamental
       // security measure to prevent negative balances, unauthorized token destruction, and manipulation of the token supply.

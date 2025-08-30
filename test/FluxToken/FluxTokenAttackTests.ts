@@ -1,7 +1,7 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { mineBlocks, parseUnits, deployDamToken, deployFluxToken } from '../helpers';
+import { mineBlocks, parseUnits, deployFluxTokenAttackFixture } from '../helpers';
 
 /**
  * @dev Test suite specifically designed to verify the FluxToken contract's resilience against
@@ -9,28 +9,6 @@ import { mineBlocks, parseUnits, deployDamToken, deployFluxToken } from '../help
  * It uses a dedicated attacker contract to simulate malicious re-entrant calls.
  */
 describe('FluxToken - Attack Scenarios', function () {
-  /**
-   * @dev Fixture to deploy all necessary contracts for attack simulations, including
-   * DamToken, FluxToken, and the UnlockAttacker contract. It also pre-funds the attacker.
-   * This ensures a controlled environment for testing specific vulnerabilities.
-   */
-  async function deployContractsFixture() {
-    const [owner, attackerAccount, otherAccount] = await ethers.getSigners();
-
-    const damToken = await deployDamToken();
-    // Deploy FluxToken with failsafe disabled (0) to simplify attack scenario setup.
-    const fluxToken = await deployFluxToken(damToken.target, 5760, 161280, 0);
-
-    // Deploy the malicious UnlockAttacker contract, which is designed to attempt re-entrancy.
-    const UnlockAttacker = await ethers.getContractFactory('UnlockAttacker');
-    const unlockAttacker = await UnlockAttacker.deploy();
-
-    // Transfer DAM to attackerAccount for locking, so the attacker has tokens to interact with FluxToken.
-    await damToken.connect(owner).transfer(attackerAccount.address, parseUnits('1000'));
-
-    return { fluxToken, damToken, unlockAttacker, owner, attackerAccount, otherAccount };
-  }
-
   describe('Re-entrancy on burnToAddress', function () {
     it('Should prevent re-entrancy on burnToAddress and not burn twice', async function () {
       // This test rigorously simulates a re-entrancy attack on the `burnToAddress` function using a malicious
@@ -38,7 +16,9 @@ describe('FluxToken - Attack Scenarios', function () {
       // ERC777 hooks, the FluxToken contract's internal mechanisms (e.g., mutexes, state checks) successfully
       // prevent double-burning or any unintended state manipulation, thereby safeguarding the token's supply
       // integrity and preventing economic exploits.
-      const { fluxToken, damToken, unlockAttacker, owner, attackerAccount } = await loadFixture(deployContractsFixture);
+      const { fluxToken, damToken, unlockAttacker, owner, attackerAccount } = await loadFixture(
+        deployFluxTokenAttackFixture,
+      );
 
       const ownerLockAmount = parseUnits('100');
       const attackerLockAmount = parseUnits('100');

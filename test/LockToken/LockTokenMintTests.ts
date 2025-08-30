@@ -2,28 +2,18 @@ import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import {
-  parseUnits,
   RevertMessages,
-  deployDamToken,
-  deployLockquidityContracts,
-  lockTokens,
   mineBlocks,
   mintLockTokens,
   deployLockTokenFixture,
+  deployLockTokenAndLockFixture,
 } from '../helpers';
 
 describe('LockToken Mint', function () {
   describe('mintToAddress', function () {
     describe('With locked tokens', function () {
-      let lockquidityToken: any, damToken: any, owner: any, addrB: any;
-      const lockAmount = parseUnits('100');
-
-      beforeEach(async function () {
-        ({ lockquidityToken, damToken, owner, addrB } = await loadFixture(deployLockTokenFixture));
-        await lockTokens(lockquidityToken, damToken, owner, lockAmount);
-      });
-
       it('Should revert if targetBlock is in the future', async function () {
+        const { lockquidityToken, owner } = await loadFixture(deployLockTokenAndLockFixture);
         const futureBlock = (await mineBlocks(1)) + 100;
 
         await expect(
@@ -32,6 +22,7 @@ describe('LockToken Mint', function () {
       });
 
       it('Should revert if targetBlock is before lastMintBlockNumber', async function () {
+        const { lockquidityToken, owner } = await loadFixture(deployLockTokenAndLockFixture);
         // This test verifies that `mintToAddress` enforces a strictly increasing `targetBlock` number.
         // This prevents users from re-minting for past blocks, which could lead to double-counting rewards
         // or manipulating the minting history, thereby safeguarding the chronological integrity of token distribution.
@@ -44,6 +35,7 @@ describe('LockToken Mint', function () {
       });
 
       it('Should revert if caller is not the minterAddress', async function () {
+        const { lockquidityToken, owner, addrB } = await loadFixture(deployLockTokenAndLockFixture);
         const block = await mineBlocks(1);
 
         await expect(

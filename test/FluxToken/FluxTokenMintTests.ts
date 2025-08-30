@@ -1,22 +1,19 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { parseUnits, RevertMessages, lockTokens, mineBlocks, mintFluxTokens, deployFluxTokenFixture } from '../helpers';
+import {
+  RevertMessages,
+  mineBlocks,
+  mintFluxTokens,
+  deployFluxTokenFixture,
+  deployFluxTokenAndLockFixture,
+} from '../helpers';
 
 describe('FluxToken Mint', function () {
   describe('mintToAddress', function () {
     describe('With locked tokens', function () {
-      let fluxToken: any, damToken: any, owner: any, otherAccount: any;
-      const lockAmount = parseUnits('100');
-
-      beforeEach(async function () {
-        // Set up a fresh state for each test within this nested block, ensuring that
-        // each minting test starts with a consistent environment where tokens are already locked.
-        ({ fluxToken, damToken, owner, otherAccount } = await loadFixture(deployFluxTokenFixture));
-      });
-
       it('Should mint tokens to the target address', async function () {
-        await lockTokens(fluxToken, damToken, owner, lockAmount);
+        const { fluxToken, owner } = await loadFixture(deployFluxTokenAndLockFixture);
         const mintBlock = await mineBlocks(1);
 
         const expectedMintAmount = await fluxToken.getMintAmount(owner.address, mintBlock);
@@ -29,7 +26,7 @@ describe('FluxToken Mint', function () {
       });
 
       it('Should revert if targetBlock is in the future', async function () {
-        await lockTokens(fluxToken, damToken, owner, lockAmount);
+        const { fluxToken, owner } = await loadFixture(deployFluxTokenAndLockFixture);
 
         const futureBlock = (await ethers.provider.getBlockNumber()) + 100;
 
@@ -42,7 +39,7 @@ describe('FluxToken Mint', function () {
       });
 
       it('Should revert if targetBlock is before lastMintBlockNumber', async function () {
-        await lockTokens(fluxToken, damToken, owner, lockAmount);
+        const { fluxToken, owner } = await loadFixture(deployFluxTokenAndLockFixture);
         await mintFluxTokens(fluxToken, owner, owner.address, 1);
 
         const lastMintBlock = await (await fluxToken.addressLocks(owner.address)).lastMintBlockNumber;
@@ -55,7 +52,7 @@ describe('FluxToken Mint', function () {
       });
 
       it('Should revert if caller is not the minterAddress', async function () {
-        await lockTokens(fluxToken, damToken, owner, lockAmount);
+        const { fluxToken, owner, otherAccount } = await loadFixture(deployFluxTokenAndLockFixture);
         const block = await mineBlocks(1);
 
         // Enforce access control: ensure that only the delegated minter can initiate minting for a source address.

@@ -1,18 +1,15 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat'; // Changed hre to ethers
-import { time } from '@nomicfoundation/hardhat-network-helpers';
 import {
   mineBlocks,
   parseUnits,
   ContractNames,
   EventNames,
   RevertMessages,
-  EMPTY_BYTES,
-  deployDamToken,
-  deployFluxToken,
   lockTokens,
   mintFluxTokens,
+  deployFluxTokenMigrationFixture,
 } from '../helpers';
 
 /**
@@ -21,26 +18,8 @@ import {
  * and various minting and burning scenarios to ensure the token behaves as intended within the ecosystem.
  */
 describe('FLUX Token Migration Tests', function () {
-  /**
-   * @dev Fixture to deploy all necessary contracts for FLUX token migration tests.
-   * This includes DamToken and FluxToken, and pre-funds a damHolder for locking scenarios.
-   * Ensures a consistent and isolated environment for each test.
-   */
-  async function deployContractsFixture() {
-    const [owner, damHolder, fluxMintReceiver, operator] = await ethers.getSigners();
-
-    const damToken = await deployDamToken();
-    // Deploy FluxToken with specific time bonus and failsafe parameters relevant for migration.
-    const fluxToken = await deployFluxToken(damToken.target, 5760, 161280, 161280);
-
-    // Transfer some DAM to the damHolder to have tokens available for locking tests.
-    await damToken.connect(owner).transfer(damHolder.address, parseUnits('1000'));
-
-    return { damToken, fluxToken, owner, damHolder, fluxMintReceiver, operator };
-  }
-
   it('should ensure proper construction parameters with 0 premined coins', async () => {
-    const { fluxToken } = await loadFixture(deployContractsFixture);
+    const { fluxToken } = await loadFixture(deployFluxTokenMigrationFixture);
     // Verify the token's name and symbol to ensure correct initialization.
     expect(await fluxToken.name()).to.equal('FLUX');
     expect(await fluxToken.symbol()).to.equal('FLUX');
@@ -50,7 +29,7 @@ describe('FLUX Token Migration Tests', function () {
   });
 
   it('ensure DAM holder can lock DAM in FLUX smart contract', async () => {
-    const { damToken, fluxToken, damHolder } = await loadFixture(deployContractsFixture);
+    const { damToken, fluxToken, damHolder } = await loadFixture(deployFluxTokenMigrationFixture);
     const lockInAmount = parseUnits('10');
 
     // Test the fundamental ability of a DAM holder to lock their DAM tokens within the FluxToken contract.
@@ -64,7 +43,7 @@ describe('FLUX Token Migration Tests', function () {
   });
 
   it('ensure after locking-in DAM into FLUX you can unlock 100% of DAM back', async () => {
-    const { damToken, fluxToken, damHolder } = await loadFixture(deployContractsFixture);
+    const { damToken, fluxToken, damHolder } = await loadFixture(deployFluxTokenMigrationFixture);
     const initialBalance = await damToken.balanceOf(damHolder.address);
     const lockInAmount = parseUnits('10');
 
@@ -85,7 +64,7 @@ describe('FLUX Token Migration Tests', function () {
   });
 
   it('ensure failsafe works', async () => {
-    const { damToken, owner, damHolder } = await loadFixture(deployContractsFixture);
+    const { damToken, owner, damHolder } = await loadFixture(deployFluxTokenMigrationFixture);
     const FluxToken = await ethers.getContractFactory(ContractNames.FluxToken);
     // Deploy a new FluxToken instance with a specific failsafe block for this test.
     const fluxTokenWithFailsafe = await FluxToken.deploy(damToken.target, 5760, 161280, 20);
@@ -116,7 +95,7 @@ describe('FLUX Token Migration Tests', function () {
   });
 
   it('ensure FLUX can be minted after DAM lock-in to another address', async () => {
-    const { damToken, fluxToken, damHolder, fluxMintReceiver } = await loadFixture(deployContractsFixture);
+    const { damToken, fluxToken, damHolder, fluxMintReceiver } = await loadFixture(deployFluxTokenMigrationFixture);
     const lockInAmount = parseUnits('1');
 
     // Lock DAM tokens, but specify a different address (fluxMintReceiver) as the minter.
@@ -144,7 +123,7 @@ describe('FLUX Token Migration Tests', function () {
   });
 
   it('ensure FLUX can be target-burned', async () => {
-    const { damToken, fluxToken, damHolder, fluxMintReceiver } = await loadFixture(deployContractsFixture);
+    const { damToken, fluxToken, damHolder, fluxMintReceiver } = await loadFixture(deployFluxTokenMigrationFixture);
     const lockInAmount = parseUnits('10');
 
     await lockTokens(fluxToken, damToken, damHolder, lockInAmount);
