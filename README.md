@@ -106,26 +106,26 @@ Gemini will then analyze the existing codebase, propose a plan, and, upon your a
 
 Our tests rigorously cover the following aspects of the Datamine Network smart contracts:
 
-*   **Core Token Functionalities:** Comprehensive testing of DAM, FLUX, and LOCK token operations, including transfers, approvals, and balance management.
-*   **Deployment and Migration:** Verification of correct contract deployment, initial state, and migration parameters.
-*   **Operator Patterns and Delegated Actions:** Thorough checks of ERC777 operator mechanisms, ensuring secure delegated control over tokens.
-*   **ERC777 Hooks and Security:** Extensive testing of `tokensToSend` and `tokensReceived` hooks, with a strong focus on preventing re-entrancy and other vulnerabilities. This includes dedicated attack tests like `DamBlockingHolderContractTests.ts` and `FluxTokenAttackTests.ts`.
-*   **Failsafe Mechanisms:** Validation of protective measures that limit token operations during critical periods, enhancing system stability.
-*   **Minting and Burning Logic:** Detailed testing of FLUX and LOCK token minting based on locked DAM, as well as various burning scenarios and their impact on token supply and multipliers.
-*   **Multipliers and Incentives:** Verification of time and burn multipliers that incentivize participation and contribute to the token's economic model.
-*   **Edge Cases and Revert Conditions:** Robust testing of invalid operations, ensuring contracts revert with appropriate error messages to maintain integrity.
+- **Core Token Functionalities:** Comprehensive testing of DAM, FLUX, and LOCK token operations, including transfers, approvals, and balance management.
+- **Deployment and Migration:** Verification of correct contract deployment, initial state, and migration parameters.
+- **Operator Patterns and Delegated Actions:** Thorough checks of ERC777 operator mechanisms, ensuring secure delegated control over tokens.
+- **ERC777 Hooks and Security:** Extensive testing of `tokensToSend` and `tokensReceived` hooks, with a strong focus on preventing re-entrancy and other vulnerabilities. This includes dedicated attack tests like `DamBlockingHolderContractTests.ts` and `FluxTokenAttackTests.ts`.
+- **Failsafe Mechanisms:** Validation of protective measures that limit token operations during critical periods, enhancing system stability.
+- **Minting and Burning Logic:** Detailed testing of FLUX and LOCK token minting based on locked DAM, as well as various burning scenarios and their impact on token supply and multipliers.
+- **Multipliers and Incentives:** Verification of time and burn multipliers that incentivize participation and contribute to the token's economic model.
+- **Edge Cases and Revert Conditions:** Robust testing of invalid operations, ensuring contracts revert with appropriate error messages to maintain integrity.
 
 ## 📂 Structure of Tests
 
 The test suite is organized logically within the `test/` directory, mirroring the contract structure to provide clear navigation and understanding of test coverage.
 
-*   **`test/<ContractName>/`**: Each primary contract (e.g., `DamToken`, `FluxToken`, `LockToken`, `DamHolder`, `DamBlockingHolder`) has its own subdirectory. These directories contain test files (`.ts`) dedicated to that contract's functionalities, deployment, migration, and specific attack scenarios.
-*   **`test/helpers/`**: This directory centralizes reusable code, utility functions, and common test setups. It includes:
-    *   `common.ts`: Defines constants, enums for contract names, event names, and revert messages, along with general utility functions like `mineBlocks` and `parseUnits`.
-    *   `deployHelpers.ts`: Contains functions to deploy various contracts consistently across tests.
-    *   `setupHelpers.ts`: Provides helpers for setting up complex test scenarios, such as authorizing operators, locking tokens, and preparing contracts for re-entrancy tests.
-    *   `commonTests.ts`: Encapsulates common test logic, like `testTokenBurn`, to reduce redundancy.
-    *   `index.ts`: Re-exports all helper modules for simplified imports in test files.
+- **`test/<ContractName>/`**: Each primary contract (e.g., `DamToken`, `FluxToken`, `LockToken`, `DamHolder`, `DamBlockingHolder`) has its own subdirectory. These directories contain test files (`.ts`) dedicated to that contract's functionalities, deployment, migration, and specific attack scenarios.
+- **`test/helpers/`**: This directory centralizes reusable code, utility functions, and common test setups. It includes:
+  - `common.ts`: Defines constants, enums for contract names, event names, and revert messages, along with general utility functions like `mineBlocks` and `parseUnits`.
+  - `deployHelpers.ts`: Contains functions to deploy various contracts consistently across tests.
+  - `setupHelpers.ts`: Provides helpers for setting up complex test scenarios, such as authorizing operators, locking tokens, and preparing contracts for re-entrancy tests.
+  - `commonTests.ts`: Encapsulates common test logic, like `testTokenBurn`, to reduce redundancy.
+  - `index.ts`: Re-exports all helper modules for simplified imports in test files.
 
 This modular structure enhances maintainability, readability, and allows for focused testing of individual contract components while leveraging shared utilities.
 

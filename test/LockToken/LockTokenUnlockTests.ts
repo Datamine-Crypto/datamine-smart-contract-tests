@@ -1,20 +1,16 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { parseUnits, RevertMessages, deployDamToken, deployLockquidityContracts, lockTokens } from '../helpers';
+import {
+  parseUnits,
+  RevertMessages,
+  deployDamToken,
+  deployLockquidityContracts,
+  lockTokens,
+  deployLockTokenFixture,
+} from '../helpers';
 
 describe('LockToken Unlock', function () {
-  async function deployLockTokenFixture() {
-    const [owner, otherAccount] = await ethers.getSigners();
-
-    const damToken = await deployDamToken();
-    const { lockquidityFactory, lockquidityToken, lockquidityVault } = await deployLockquidityContracts(
-      damToken.target,
-    );
-
-    return { lockquidityFactory, lockquidityToken, lockquidityVault, damToken, owner, otherAccount };
-  }
-
   describe('Unlock', function () {
     it('Should allow a user to unlock their tokens', async function () {
       const { lockquidityToken, damToken, owner } = await loadFixture(deployLockTokenFixture);

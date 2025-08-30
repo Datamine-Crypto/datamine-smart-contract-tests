@@ -9,22 +9,13 @@ import {
   deployLockquidityContracts,
   deployDamHolder,
   setupHolderForLocking,
+  deployDamHolderFixture,
 } from '../helpers';
 
 describe('DamHolder Functionality', function () {
-  async function deployLockTokenFixture() {
-    const [owner, addrB] = await ethers.getSigners();
-
-    const damToken = await deployDamToken();
-    const { lockquidityFactory, lockquidityToken } = await deployLockquidityContracts(damToken.target);
-    const damHolder = await deployDamHolder();
-
-    return { lockquidityFactory, lockquidityToken, owner, addrB, damToken, damHolder };
-  }
-
   describe('Functionality', function () {
     it('Should successfully authorize an operator', async function () {
-      const { damToken, owner, damHolder, addrB } = await loadFixture(deployLockTokenFixture);
+      const { damToken, owner, damHolder, addrB } = await loadFixture(deployDamHolderFixture);
       const operator = addrB.address;
 
       // Authorize addrB as an operator for the DamHolder's tokens
@@ -35,7 +26,7 @@ describe('DamHolder Functionality', function () {
     });
 
     it('Should fail to lock if operator is not authorized', async function () {
-      const { owner, damHolder, damToken, lockquidityToken } = await loadFixture(deployLockTokenFixture);
+      const { owner, damHolder, damToken, lockquidityToken } = await loadFixture(deployDamHolderFixture);
       const lockAmount = parseUnits('100', 18);
 
       // Transfer tokens to DamHolder but do NOT authorize the operator
@@ -48,7 +39,7 @@ describe('DamHolder Functionality', function () {
     });
 
     it('Should fail to lock more than 100 tokens during failsafe period', async function () {
-      const { owner, damHolder, damToken, lockquidityToken } = await loadFixture(deployLockTokenFixture);
+      const { owner, damHolder, damToken, lockquidityToken } = await loadFixture(deployDamHolderFixture);
       const lockAmount = parseUnits('101'); // More than failsafe limit
 
       // Setup holder with tokens and operator authorization
@@ -61,7 +52,7 @@ describe('DamHolder Functionality', function () {
     });
 
     it('Should fail to lock more tokens than balance', async function () {
-      const { owner, damHolder, damToken, lockquidityToken } = await loadFixture(deployLockTokenFixture);
+      const { owner, damHolder, damToken, lockquidityToken } = await loadFixture(deployDamHolderFixture);
       const initialBalance = parseUnits('50');
       const lockAmount = parseUnits('51'); // More than balance
 
@@ -78,7 +69,7 @@ describe('DamHolder Functionality', function () {
     });
 
     it('Should receive Ether via the receive() fallback function', async function () {
-      const { damHolder } = await loadFixture(deployLockTokenFixture);
+      const { damHolder } = await loadFixture(deployDamHolderFixture);
       const [owner] = await ethers.getSigners();
       const amount = ethers.parseEther('1.0');
 
@@ -90,7 +81,7 @@ describe('DamHolder Functionality', function () {
     });
 
     it('Should allow any address to trigger lock if operator is authorized', async function () {
-      const { owner, addrB, damHolder, damToken, lockquidityToken } = await loadFixture(deployLockTokenFixture);
+      const { owner, addrB, damHolder, damToken, lockquidityToken } = await loadFixture(deployDamHolderFixture);
       const lockAmount = parseUnits('100');
 
       // Setup holder with tokens and operator authorization
@@ -106,7 +97,7 @@ describe('DamHolder Functionality', function () {
     });
 
     it('Should fail to lock zero tokens', async function () {
-      const { owner, damHolder, damToken, lockquidityToken } = await loadFixture(deployLockTokenFixture);
+      const { owner, damHolder, damToken, lockquidityToken } = await loadFixture(deployDamHolderFixture);
       const lockAmount = parseUnits('0', 18);
 
       // Authorize operator, even though the amount is zero
@@ -119,7 +110,7 @@ describe('DamHolder Functionality', function () {
     });
 
     it('Should fail when authorizing self as operator', async function () {
-      const { damToken, damHolder } = await loadFixture(deployLockTokenFixture);
+      const { damToken, damHolder } = await loadFixture(deployDamHolderFixture);
 
       // Attempting to authorize the DamHolder contract itself as an operator for its own tokens
       // This should be disallowed by the ERC777 token contract
@@ -129,7 +120,7 @@ describe('DamHolder Functionality', function () {
     });
 
     it('Should fail to authorize operator for a non-ERC777 token', async function () {
-      const { damHolder, addrB } = await loadFixture(deployLockTokenFixture);
+      const { damHolder, addrB } = await loadFixture(deployDamHolderFixture);
 
       // Using an Externally Owned Account (EOA) as a stand-in for a non-ERC777 contract
       const nonErc777TokenAddress = addrB.address;

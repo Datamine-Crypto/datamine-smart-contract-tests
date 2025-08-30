@@ -1,17 +1,17 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { parseUnits, ZERO_ADDRESS, EventNames, RevertMessages, EMPTY_BYTES, deployDamToken } from '../helpers';
+import {
+  parseUnits,
+  ZERO_ADDRESS,
+  EventNames,
+  RevertMessages,
+  EMPTY_BYTES,
+  deployDamToken,
+  deployDamTokenFixture,
+} from '../helpers';
 
 describe('DamToken Send Operations', function () {
-  async function deployDamTokenFixture() {
-    const [owner, operatorAddress, otherAccount] = await ethers.getSigners();
-
-    const damToken = await deployDamToken();
-
-    return { damToken, owner, operatorAddress, otherAccount };
-  }
-
   describe('send function tests', function () {
     let damToken: any;
     let owner: any;

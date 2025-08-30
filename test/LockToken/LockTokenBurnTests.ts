@@ -8,20 +8,10 @@ import {
   deployLockquidityContracts,
   lockTokens,
   mintLockTokens,
+  deployLockTokenFixture,
 } from '../helpers';
 
 describe('LockToken Burn', function () {
-  async function deployLockTokenFixture() {
-    const [owner, otherAccount] = await ethers.getSigners();
-
-    const damToken = await deployDamToken();
-    const { lockquidityFactory, lockquidityToken, lockquidityVault } = await deployLockquidityContracts(
-      damToken.target,
-    );
-
-    return { lockquidityFactory, lockquidityToken, lockquidityVault, damToken, owner, otherAccount };
-  }
-
   describe('burnToAddress', function () {
     let lockquidityToken: any, damToken: any, owner: any;
 

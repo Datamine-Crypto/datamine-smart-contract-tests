@@ -1,17 +1,9 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { parseUnits, ZERO_ADDRESS, deployDamToken } from '../helpers';
+import { parseUnits, ZERO_ADDRESS, deployDamToken, deployDamTokenFixture } from '../helpers';
 
 describe('DamToken Deployment', function () {
-  async function deployDamTokenFixture() {
-    const [owner, operatorAddress, otherAccount] = await ethers.getSigners();
-
-    const damToken = await deployDamToken();
-
-    return { damToken, owner, operatorAddress, otherAccount };
-  }
-
   describe('Deployment', function () {
     it('Should have the correct name and symbol', async function () {
       const { damToken } = await loadFixture(deployDamTokenFixture);

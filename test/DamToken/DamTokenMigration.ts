@@ -1,28 +1,22 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { parseUnits, ZERO_ADDRESS, EventNames, EMPTY_BYTES, deployDamToken, testTokenBurn } from '../helpers';
+import {
+  parseUnits,
+  ZERO_ADDRESS,
+  EventNames,
+  EMPTY_BYTES,
+  testTokenBurn,
+  deployDamTokenMigrationFixture,
+} from '../helpers';
 
 /**
  * @dev Test suite for verifying the correct deployment and initial state of the DamToken contract,
  * specifically focusing on its migration-related parameters and event emissions.
  */
 describe('DAM Token Migration Tests', function () {
-  /**
-   * @dev Fixture to deploy a fresh DamToken contract for each test, using a specific creator address.
-   * This setup ensures a consistent and isolated environment for migration-specific tests.
-   */
-  async function deployDamTokenFixture() {
-    const [registryFunderAddress, creatorAddress, operatorAddress, otherAccount] = await ethers.getSigners();
-
-    // Use creatorAddress to deploy the DamToken to simulate a specific deployment scenario.
-    const damToken = await deployDamToken(creatorAddress);
-
-    return { damToken, registryFunderAddress, creatorAddress, operatorAddress, otherAccount };
-  }
-
   it('should ensure proper construction parameters with 25m premine', async function () {
-    const { damToken } = await loadFixture(deployDamTokenFixture);
+    const { damToken } = await loadFixture(deployDamTokenMigrationFixture);
 
     // Verify the token's name and symbol to ensure correct initialization as per migration specifications.
     expect(await damToken.name()).to.equal('Datamine');
@@ -36,7 +30,7 @@ describe('DAM Token Migration Tests', function () {
   });
 
   it('should emit Minted and Transfer events on deployment', async function () {
-    const { damToken, creatorAddress } = await loadFixture(deployDamTokenFixture);
+    const { damToken, creatorAddress } = await loadFixture(deployDamTokenMigrationFixture);
     const expectedSupply = parseUnits('25000000');
 
     // Verify that the ERC777 Minted event is emitted upon deployment.
@@ -53,7 +47,7 @@ describe('DAM Token Migration Tests', function () {
   });
 
   it('should ensure supply burns properly via operator', async function () {
-    const { damToken, creatorAddress, operatorAddress } = await loadFixture(deployDamTokenFixture);
+    const { damToken, creatorAddress, operatorAddress } = await loadFixture(deployDamTokenMigrationFixture);
     const burnAmount = parseUnits('1000');
     // This test validates the delegated burning functionality, ensuring that an authorized operator can correctly
     // burn DamTokens. This is crucial for flexible supply management post-migration, allowing for controlled

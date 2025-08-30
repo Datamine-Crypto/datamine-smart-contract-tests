@@ -1,7 +1,7 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { parseUnits, EventNames, RevertMessages, EMPTY_BYTES, deployDamToken } from '../helpers';
+import { parseUnits, EventNames, RevertMessages, EMPTY_BYTES, deployDamTokenFixture, deployDamToken } from '../helpers';
 
 describe('DamToken Operator Operations', function () {
   async function deployDamTokenFixture() {

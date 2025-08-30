@@ -12,6 +12,8 @@ import {
   deployDamBlockingHolder,
   deployLockquidityToken,
   setupDamBlockingHolderTest,
+  deployLockTokenFixtureNoFailsafe,
+  deployLockTokenFixture,
 } from '../helpers';
 
 /**
@@ -21,36 +23,6 @@ import {
  * ensuring the security and integrity of token operations, especially burning functionality.
  */
 describe('DamBlockingHolder Contract Test', function () {
-  /**
-   * @dev Deploys the necessary contracts for tests that require the LockquidityToken's failsafe mechanism to be active.
-   * This fixture provides a standard setup for scenarios where failsafe limits are relevant.
-   */
-  async function deployLockTokenFixture() {
-    const [owner, addrB] = await ethers.getSigners();
-
-    const damToken = await deployDamToken();
-    const { lockquidityFactory, lockquidityToken } = await deployLockquidityContracts(damToken.target);
-    const damBlockingHolder = await deployDamBlockingHolder(lockquidityToken.target);
-
-    return { lockquidityFactory, owner, addrB, damToken, damBlockingHolder, lockquidityToken };
-  }
-
-  /**
-   * @dev Deploys the necessary contracts for tests where the LockquidityToken's failsafe mechanism is intentionally disabled.
-   * This allows for testing scenarios that would otherwise be prevented by the failsafe, such as specific re-entrancy conditions
-   * where the failsafe might interfere with the intended test logic.
-   */
-  async function deployLockTokenFixtureNoFailsafe() {
-    const [owner, addrB] = await ethers.getSigners();
-
-    const damToken = await deployDamToken();
-    // Deploy LockquidityToken with failsafe disabled (failsafeBlock = 0) to allow testing specific re-entrancy conditions
-    const lockquidityToken = await deployLockquidityToken(damToken.target, 5760, 161280, 0, owner.address);
-    const damBlockingHolder = await deployDamBlockingHolder(lockquidityToken.target);
-
-    return { lockquidityToken, owner, addrB, damToken, damBlockingHolder };
-  }
-
   describe('Re-Entry Tests', function () {
     /**
      * @dev This test is crucial for demonstrating the effectiveness of the re-entrancy mutex.
@@ -60,7 +32,9 @@ describe('DamBlockingHolder Contract Test', function () {
      * This confirms that the contract can safely handle re-entrant calls without leading to unintended state changes.
      */
     it('Re-Entry Test: DamBlockingHolder should prevent unlock() inside lock() with mutex AND allow send() before lock() finishes', async function () {
-      const { owner, damBlockingHolder, lockquidityToken, damToken } = await loadFixture(deployLockTokenFixture);
+      const { owner, damBlockingHolder, lockquidityToken, damToken } = await loadFixture(
+        deployLockTokenFixtureNoFailsafe,
+      );
 
       const initialAmount = parseUnits('200');
       const lockAmount = parseUnits('100');

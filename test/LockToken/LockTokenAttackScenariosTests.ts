@@ -9,20 +9,10 @@ import {
   lockTokens,
   mineBlocks,
   mintLockTokens,
+  deployLockTokenFixture,
 } from '../helpers';
 
 describe('LockToken Attack Scenarios', function () {
-  async function deployLockTokenFixture() {
-    const [owner, otherAccount] = await ethers.getSigners();
-
-    const damToken = await deployDamToken();
-    const { lockquidityFactory, lockquidityToken, lockquidityVault } = await deployLockquidityContracts(
-      damToken.target,
-    );
-
-    return { lockquidityFactory, lockquidityToken, lockquidityVault, damToken, owner, otherAccount };
-  }
-
   describe('Attack Scenarios', function () {
     it('should not be possible to mint tokens for a past lock period after re-locking', async () => {
       // This test simulates an attack scenario where a user attempts to exploit the minting mechanism by re-locking tokens

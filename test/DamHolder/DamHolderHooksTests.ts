@@ -9,22 +9,13 @@ import {
   deployLockquidityContracts,
   deployDamHolder,
   setupHolderForLocking,
+  deployDamHolderFixture,
 } from '../helpers';
 
 describe('DamHolder Hooks', function () {
-  async function deployLockTokenFixture() {
-    const [owner, addrB] = await ethers.getSigners();
-
-    const damToken = await deployDamToken();
-    const { lockquidityFactory, lockquidityToken } = await deployLockquidityContracts(damToken.target);
-    const damHolder = await deployDamHolder();
-
-    return { lockquidityFactory, lockquidityToken, owner, addrB, damToken, damHolder };
-  }
-
   describe('Hooks', function () {
     it('Should emit TokensReceivedCalled event with correct arguments when receiving tokens', async function () {
-      const { damToken, owner, damHolder } = await loadFixture(deployLockTokenFixture);
+      const { damToken, owner, damHolder } = await loadFixture(deployDamHolderFixture);
       const amountToSend = parseUnits('100');
       const userData = ethers.toUtf8Bytes('some user data');
       // operatorData is empty for send, as per ERC777 standard for `send` function
@@ -40,7 +31,7 @@ describe('DamHolder Hooks', function () {
     });
 
     it('Should emit TokensToSendCalled event with correct arguments when sending tokens', async function () {
-      const { owner, damHolder, damToken, lockquidityToken } = await loadFixture(deployLockTokenFixture);
+      const { owner, damHolder, damToken, lockquidityToken } = await loadFixture(deployDamHolderFixture);
       const lockAmount = parseUnits('100');
       // userData and operatorData are empty for operatorSend called by LockquidityToken
       const emptyBytes = ethers.toUtf8Bytes('');

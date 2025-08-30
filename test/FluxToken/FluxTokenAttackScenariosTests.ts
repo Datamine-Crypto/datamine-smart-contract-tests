@@ -9,19 +9,10 @@ import {
   lockTokens,
   mineBlocks,
   mintFluxTokens,
+  deployFluxTokenFixture,
 } from '../helpers';
 
 describe('FluxToken Attack Scenarios', function () {
-  async function deployFluxTokenFixture() {
-    const [owner, otherAccount] = await ethers.getSigners();
-
-    const damToken = await deployDamToken();
-    // Deploy FluxToken with specific parameters for time bonus and failsafe.
-    const fluxToken = await deployFluxToken(damToken.target, 5760, 161280, 0);
-
-    return { fluxToken, damToken, owner, otherAccount };
-  }
-
   describe('Attack Scenarios', function () {
     it('should not be possible to mint tokens for a past lock period after re-locking', async () => {
       const { fluxToken, damToken, owner } = await loadFixture(deployFluxTokenFixture);

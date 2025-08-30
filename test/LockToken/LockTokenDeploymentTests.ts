@@ -8,20 +8,10 @@ import {
   deployLockquidityContracts,
   lockTokens,
   mineBlocks,
+  deployLockTokenFixture,
 } from '../helpers';
 
 describe('LockToken Deployment', function () {
-  async function deployLockTokenFixture() {
-    const [owner, otherAccount] = await ethers.getSigners();
-
-    const damToken = await deployDamToken();
-    const { lockquidityFactory, lockquidityToken, lockquidityVault } = await deployLockquidityContracts(
-      damToken.target,
-    );
-
-    return { lockquidityFactory, lockquidityToken, lockquidityVault, damToken, owner, otherAccount };
-  }
-
   describe('Deployment', function () {
     it('Should deploy LockquidityFactory and its internal contracts', async function () {
       // This test verifies the successful deployment of the core LockquidityFactory and its associated contracts

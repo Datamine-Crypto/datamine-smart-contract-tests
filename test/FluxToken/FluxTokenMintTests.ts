@@ -1,27 +1,9 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import {
-  parseUnits,
-  RevertMessages,
-  deployDamToken,
-  deployFluxToken,
-  lockTokens,
-  mineBlocks,
-  mintFluxTokens,
-} from '../helpers';
+import { parseUnits, RevertMessages, lockTokens, mineBlocks, mintFluxTokens, deployFluxTokenFixture } from '../helpers';
 
 describe('FluxToken Mint', function () {
-  async function deployFluxTokenFixture() {
-    const [owner, otherAccount] = await ethers.getSigners();
-
-    const damToken = await deployDamToken();
-    // Deploy FluxToken with specific parameters for time bonus and failsafe.
-    const fluxToken = await deployFluxToken(damToken.target, 5760, 161280, 0);
-
-    return { fluxToken, damToken, owner, otherAccount };
-  }
-
   describe('mintToAddress', function () {
     describe('With locked tokens', function () {
       let fluxToken: any, damToken: any, owner: any, otherAccount: any;

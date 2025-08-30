@@ -12,22 +12,13 @@ import {
   deployLockquidityContracts,
   deployDamHolder,
   setupHolderForLocking,
+  deployDamHolderFixture,
 } from '../helpers';
 
 describe('DamHolder Deployment', function () {
-  async function deployLockTokenFixture() {
-    const [owner, addrB] = await ethers.getSigners();
-
-    const damToken = await deployDamToken();
-    const { lockquidityFactory, lockquidityToken } = await deployLockquidityContracts(damToken.target);
-    const damHolder = await deployDamHolder();
-
-    return { lockquidityFactory, lockquidityToken, owner, addrB, damToken, damHolder };
-  }
-
   describe('Deployment', function () {
     it('Should allow sending 100 DAM tokens to a DamHolder contract', async function () {
-      const { damToken, owner, damHolder } = await loadFixture(deployLockTokenFixture);
+      const { damToken, owner, damHolder } = await loadFixture(deployDamHolderFixture);
       const amountToSend = parseUnits('100');
 
       // This test verifies that DAM tokens can be successfully sent to the `DamHolder` contract. This is a foundational
@@ -42,7 +33,7 @@ describe('DamHolder Deployment', function () {
     });
 
     it('Should allow DamHolder to lock DAM tokens after receiving from owner', async function () {
-      const { owner, damHolder, damToken, lockquidityToken } = await loadFixture(deployLockTokenFixture);
+      const { owner, damHolder, damToken, lockquidityToken } = await loadFixture(deployDamHolderFixture);
       const lockAmount = parseUnits('100', 18);
 
       // Setup holder with tokens and operator authorization
@@ -61,7 +52,7 @@ describe('DamHolder Deployment', function () {
     });
 
     it('Should correctly register ERC1820 interfaces in constructor', async function () {
-      const { damHolder } = await loadFixture(deployLockTokenFixture);
+      const { damHolder } = await loadFixture(deployDamHolderFixture);
 
       // Get the ERC1820 registry instance using its fully qualified name
       const erc1820Registry = await getERC1820Registry();
