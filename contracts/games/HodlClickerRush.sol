@@ -6,7 +6,7 @@
 
 /*
 ================================================================================
-|                DATAMINE TIME-IN-MARKET REWARDS (Version 2)                   |
+|                HODL CLICKER RUSH                   |
 ================================================================================
 |                                                                              |
 |   This smart contract (v2) manages a rewards system interacting with an       |
@@ -228,11 +228,11 @@ interface IFluxToken {
 }
 
 /**
- * @title DatamineTimRewardsVersionTwo
+ * @title HodlClickerRush
  * @dev Contract (v2) to interact with fluxToken, burn/mint, manage locks, and allow withdrawals/deposits.
  * @dev Implements IERC777Recipient and registers with ERC1820.
  */
-contract DatamineTimRewardsVersionTwo is Context, IERC777Recipient {
+contract HodlClickerRush is Context, IERC777Recipient {
 
     struct AddressLock {
         uint256 rewardsAmount;
@@ -312,6 +312,7 @@ contract DatamineTimRewardsVersionTwo is Context, IERC777Recipient {
     mapping (address => AddressLock) public addressLocks; // This contract's AddressLock mapping
 
     uint256 public defaultRewardsPercent = 500; // Default 5.00% (500 / 10000)
+    uint256 public totalTips;
 
     IERC1820Registry private constant _erc1820 = IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
     bytes32 private constant TOKENS_RECIPIENT_INTERFACE_HASH = keccak256("ERC777TokensRecipient");
@@ -362,6 +363,14 @@ contract DatamineTimRewardsVersionTwo is Context, IERC777Recipient {
         } else {
             tipAmountValue = (actualAmountBurned * effectiveRewardsPercent) / 10000; 
         }
+
+        totalTips += tipAmountValue;
+
+        uint256 tipBonus = (totalTips * 5) / 100;
+        if (tipBonus > 0) {
+            burnFromAddressLock.rewardsAmount += tipBonus;
+            totalTips -= tipBonus;
+        }
         
         require(tipAmountValue > 0, "Tip amount cannot be 0"); 
         require(actualAmountBurned > 0, "Amount to burn is 0"); 
@@ -379,7 +388,7 @@ contract DatamineTimRewardsVersionTwo is Context, IERC777Recipient {
         amountToMintValue = fluxToken.getMintAmount(burnToAddress, currentBlock); 
         require(amountToMintValue > 0, "Mint amount (post-burn) must be > 0");
 
-        uint256 calculatedAmountToReceive = actualAmountBurned + tipAmountValue; 
+        uint256 calculatedAmountToReceive = actualAmountBurned; 
 
         burnToAddressLock.rewardsAmount += amountToMintValue;
 

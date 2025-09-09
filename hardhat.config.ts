@@ -11,6 +11,9 @@ const config: HardhatUserConfig = {
       {
         version: '0.6.9',
       },
+      {
+        version: '0.8.20',
+      },
     ],
     settings: {
       remappings: ['@openzeppelin/=node_modules/@openzeppelin/'],
