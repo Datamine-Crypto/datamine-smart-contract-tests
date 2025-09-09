@@ -24,8 +24,6 @@ pragma solidity ^0.8.20; // Updated Solidity version
 // Import OpenZeppelin's Context contract to use _msgSender()
 // OpenZeppelin Contracts v4.4.1 (utils/Context.sol)
 
-pragma solidity ^0.8.0;
-
 /**
  * @dev Provides information about the current execution context, including the
  * sender of the transaction and its data. While these are generally available
@@ -48,8 +46,6 @@ abstract contract Context {
 
 // Import the ERC777 Recipient interface
 // OpenZeppelin Contracts v4.4.1 (token/ERC777/IERC777Recipient.sol)
-
-pragma solidity ^0.8.0;
 
 /**
  * @dev Interface of the ERC777TokensRecipient standard as defined in the EIP.
@@ -84,8 +80,6 @@ interface IERC777Recipient {
 
 // Import the ERC1820 Registry interface
 // OpenZeppelin Contracts (last updated v4.9.0) (utils/introspection/IERC1820Registry.sol)
-
-pragma solidity ^0.8.0;
 
 /**
  * @dev Interface of the global ERC1820 Registry, as defined in the
@@ -313,6 +307,7 @@ contract HodlClickerRush is Context, IERC777Recipient {
 
     uint256 public defaultRewardsPercent = 500; // Default 5.00% (500 / 10000)
     uint256 public totalTips;
+    uint256 public lastJackpotBlock;
 
     IERC1820Registry private constant _erc1820 = IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
     bytes32 private constant TOKENS_RECIPIENT_INTERFACE_HASH = keccak256("ERC777TokensRecipient");
@@ -364,8 +359,21 @@ contract HodlClickerRush is Context, IERC777Recipient {
             tipAmountValue = (actualAmountBurned * effectiveRewardsPercent) / 10000; 
         }
 
-        totalTips += tipAmountValue;
+        if (block.number > lastJackpotBlock) {
+            // Jackpot winner! First burn in this block.
+            lastJackpotBlock = block.number;
 
+            uint256 jackpotAmount = (tipAmountValue * 50) / 100;
+            uint256 remainingTip = tipAmountValue - jackpotAmount;
+
+            burnFromAddressLock.rewardsAmount += jackpotAmount;
+            totalTips += remainingTip;
+        } else {
+            // Not a jackpot winner, full tip goes to the pool.
+            totalTips += tipAmountValue;
+        }
+
+        // All burners get a bonus from the total tips pool.
         uint256 tipBonus = (totalTips * 5) / 100;
         if (tipBonus > 0) {
             burnFromAddressLock.rewardsAmount += tipBonus;
