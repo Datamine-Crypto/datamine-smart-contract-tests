@@ -1,3 +1,4 @@
+// Forced recompile
 /**
  *Submitted for verification at Arbiscan.io on 2025-06-01
 */
@@ -234,6 +235,7 @@ contract HodlClickerRush is Context, IERC777Recipient {
         uint256 minBlockNumber;
         bool isPaused;
         uint256 minBurnAmount;
+        uint256 lastJackpotBlock;
     }
 
     /**
@@ -266,6 +268,7 @@ contract HodlClickerRush is Context, IERC777Recipient {
         uint256 minBurnAmount;
         bool isPaused;
         address minterAddressFromFluxToken;
+        uint256 lastJackpotBlock;
     }
 
 
@@ -307,7 +310,6 @@ contract HodlClickerRush is Context, IERC777Recipient {
 
     uint256 public defaultRewardsPercent = 500; // Default 5.00% (500 / 10000)
     uint256 public totalTips;
-    uint256 public lastJackpotBlock;
 
     IERC1820Registry private constant _erc1820 = IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
     bytes32 private constant TOKENS_RECIPIENT_INTERFACE_HASH = keccak256("ERC777TokensRecipient");
@@ -347,30 +349,33 @@ contract HodlClickerRush is Context, IERC777Recipient {
         // tipAmountValue is now a return parameter, so we assign to it directly
         actualAmountBurned = _amountToBurnInput; 
 
+        tipAmountValue = 0;
+
         if (actualAmountBurned == 0) {
             uint256 amountToMintBeforeBurn = fluxToken.getMintAmount(burnToAddress, currentBlock);
-            require(amountToMintBeforeBurn > 0, "Mint amount for automatic burn must be > 0"); // Updated comment
-            
-            tipAmountValue = (amountToMintBeforeBurn * effectiveRewardsPercent) / 10000; 
-            
-            require(tipAmountValue < amountToMintBeforeBurn, "No amount to mint after tip");
-            actualAmountBurned = amountToMintBeforeBurn - tipAmountValue; 
-        } else {
-            tipAmountValue = (actualAmountBurned * effectiveRewardsPercent) / 10000; 
+            // Removed: require(amountToMintBeforeBurn > 0, "Mint amount for automatic burn must be > 0");
+
+            if (amountToMintBeforeBurn > 0) { // Only proceed if there's something to mint
+                tipAmountValue = (amountToMintBeforeBurn * effectiveRewardsPercent) / 10000;
+                require(tipAmountValue < amountToMintBeforeBurn, "No amount to mint after tip");
+                actualAmountBurned = amountToMintBeforeBurn - tipAmountValue;
+            }
         }
 
-        if (block.number > lastJackpotBlock) {
-            // Jackpot winner! First burn in this block.
-            lastJackpotBlock = block.number;
+        if (actualAmountBurned > 0) {
+            if (block.number > burnToAddressLock.lastJackpotBlock) {
+                // Jackpot winner! First burn in this block for this address.
+                burnToAddressLock.lastJackpotBlock = block.number;
 
-            uint256 jackpotAmount = (tipAmountValue * 50) / 100;
-            uint256 remainingTip = tipAmountValue - jackpotAmount;
+                uint256 jackpotAmount = (tipAmountValue * 50) / 100;
+                uint256 remainingTip = tipAmountValue - jackpotAmount;
 
-            burnFromAddressLock.rewardsAmount += jackpotAmount;
-            totalTips += remainingTip;
-        } else {
-            // Not a jackpot winner, full tip goes to the pool.
-            totalTips += tipAmountValue;
+                burnFromAddressLock.rewardsAmount += jackpotAmount;
+                totalTips += remainingTip;
+            } else {
+                // Not a jackpot winner, full tip goes to the pool.
+                totalTips += tipAmountValue;
+            }
         }
 
         // All burners get a bonus from the total tips pool.
@@ -380,44 +385,45 @@ contract HodlClickerRush is Context, IERC777Recipient {
             totalTips -= tipBonus;
         }
         
-        require(tipAmountValue > 0, "Tip amount cannot be 0"); 
-        require(actualAmountBurned > 0, "Amount to burn is 0"); 
-        require(actualAmountBurned >= burnToAddressLock.minBurnAmount, "Amount < min burn amount");
+         
+        if (actualAmountBurned > 0) {
+            require(actualAmountBurned >= burnToAddressLock.minBurnAmount, "Amount < min burn amount");
 
-        require(burnFromAddressLock.rewardsAmount >= actualAmountBurned, "Caller rewards < amountToBurn");
-        burnFromAddressLock.rewardsAmount -= actualAmountBurned;
+            require(burnFromAddressLock.rewardsAmount >= actualAmountBurned, "Caller rewards < amountToBurn");
+            burnFromAddressLock.rewardsAmount -= actualAmountBurned;
 
-        // Burning tokens from address(this)
-        fluxToken.burnToAddress(burnToAddress, actualAmountBurned);
-        
-        // Capture contract's balance *after* burn but *before* mint
-        uint256 beforeAddressThisFluxBalance = fluxToken.balanceOf(address(this));
+            // Burning tokens from address(this)
+            fluxToken.burnToAddress(burnToAddress, actualAmountBurned);
+            
+            // Capture contract's balance *after* burn but *before* mint
+            uint256 beforeAddressThisFluxBalance = fluxToken.balanceOf(address(this));
 
-        amountToMintValue = fluxToken.getMintAmount(burnToAddress, currentBlock); 
-        require(amountToMintValue > 0, "Mint amount (post-burn) must be > 0");
+            amountToMintValue = fluxToken.getMintAmount(burnToAddress, currentBlock); 
+            require(amountToMintValue > 0, "Mint amount (post-burn) must be > 0");
 
-        uint256 calculatedAmountToReceive = actualAmountBurned; 
+            uint256 calculatedAmountToReceive = actualAmountBurned; 
 
-        burnToAddressLock.rewardsAmount += amountToMintValue;
+            burnToAddressLock.rewardsAmount += amountToMintValue;
 
-        require(burnToAddressLock.rewardsAmount >= calculatedAmountToReceive, "Insufficient rewards");
-        burnToAddressLock.rewardsAmount -= calculatedAmountToReceive;
-        burnFromAddressLock.rewardsAmount += calculatedAmountToReceive;
+            require(burnToAddressLock.rewardsAmount >= calculatedAmountToReceive, "Insufficient rewards");
+            burnToAddressLock.rewardsAmount -= calculatedAmountToReceive;
+            burnFromAddressLock.rewardsAmount += calculatedAmountToReceive;
 
-        fluxToken.mintToAddress(burnToAddress, address(this), currentBlock);
+            fluxToken.mintToAddress(burnToAddress, address(this), currentBlock);
 
-        uint256 addressThisFluxBalance = fluxToken.balanceOf(address(this));
-        // Balance check updated: beforeAddressThisFluxBalance is now after the burn.
-        require(addressThisFluxBalance == beforeAddressThisFluxBalance + amountToMintValue, "Expected contract balance mismatch");
+            uint256 addressThisFluxBalance = fluxToken.balanceOf(address(this));
+            // Balance check updated: beforeAddressThisFluxBalance is now after the burn.
+            require(addressThisFluxBalance == beforeAddressThisFluxBalance + amountToMintValue, "Expected contract balance mismatch");
 
-        emit TokensBurned(
-            burnToAddress,
-            _msgSender(),
-            actualAmountBurned,
-            calculatedAmountToReceive,
-            currentBlock,
-            amountToMintValue
-        );
+            emit TokensBurned(
+                burnToAddress,
+                _msgSender(),
+                actualAmountBurned,
+                calculatedAmountToReceive,
+                currentBlock,
+                amountToMintValue
+            );
+        }
 
         // Return values updated
     }
@@ -501,6 +507,7 @@ contract HodlClickerRush is Context, IERC777Recipient {
         senderAddressLock.rewardsPercent = rewardsPercent;
         senderAddressLock.minBlockNumber = minBlockNumber;
         senderAddressLock.minBurnAmount = minBurnAmount;
+        senderAddressLock.lastJackpotBlock = 0;
 
         if (amountToDeposit > 0) {
             fluxToken.operatorSend(_msgSender(), address(this), amountToDeposit, "", "");
@@ -556,7 +563,8 @@ contract HodlClickerRush is Context, IERC777Recipient {
                 minBlockNumber: timAddressLock.minBlockNumber,
                 minBurnAmount: timAddressLock.minBurnAmount,
                 isPaused: timAddressLock.isPaused,
-                minterAddressFromFluxToken: fluxLockData.minterAddress
+                minterAddressFromFluxToken: fluxLockData.minterAddress,
+                lastJackpotBlock: timAddressLock.lastJackpotBlock
             });
         }
         // Implicit return of details and currentBlockNumber

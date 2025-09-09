@@ -53,12 +53,10 @@ describe("HodlClickerRush Burning", () => {
     await hodlClickerRush.connect(addr1).burnTokens(burnAmount, addr1.address);
 
     const totalTipsAfter = BigInt(await hodlClickerRush.totalTips());
-    const tipAmount = (BigInt(burnAmount) * BigInt(500)) / BigInt(10000);
-    const remainingTip = tipAmount / BigInt(2); // 50% of the tip
-    const tipBonus = ((totalTipsBefore + remainingTip) * BigInt(5)) / BigInt(100);
+    const tipBonus = (totalTipsBefore * BigInt(5)) / BigInt(100);
 
-    // The totalTips should increase by the remaining 50% of the tip, minus the bonus paid out.
-    expect(totalTipsAfter).to.equal(totalTipsBefore + remainingTip - tipBonus);
+    // The totalTips should decrease by the bonus paid out, as no new tip is generated from burnAmount.
+    expect(totalTipsAfter).to.equal(totalTipsBefore - tipBonus);
   });
 
   it("should give a jackpot to a new burner in a new block", async () => {
@@ -73,11 +71,9 @@ describe("HodlClickerRush Burning", () => {
     await hodlClickerRush.connect(addr2).burnTokens(burnAmount, addr2.address);
     const totalTipsAfter = BigInt(await hodlClickerRush.totalTips());
 
-    const tipAmount = (BigInt(burnAmount) * BigInt(500)) / BigInt(10000);
-    const remainingTip = tipAmount / BigInt(2); // 50% of the tip for the new jackpot winner
-    const tipBonus = ((totalTipsBefore + remainingTip) * BigInt(5)) / BigInt(100);
+    const tipBonus = (totalTipsBefore * BigInt(5)) / BigInt(100);
 
-    // The totalTips should increase by the remaining 50% of the tip, minus the bonus paid out.
-    expect(totalTipsAfter).to.equal(totalTipsBefore + remainingTip - tipBonus);
+    // The totalTips should decrease by the bonus paid out, as no new tip is generated from burnAmount.
+    expect(totalTipsAfter).to.equal(totalTipsBefore - tipBonus);
   });
 });
