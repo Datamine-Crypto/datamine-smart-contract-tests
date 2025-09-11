@@ -163,8 +163,8 @@ describe("HodlClickerRush Rewards", () => {
     expect(tipBonusAwarded.tipBonus).to.equal(expectedTipBonus);
   });
 
-  it("should only give one tip bonus per block even if burning for multiple addresses", async () => {
-    const [, , , addr3] = await ethers.getSigners();
+  it("should only give one tip bonus per block even if burning for multiple addresses (different burnToAddress)", async () => {
+    const [, , , addr3, addr4] = await ethers.getSigners(); // Add addr4
     const damAmount = ethers.parseEther("1000000");
 
     // owner deposits to provide totalContractRewardsAmount
@@ -183,6 +183,12 @@ describe("HodlClickerRush Rewards", () => {
     await mineBlocks(1);
     await hodlClickerRush.connect(owner).burnTokens(addr1.address);
 
+    // addr4 is also set up to be burned
+    await damToken.connect(owner).transfer(addr4.address, damAmount);
+    await lockTokens(fluxToken, damToken, addr4, damAmount, hodlClickerRush.target);
+    await mineBlocks(1);
+    await hodlClickerRush.connect(owner).burnTokens(addr4.address);
+
     // addr2 deposits to have rewardsAmount and earn a tip bonus
     await damToken.connect(owner).transfer(addr2.address, damAmount);
     await lockTokens(fluxToken, damToken, addr2, damAmount, addr2.address);
@@ -192,15 +198,6 @@ describe("HodlClickerRush Rewards", () => {
     await fluxToken.connect(addr2).authorizeOperator(hodlClickerRush.target);
     await hodlClickerRush.connect(addr2).deposit(addr2FluxBalance, 0, 0, 0);
 
-    // addr3 deposits to have rewardsAmount and earn a tip bonus
-    await damToken.connect(owner).transfer(addr3.address, damAmount);
-    await lockTokens(fluxToken, damToken, addr3, damAmount, addr3.address);
-    await mineBlocks(1);
-    await fluxToken.connect(addr3).mintToAddress(addr3.address, addr3.address, await ethers.provider.getBlockNumber());
-    const addr3FluxBalance = await fluxToken.balanceOf(addr3.address);
-    await fluxToken.connect(addr3).authorizeOperator(hodlClickerRush.target);
-    await hodlClickerRush.connect(addr3).deposit(addr3FluxBalance, 0, 0, 0);
-
     // Turn off auto-mining
     await ethers.provider.send("evm_setAutomine", [false]);
 
@@ -208,8 +205,8 @@ describe("HodlClickerRush Rewards", () => {
 
     // addr2 burns for addr1
     const burnTx1 = await hodlClickerRush.connect(addr2).burnTokens(addr1.address, { gasLimit: gasLimit });
-    // addr2 burns for addr3
-    const burnTx2 = await hodlClickerRush.connect(addr2).burnTokens(addr3.address, { gasLimit: gasLimit });
+    // addr2 burns for addr4 (different burnToAddress)
+    const burnTx2 = await hodlClickerRush.connect(addr2).burnTokens(addr4.address, { gasLimit: gasLimit });
 
     // Mine exactly 1 new block which will include both transactions
     await mineBlocks(1);
@@ -226,6 +223,6 @@ describe("HodlClickerRush Rewards", () => {
     const tipBonusAwarded2 = receipt2.logs.find((log: any) => log.fragment && log.fragment.name === 'TipBonusAwarded');
 
     expect(tipBonusAwarded1).to.not.be.undefined;
-    expect(tipBonusAwarded2).to.be.undefined; // Only one tip bonus should be awarded
+    expect(tipBonusAwarded2).to.be.undefined; // Only one tip bonus should be awarded for addr2 in this block
   });
 });
