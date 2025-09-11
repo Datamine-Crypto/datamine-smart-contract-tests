@@ -327,7 +327,11 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
     mapping (address => AddressLock) public addressLocks; // This contract's AddressLock mapping
 
     uint256 public defaultRewardsPercent = 500; // Default 5.00% (500 / 10000)
+
+    // How much of the total balance is for tip bonuses
     uint256 public totalTips;
+
+    // How much of the balance in this contract is for rewards that can be withdrawn (across all participants)
     uint256 public totalContractRewardsAmount;
 
     IERC1820Registry private constant _erc1820 = IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
