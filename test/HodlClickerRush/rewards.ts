@@ -225,4 +225,5 @@ describe("HodlClickerRush Rewards", () => {
     expect(tipBonusAwarded1).to.not.be.undefined;
     expect(tipBonusAwarded2).to.be.undefined; // Only one tip bonus should be awarded for addr2 in this block
   });
-});
+
+  });
