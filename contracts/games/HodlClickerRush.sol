@@ -360,10 +360,19 @@ contract HodlClickerRush is Context, IERC777Recipient {
 
         // All burners get a bonus from the total tips pool. Percent is based on their current reward balance
         if (currentBlock > burnFromAddressLock.lastTipBonusBlock) {
-            uint256 tipBonus = (totalTips * 5) / 100; //@todo this percentage will be based off holdings
+
+            // Tip bonus is based off percantage of your share in the pool
+            // For example if you win 3 LOCK jackpot and there are 10 LOCK of rewards you now get 30% of the tip pool every block
+            uint256 tipBonus = 0;
+            if (totalContractRewardsAmount > 0) {
+                tipBonus = (totalTips * burnFromAddressLock.rewardsAmount) / totalContractRewardsAmount;
+            }
+
             if (tipBonus > 0) {
 
                 burnFromAddressLock.rewardsAmount += tipBonus;
+                totalContractRewardsAmount += tipBonus; // Increases global rewards inside the contract
+
                 totalTips -= tipBonus;
                 burnFromAddressLock.lastTipBonusBlock = currentBlock;
 
@@ -473,6 +482,7 @@ contract HodlClickerRush is Context, IERC777Recipient {
 
         // The address that performs the burn gets the jackpot (50% of the tip)
         burnFromAddressLock.rewardsAmount += jackpotAmount;
+        totalContractRewardsAmount += jackpotAmount; // Increases global rewards inside the contract
 
         // The raminder of funds is added back as totalTips (for bonuses)
         uint256 totalTipToAddAmount = amountToMintAfterBurn - actualAmountToBurn - jackpotAmount; 
