@@ -10,10 +10,8 @@ describe("HodlClickerRush Deployment", () => {
     hodlClickerRush = fixture.hodlClickerRush;
   });
 
-  it("Should initialize with totalTips and lastJackpotBlock equal to 0", async () => {
+  it("Should initialize with totalTips equal to 0", async () => {
     const [owner] = await ethers.getSigners();
     expect(await hodlClickerRush.totalTips()).to.equal(0);
-    const ownerLock = await hodlClickerRush.addressLocks(owner.address);
-    expect(ownerLock.lastJackpotBlock).to.equal(0);
   });
 });

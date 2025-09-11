@@ -11,7 +11,6 @@ export async function hodlClickerRushFixture() {
   const FluxToken = await ethers.getContractFactory("FluxToken");
   const fluxToken = await FluxToken.deploy(damToken.target, 1, 1, 1);
   await fluxToken.waitForDeployment();
-  console.log("Owner FluxToken balance after deployment:", (await fluxToken.balanceOf(owner.address)).toString());
 
   const HodlClickerRush = await ethers.getContractFactory("HodlClickerRush");
   const hodlClickerRush = await HodlClickerRush.deploy(fluxToken.target);
