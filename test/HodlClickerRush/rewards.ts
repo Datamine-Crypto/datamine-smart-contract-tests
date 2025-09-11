@@ -118,7 +118,6 @@ describe("HodlClickerRush Rewards", () => {
 
     expect(tipBonusAwardedArgs.currentBlock).to.equal(tokensBurnedEventArgs.currentBlock);
     expect(tipBonusAwardedArgs.tipBonus).to.be.gt(0); // We should be taking in some bonus
-    expect(tipBonusAwardedArgs.totalTipsAfterTipBonus).to.be.gt(0); // There should be more bonus left after
   });
   
   it("should give a tip bonus based on holdings in a new block", async () => {

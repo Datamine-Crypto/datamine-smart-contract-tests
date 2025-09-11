@@ -66,6 +66,5 @@ describe("HodlClickerRush Simple Burn", () => {
     const burnOperationResult = await hodlClickerRush.connect(owner).burnTokens.staticCall(addr2.address);
 
     expect(burnOperationResult.resultCode).to.equal(0);
-    expect(burnOperationResult.finalTotalTips).to.be.gt(0);
   });
 });

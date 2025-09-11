@@ -260,7 +260,6 @@ contract HodlClickerRush is Context, IERC777Recipient {
      */
     struct BurnOperationResult {
         uint256 tipBonus;        // The tip amount calculated for this operation
-        uint256 totalTipsAfterTipBonus;       // The final totalTips left after distributions of bonus
         BurnResultCode resultCode; // Empty/0 would mean success. This helps track reason for failure
         uint256 actualAmountBurned; // The actual amount that was burned
         address burnToAddress;   // Who received the burn
@@ -269,7 +268,6 @@ contract HodlClickerRush is Context, IERC777Recipient {
         uint256 jackpotAmount; // How much the jackpot was for the burning address
         uint256 totalTipToAddAmount; // How much is being added to final totalTips
         uint256 amountToMintAfterBurn; // How much is minted after the burn happens
-        uint256 finalTotalTips; // The final amount in tips that are left in the contract
     }
 
     /**
@@ -284,7 +282,6 @@ contract HodlClickerRush is Context, IERC777Recipient {
         uint256 minBurnAmount;
         bool isPaused;
         address minterAddressFromFluxToken;
-        uint256 lastTipBonusBlock;
     }
 
 
@@ -305,8 +302,7 @@ contract HodlClickerRush is Context, IERC777Recipient {
         address indexed burnToAddress,
         address indexed caller,
         uint256 currentBlock,
-        uint256 tipBonus, 
-        uint256 totalTipsAfterTipBonus
+        uint256 tipBonus
     );
 
     event Withdrawn(address indexed user, uint256 amount);
@@ -378,15 +374,13 @@ contract HodlClickerRush is Context, IERC777Recipient {
 
                 // Store for returning results
                 burnOperationResult.tipBonus = tipBonus;
-                burnOperationResult.totalTipsAfterTipBonus = totalTips;
 
                 // Issue a new event for tip collected
                 emit TipBonusAwarded(
                     burnToAddress,
                     _msgSender(),
                     currentBlock,
-                    tipBonus,
-                    totalTips
+                    tipBonus
                 );
             }
         }
@@ -493,7 +487,6 @@ contract HodlClickerRush is Context, IERC777Recipient {
         burnOperationResult.jackpotAmount = jackpotAmount;
         burnOperationResult.totalTipToAddAmount = totalTipToAddAmount;
         burnOperationResult.amountToMintAfterBurn = amountToMintAfterBurn;
-        burnOperationResult.finalTotalTips = totalTips;
         
         emit TokensBurned(
             burnToAddress,
@@ -603,8 +596,7 @@ contract HodlClickerRush is Context, IERC777Recipient {
                 minBlockNumber: timAddressLock.minBlockNumber,
                 minBurnAmount: timAddressLock.minBurnAmount,
                 isPaused: timAddressLock.isPaused,
-                minterAddressFromFluxToken: fluxLockData.minterAddress,
-                lastTipBonusBlock: timAddressLock.lastTipBonusBlock
+                minterAddressFromFluxToken: fluxLockData.minterAddress
             });
         }
         // Implicit return of details and currentBlockNumber
