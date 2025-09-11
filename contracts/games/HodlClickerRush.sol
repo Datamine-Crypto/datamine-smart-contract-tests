@@ -24,6 +24,7 @@ pragma solidity ^0.8.20; // Updated Solidity version
 
 // Import OpenZeppelin's Context contract to use _msgSender()
 // OpenZeppelin Contracts v4.4.1 (utils/Context.sol)
+import "../OpenZeppelin/ReentrancyGuard.sol";
 
 /**
  * @dev Provides information about the current execution context, including the
@@ -227,7 +228,7 @@ interface IFluxToken {
  * @dev Contract to interact with fluxToken, burn/mint, manage locks, and allow withdrawals/deposits.
  * @dev Implements IERC777Recipient and registers with ERC1820.
  */
-contract HodlClickerRush is Context, IERC777Recipient {
+contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
 
     struct AddressLock {
         uint256 rewardsAmount;
@@ -344,7 +345,7 @@ contract HodlClickerRush is Context, IERC777Recipient {
      * @notice Burns tokens for a target address.
      * @param burnToAddress The address whose tokens are targeted for burning and rewards calculation.
      */
-    function burnTokens(address burnToAddress) public returns (BurnOperationResult memory) {
+    function burnTokens(address burnToAddress) public nonReentrant returns (BurnOperationResult memory) {
         uint256 currentBlock = block.number;
         require(currentBlock > 0, "Current block must be > 0");
 
@@ -502,7 +503,7 @@ contract HodlClickerRush is Context, IERC777Recipient {
         return burnOperationResult;
     }
 
-    function burnTokensFromAddresses(BurnRequest[] calldata requests) public returns (BurnOperationResult[] memory) {
+    function burnTokensFromAddresses(BurnRequest[] calldata requests) public nonReentrant returns (BurnOperationResult[] memory) {
         uint256 numRequests = requests.length;
         require(numRequests > 0, "No burn requests provided");
 
@@ -517,7 +518,7 @@ contract HodlClickerRush is Context, IERC777Recipient {
         return results;
     }
 
-    function withdrawAll() public {
+    function withdrawAll() public nonReentrant {
         AddressLock storage senderAddressLock = addressLocks[_msgSender()];
         uint256 amountToSend = senderAddressLock.rewardsAmount;
         require(amountToSend > 0, "No rewards to withdraw");
@@ -530,7 +531,7 @@ contract HodlClickerRush is Context, IERC777Recipient {
         emit Withdrawn(_msgSender(), amountToSend);
     }
 
-    function deposit(uint256 amountToDeposit, uint256 rewardsPercent, uint256 minBlockNumber, uint256 minBurnAmount) public {
+    function deposit(uint256 amountToDeposit, uint256 rewardsPercent, uint256 minBlockNumber, uint256 minBurnAmount) public nonReentrant {
         require(amountToDeposit >= 0, "Deposit amount must be >= 0");
         require(rewardsPercent <= 10000, "Rewards % must be <= 10000"); // User can set to 0
 
@@ -556,13 +557,13 @@ contract HodlClickerRush is Context, IERC777Recipient {
         );
     }
 
-    function setPaused(bool isPaused) public {
+    function setPaused(bool isPaused) public nonReentrant {
         AddressLock storage pauseAddressLock = addressLocks[_msgSender()];
         pauseAddressLock.isPaused = isPaused;
         emit PausedChanged(_msgSender(), isPaused);
     }
 
-    function normalMintToAddress(address targetAddress) public {
+    function normalMintToAddress(address targetAddress) public nonReentrant {
         uint256 currentBlock = block.number;
         fluxToken.mintToAddress(_msgSender(), targetAddress, currentBlock);
         emit NormalMint(_msgSender(), targetAddress, currentBlock);
