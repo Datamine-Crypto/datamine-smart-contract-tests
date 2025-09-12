@@ -1,6 +1,6 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import { mineBlocks, EMPTY_BYTES, EventNames, ZERO_ADDRESS } from './common';
+import { mineBlocks, EMPTY_BYTES, EventNames, ZERO_ADDRESS, lockTokens } from './common';
 
 /**
  * @dev This file centralizes helper functions for setting up specific test scenarios.
@@ -8,6 +8,24 @@ import { mineBlocks, EMPTY_BYTES, EventNames, ZERO_ADDRESS } from './common';
  * for tests, reducing boilerplate and improving the readability and maintainability
  * of the test suite.
  */
+
+export async function setupPlayerForHodlClicker(
+  hodlClickerRush: any,
+  fluxToken: any,
+  damToken: any,
+  player: any,
+  damAmount: any,
+  minter: any
+) {
+  await damToken.transfer(player.address, damAmount);
+  await lockTokens(fluxToken, damToken, player, damAmount, minter);
+  await mineBlocks(1000);
+  const currentBlock = await ethers.provider.getBlockNumber();
+  await fluxToken.connect(player).mintToAddress(player.address, player.address, currentBlock);
+  const playerFluxBalance = await fluxToken.balanceOf(player.address);
+  await fluxToken.connect(player).authorizeOperator(hodlClickerRush.target);
+  return playerFluxBalance;
+}
 
 /**
  * Sets up the DamBlockingHolder contract for a re-entrancy test.
@@ -95,28 +113,6 @@ export async function setupHolderForLocking(
   // Authorize the LockableToken contract to spend DAM tokens on behalf of the DamHolder.
   // This is a critical step to allow the locking contract to pull tokens from the holder.
   await damHolder.connect(owner).authorizeOperator(damToken.target, lockableToken.target);
-}
-
-/**
- * A generic helper to authorize and lock tokens in one step.
- * This simplifies test scenarios where a user needs to lock tokens,
- * ensuring the necessary authorization is handled automatically.
- * @param token The token contract to lock into (e.g., FluxToken, LockquidityToken).
- * @param damToken The DAM token contract instance.
- * @param user The user/signer account performing the lock.
- * @param amount The amount of DAM to lock.
- * @param minterAddress Optional address to be designated as the minter. Defaults to the user's address.
- * @returns The block number after the lock transaction.
- */
-export async function lockTokens(token: any, damToken: any, user: any, amount: any, minterAddress?: any) {
-  const minter = minterAddress || user.address;
-  // Authorize the target token contract to spend DAM tokens on behalf of the user.
-  // This is required for the `lock` function to pull DAM tokens from the user.
-  await damToken.connect(user).authorizeOperator(token.target);
-  // Execute the lock operation.
-  await token.connect(user).lock(minter, amount);
-  // Return the current block number to allow for time-dependent assertions in tests.
-  return await ethers.provider.getBlockNumber();
 }
 
 /**

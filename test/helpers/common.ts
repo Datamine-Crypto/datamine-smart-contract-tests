@@ -8,6 +8,28 @@ import { ethers } from 'hardhat';
  */
 
 /**
+ * A generic helper to authorize and lock tokens in one step.
+ * This simplifies test scenarios where a user needs to lock tokens,
+ * ensuring the necessary authorization is handled automatically.
+ * @param token The token contract to lock into (e.g., FluxToken, LockquidityToken).
+ * @param damToken The DAM token contract instance.
+ * @param user The user/signer account performing the lock.
+ * @param amount The amount of DAM to lock.
+ * @param minterAddress Optional address to be designated as the minter. Defaults to the user's address.
+ * @returns The block number after the lock transaction.
+ */
+export async function lockTokens(token: any, damToken: any, user: any, amount: any, minterAddress?: any) {
+  const minter = minterAddress || user.address;
+  // Authorize the target token contract to spend DAM tokens on behalf of the user.
+  // This is required for the `lock` function to pull DAM tokens from the user.
+  await damToken.connect(user).authorizeOperator(token.target);
+  // Execute the lock operation.
+  await token.connect(user).lock(minter, amount);
+  // Return the current block number to allow for time-dependent assertions in tests.
+  return await ethers.provider.getBlockNumber();
+}
+
+/**
  * Advances the blockchain by a specified number of blocks and returns the new block number.
  * This is crucial for testing time-dependent logic in smart contracts, such as
  * block-based rewards, failsafe periods, or time-locked functionalities.

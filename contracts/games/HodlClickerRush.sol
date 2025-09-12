@@ -10,7 +10,7 @@
 |                HODL CLICKER RUSH                   |
 ================================================================================
 |                                                                              |
-|   This smart contract (v2) manages a rewards system interacting with an       |
+|   This smart contract manages a rewards system interacting with an           |
 |   ERC777-like token (fluxToken). It allows users to deposit (lock)           |
 |   tokens, set rewards percentage (with a default), min block number, and     |
 |   min burn amount. It triggers minting events and rewards distribution.      |
@@ -236,7 +236,7 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
         uint256 minBlockNumber;
         bool isPaused;
         uint256 minBurnAmount;
-        uint256 lastTipBonusBlock;
+        uint256 lastTipBonusBlock; // Track blocks so validators can only collect once per block   
     }
 
     /**

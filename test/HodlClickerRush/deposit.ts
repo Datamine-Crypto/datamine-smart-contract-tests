@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-import { hodlClickerRushFixture, lockTokens, mineBlocks } from "../helpers";
+import { hodlClickerRushFixture, setupPlayerForHodlClicker } from "../helpers";
 
 describe("HodlClickerRush Deposit", () => {
   let hodlClickerRush: any;
@@ -23,13 +23,7 @@ describe("HodlClickerRush Deposit", () => {
 
   it("should allow depositing with maximum rewardsPercent (10000)", async () => {
     const damAmount = ethers.parseEther("1000000");
-    await damToken.connect(owner).transfer(addr1.address, damAmount);
-    await lockTokens(fluxToken, damToken, addr1, damAmount, addr1.address);
-    await mineBlocks(1000);
-    const currentBlock = await ethers.provider.getBlockNumber();
-    await fluxToken.connect(addr1).mintToAddress(addr1.address, addr1.address, currentBlock);
-    const addr1FluxBalance = await fluxToken.balanceOf(addr1.address);
-    await fluxToken.connect(addr1).authorizeOperator(hodlClickerRush.target);
+    const addr1FluxBalance = await setupPlayerForHodlClicker(hodlClickerRush, fluxToken, damToken, addr1, damAmount, addr1.address);
 
     await expect(hodlClickerRush.connect(addr1).deposit(addr1FluxBalance, 10000, 0, 0))
       .to.emit(hodlClickerRush, "Deposited")
@@ -41,13 +35,7 @@ describe("HodlClickerRush Deposit", () => {
 
   it("should allow depositing with zero rewardsPercent", async () => {
     const damAmount = ethers.parseEther("1000000");
-    await damToken.connect(owner).transfer(addr1.address, damAmount);
-    await lockTokens(fluxToken, damToken, addr1, damAmount, addr1.address);
-    await mineBlocks(1000);
-    const currentBlock = await ethers.provider.getBlockNumber();
-    await fluxToken.connect(addr1).mintToAddress(addr1.address, addr1.address, currentBlock);
-    const addr1FluxBalance = await fluxToken.balanceOf(addr1.address);
-    await fluxToken.connect(addr1).authorizeOperator(hodlClickerRush.target);
+    const addr1FluxBalance = await setupPlayerForHodlClicker(hodlClickerRush, fluxToken, damToken, addr1, damAmount, addr1.address);
 
     await expect(hodlClickerRush.connect(addr1).deposit(addr1FluxBalance, 0, 0, 0))
       .to.emit(hodlClickerRush, "Deposited")
@@ -59,13 +47,7 @@ describe("HodlClickerRush Deposit", () => {
 
   it("should revert when depositing with rewardsPercent above maximum", async () => {
     const damAmount = ethers.parseEther("1000000");
-    await damToken.connect(owner).transfer(addr1.address, damAmount);
-    await lockTokens(fluxToken, damToken, addr1, damAmount, addr1.address);
-    await mineBlocks(1000);
-    const currentBlock = await ethers.provider.getBlockNumber();
-    await fluxToken.connect(addr1).mintToAddress(addr1.address, addr1.address, currentBlock);
-    const addr1FluxBalance = await fluxToken.balanceOf(addr1.address);
-    await fluxToken.connect(addr1).authorizeOperator(hodlClickerRush.target);
+    const addr1FluxBalance = await setupPlayerForHodlClicker(hodlClickerRush, fluxToken, damToken, addr1, damAmount, addr1.address);
 
     await expect(hodlClickerRush.connect(addr1).deposit(addr1FluxBalance, 10001, 0, 0))
       .to.be.revertedWith("Rewards % must be <= 10000");
@@ -73,13 +55,7 @@ describe("HodlClickerRush Deposit", () => {
 
   it("should store minBlockNumber and minBurnAmount correctly", async () => {
     const damAmount = ethers.parseEther("1000000");
-    await damToken.connect(owner).transfer(addr1.address, damAmount);
-    await lockTokens(fluxToken, damToken, addr1, damAmount, addr1.address);
-    await mineBlocks(1000);
-    const currentBlock = await ethers.provider.getBlockNumber();
-    await fluxToken.connect(addr1).mintToAddress(addr1.address, addr1.address, currentBlock);
-    const addr1FluxBalance = await fluxToken.balanceOf(addr1.address);
-    await fluxToken.connect(addr1).authorizeOperator(hodlClickerRush.target);
+    const addr1FluxBalance = await setupPlayerForHodlClicker(hodlClickerRush, fluxToken, damToken, addr1, damAmount, addr1.address);
 
     const testMinBlockNumber = 5000;
     const testMinBurnAmount = ethers.parseEther("100");

@@ -1,7 +1,6 @@
 import { ethers } from 'hardhat';
 import { deployFluxToken } from '../deployHelpers';
-import { lockTokens } from '../setupHelpers';
-import { parseUnits } from '../common';
+import { lockTokens, parseUnits } from '../common';
 import { deployBaseFixture } from './base';
 
 export async function deployFluxTokenFixture() {

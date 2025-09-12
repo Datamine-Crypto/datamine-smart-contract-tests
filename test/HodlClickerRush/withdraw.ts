@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-import { hodlClickerRushFixture, lockTokens, mineBlocks } from "../helpers";
+import { hodlClickerRushFixture, lockTokens, mineBlocks, setupPlayerForHodlClicker } from "../helpers";
 
 describe("HodlClickerRush Withdraw", () => {
   let hodlClickerRush: any;
@@ -25,13 +25,7 @@ describe("HodlClickerRush Withdraw", () => {
     const damAmount = ethers.parseEther("1000000");
 
     // owner deposits to provide totalContractRewardsAmount
-    await damToken.connect(owner).transfer(owner.address, damAmount);
-    await lockTokens(fluxToken, damToken, owner, damAmount, owner.address);
-    await mineBlocks(1000);
-    const currentBlock = await ethers.provider.getBlockNumber();
-    await fluxToken.connect(owner).mintToAddress(owner.address, owner.address, currentBlock);
-    const ownerFluxBalance = await fluxToken.balanceOf(owner.address);
-    await fluxToken.connect(owner).authorizeOperator(hodlClickerRush.target);
+    const ownerFluxBalance = await setupPlayerForHodlClicker(hodlClickerRush, fluxToken, damToken, owner, damAmount, owner.address);
     await hodlClickerRush.connect(owner).deposit(ownerFluxBalance, 0, 0, 0);
 
     // addr1 is burned to generate tips
@@ -41,12 +35,7 @@ describe("HodlClickerRush Withdraw", () => {
     await hodlClickerRush.connect(owner).burnTokens(addr1.address);
 
     // addr2 deposits to have rewardsAmount and earn a tip bonus
-    await damToken.connect(owner).transfer(addr2.address, damAmount);
-    await lockTokens(fluxToken, damToken, addr2, damAmount, addr2.address);
-    await mineBlocks(1);
-    await fluxToken.connect(addr2).mintToAddress(addr2.address, addr2.address, await ethers.provider.getBlockNumber());
-    const addr2FluxBalance = await fluxToken.balanceOf(addr2.address);
-    await fluxToken.connect(addr2).authorizeOperator(hodlClickerRush.target);
+    const addr2FluxBalance = await setupPlayerForHodlClicker(hodlClickerRush, fluxToken, damToken, addr2, damAmount, addr2.address);
     await hodlClickerRush.connect(addr2).deposit(addr2FluxBalance, 0, 0, 0);
 
     // addr2 burns for addr1 again to earn a tip bonus
@@ -72,13 +61,7 @@ describe("HodlClickerRush Withdraw", () => {
     const damAmount = ethers.parseEther("1000000");
 
     // owner deposits to provide totalContractRewardsAmount
-    await damToken.connect(owner).transfer(owner.address, damAmount);
-    await lockTokens(fluxToken, damToken, owner, damAmount, owner.address);
-    await mineBlocks(1000);
-    const currentBlock = await ethers.provider.getBlockNumber();
-    await fluxToken.connect(owner).mintToAddress(owner.address, owner.address, currentBlock);
-    const ownerFluxBalance = await fluxToken.balanceOf(owner.address);
-    await fluxToken.connect(owner).authorizeOperator(hodlClickerRush.target);
+    const ownerFluxBalance = await setupPlayerForHodlClicker(hodlClickerRush, fluxToken, damToken, owner, damAmount, owner.address);
     await hodlClickerRush.connect(owner).deposit(ownerFluxBalance, 0, 0, 0);
 
     // addr1 is burned to generate tips
@@ -88,12 +71,7 @@ describe("HodlClickerRush Withdraw", () => {
     await hodlClickerRush.connect(owner).burnTokens(addr1.address);
 
     // addr2 deposits to have rewardsAmount and earn a tip bonus
-    await damToken.connect(owner).transfer(addr2.address, damAmount);
-    await lockTokens(fluxToken, damToken, addr2, damAmount, addr2.address);
-    await mineBlocks(1);
-    await fluxToken.connect(addr2).mintToAddress(addr2.address, addr2.address, await ethers.provider.getBlockNumber());
-    const addr2FluxBalance = await fluxToken.balanceOf(addr2.address);
-    await fluxToken.connect(addr2).authorizeOperator(hodlClickerRush.target);
+    const addr2FluxBalance = await setupPlayerForHodlClicker(hodlClickerRush, fluxToken, damToken, addr2, damAmount, addr2.address);
     await hodlClickerRush.connect(addr2).deposit(addr2FluxBalance, 0, 0, 0);
 
     // addr2 burns for addr1 again to earn a tip bonus

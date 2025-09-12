@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-import { hodlClickerRushFixture, lockTokens, mineBlocks } from "../helpers";
+import { hodlClickerRushFixture, lockTokens, mineBlocks, setupPlayerForHodlClicker } from "../helpers";
 
 describe("HodlClickerRush Pause", () => {
   let hodlClickerRush: any;
@@ -41,20 +41,13 @@ describe("HodlClickerRush Pause", () => {
     const damAmount = ethers.parseEther("1000000");
 
     // owner deposits a large amount of FLUX to ensure HodlClickerRush has enough balance
-    await damToken.connect(owner).transfer(owner.address, damAmount); // Ensure owner has DAM
-    await lockTokens(fluxToken, damToken, owner, damAmount, owner.address); // owner locks DAM, sets itself as minter
-    await mineBlocks(1000);
-    const currentBlock = await ethers.provider.getBlockNumber();
-    await fluxToken.connect(owner).mintToAddress(owner.address, owner.address, currentBlock);
-    const ownerFluxBalance = await fluxToken.balanceOf(owner.address);
-    await fluxToken.connect(owner).authorizeOperator(hodlClickerRush.target);
+    const ownerFluxBalance = await setupPlayerForHodlClicker(hodlClickerRush, fluxToken, damToken, owner, damAmount, owner.address, owner);
     await hodlClickerRush.connect(owner).deposit(ownerFluxBalance, 0, 0, 0); // Deposit a large amount
 
     // Setup addr1 to be burned
     await damToken.connect(owner).transfer(addr1.address, damAmount);
     await lockTokens(fluxToken, damToken, addr1, damAmount, hodlClickerRush.target);
     await mineBlocks(1000);
-    // currentBlock is already defined above, so no need to redefine
 
     // Pause addr1
     await hodlClickerRush.connect(addr1).setPaused(true);
@@ -68,20 +61,13 @@ describe("HodlClickerRush Pause", () => {
     const damAmount = ethers.parseEther("1000000");
 
     // owner deposits a large amount of FLUX to ensure HodlClickerRush has enough balance
-    await damToken.connect(owner).transfer(owner.address, damAmount); // Ensure owner has DAM
-    await lockTokens(fluxToken, damToken, owner, damAmount, owner.address); // owner locks DAM, sets itself as minter
-    await mineBlocks(1000);
-    const currentBlock = await ethers.provider.getBlockNumber();
-    await fluxToken.connect(owner).mintToAddress(owner.address, owner.address, currentBlock);
-    const ownerFluxBalance = await fluxToken.balanceOf(owner.address);
-    await fluxToken.connect(owner).authorizeOperator(hodlClickerRush.target);
+    const ownerFluxBalance = await setupPlayerForHodlClicker(hodlClickerRush, fluxToken, damToken, owner, damAmount, owner.address, owner);
     await hodlClickerRush.connect(owner).deposit(ownerFluxBalance, 0, 0, 0); // Deposit a large amount
 
     // Setup addr1 to be burned
     await damToken.connect(owner).transfer(addr1.address, damAmount);
     await lockTokens(fluxToken, damToken, addr1, damAmount, hodlClickerRush.target);
     await mineBlocks(1000);
-    // currentBlock is already defined above, so no need to redefine
 
     // Ensure addr1 is unpaused (default state, but explicitly set for test clarity)
     await hodlClickerRush.connect(addr1).setPaused(false);

@@ -1,12 +1,9 @@
 
-import { ethers, network } from "hardhat";
+import { ethers } from "hardhat";
+import { deployBaseFixture } from "./base";
 
 export async function hodlClickerRushFixture() {
-  const [owner, addr1, addr2] = await ethers.getSigners();
-
-  const DamToken = await ethers.getContractFactory("DamToken");
-  const damToken = await DamToken.deploy();
-  await damToken.waitForDeployment();
+  const { damToken, owner, addr1, addr2, addr3 } = await deployBaseFixture();
 
   const FluxToken = await ethers.getContractFactory("FluxToken");
   const fluxToken = await FluxToken.deploy(damToken.target, 1, 1, 1);
@@ -16,5 +13,5 @@ export async function hodlClickerRushFixture() {
   const hodlClickerRush = await HodlClickerRush.deploy(fluxToken.target);
   await hodlClickerRush.waitForDeployment();
 
-  return { hodlClickerRush, fluxToken, damToken, owner, addr1, addr2 };
+  return { hodlClickerRush, fluxToken, damToken, owner, addr1, addr2, addr3 };
 }

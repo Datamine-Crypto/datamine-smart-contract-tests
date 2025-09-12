@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-import { hodlClickerRushFixture, lockTokens, mineBlocks } from "../helpers";
+import { hodlClickerRushFixture, lockTokens, mineBlocks, setupPlayerForHodlClicker } from "../helpers";
 
 describe("HodlClickerRush Simple Burn", () => {
   let hodlClickerRush: any;
@@ -43,24 +43,14 @@ describe("HodlClickerRush Simple Burn", () => {
     const damAmount = ethers.parseEther("1000000");
 
     // addr1 will be the depositor, so it's its own minter
-    await damToken.connect(owner).transfer(addr1.address, damAmount);
-    await lockTokens(fluxToken, damToken, addr1, damAmount, addr1.address);
+    const addr1FluxBalance = await setupPlayerForHodlClicker(hodlClickerRush, fluxToken, damToken, addr1, damAmount, addr1.address);
+    await hodlClickerRush.connect(addr1).deposit(addr1FluxBalance, 0, 0, 0);
 
     // addr2 will be the one being "burned", so hodlClicker is the minter
     await damToken.connect(owner).transfer(addr2.address, damAmount);
     await lockTokens(fluxToken, damToken, addr2, damAmount, hodlClickerRush.target);
 
     await mineBlocks(1000);
-    const currentBlock = await ethers.provider.getBlockNumber();
-
-    // addr1 mints its own tokens to be able to deposit them
-    await fluxToken.connect(addr1).mintToAddress(addr1.address, addr1.address, currentBlock);
-    
-    // addr1 deposits its FLUX
-    const addr1FluxBalance = await fluxToken.balanceOf(addr1.address);
-    expect(addr1FluxBalance).to.be.gt(0);
-    await fluxToken.connect(addr1).authorizeOperator(hodlClickerRush.target);
-    await hodlClickerRush.connect(addr1).deposit(addr1FluxBalance, 0, 0, 0);
 
     // owner calls burnTokens for addr2
     const burnOperationResult = await hodlClickerRush.connect(owner).burnTokens.staticCall(addr2.address);
