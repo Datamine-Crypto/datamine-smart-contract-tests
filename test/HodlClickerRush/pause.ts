@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { setupDefaultScenario, setupHodlClickerRushTests } from '../helpers';
+import { BurnResultCode, setupDefaultScenario, setupHodlClickerRushTests } from '../helpers';
 
 describe('HodlClickerRush Pause', () => {
   let hodlClickerRush: any,
@@ -45,7 +45,7 @@ describe('HodlClickerRush Pause', () => {
     await hodlClickerRush.connect(addr1).setPaused(true);
 
     const burnOperationResult = await hodlClickerRush.connect(addr2).burnTokens.staticCall(addr1.address);
-    expect(burnOperationResult.resultCode).to.equal(4); // ValidatorPaused
+    expect(burnOperationResult.resultCode).to.equal(BurnResultCode.ValidatorPaused);
   });
 
   it('should allow an unpaused address to burn tokens', async () => {
@@ -56,7 +56,7 @@ describe('HodlClickerRush Pause', () => {
     await hodlClickerRush.connect(addr1).setPaused(false);
 
     const burnOperationResult = await hodlClickerRush.connect(addr2).burnTokens.staticCall(addr1.address);
-    expect(burnOperationResult.resultCode).to.equal(0); // Success
+    expect(burnOperationResult.resultCode).to.equal(BurnResultCode.Success);
   });
 
   it('should emit PausedChanged event', async () => {

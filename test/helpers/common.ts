@@ -167,3 +167,13 @@ export enum UnitTestCases {
   CallUnlockTokensToSendHook = 0,
   CallSendTokensToSendHook = 1,
 }
+
+export enum BurnResultCode {
+  Success = 0,
+  NothingToMint = 1,
+  NothingToTip = 2,
+  InsufficientContractBalance = 3,
+  ValidatorPaused = 4,
+  ValidatorMinBlockNotMet = 5,
+  ValidatorMinBurnAmountNotMet = 6,
+}

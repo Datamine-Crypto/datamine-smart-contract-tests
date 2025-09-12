@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { setupHodlClickerRushTests, setupBurnableAddress, depositFor } from '../helpers';
+import { setupHodlClickerRushTests, setupBurnableAddress, depositFor, BurnResultCode } from '../helpers';
 
 describe('HodlClickerRush Simple Burn', () => {
   let hodlClickerRush: any, owner: any, addr1: any, addr2: any, damToken: any, fluxToken: any;
@@ -21,7 +21,7 @@ describe('HodlClickerRush Simple Burn', () => {
 
     const burnOperationResult = await hodlClickerRush.connect(addr2).burnTokens.staticCall(addr1.address);
 
-    expect(burnOperationResult.resultCode).to.equal(3);
+    expect(burnOperationResult.resultCode).to.equal(BurnResultCode.InsufficientContractBalance);
   });
 
   it('should successfully burn tokens if enough FLUX is deposited', async () => {
@@ -32,6 +32,6 @@ describe('HodlClickerRush Simple Burn', () => {
 
     const burnOperationResult = await hodlClickerRush.connect(owner).burnTokens.staticCall(addr2.address);
 
-    expect(burnOperationResult.resultCode).to.equal(0);
+    expect(burnOperationResult.resultCode).to.equal(BurnResultCode.Success);
   });
 });
