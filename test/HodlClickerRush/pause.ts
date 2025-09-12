@@ -1,9 +1,15 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { setupHodlClickerRushTests } from '../helpers';
+import { setupDefaultScenario, setupHodlClickerRushTests } from '../helpers';
 
 describe('HodlClickerRush Pause', () => {
-  let hodlClickerRush: any, owner: any, addr1: any, addr2: any, depositFor: any, setupBurnableAddress: any;
+  let hodlClickerRush: any,
+    owner: any,
+    addr1: any,
+    addr2: any,
+    damToken: any,
+    fluxToken: any,
+    setupBurnableAddress: any;
 
   beforeEach(async () => {
     const setup = await setupHodlClickerRushTests();
@@ -11,8 +17,8 @@ describe('HodlClickerRush Pause', () => {
     owner = setup.owner;
     addr1 = setup.addr1;
     addr2 = setup.addr2;
-    depositFor = setup.depositFor;
-    setupBurnableAddress = setup.setupBurnableAddress;
+    damToken = setup.damToken;
+    fluxToken = setup.fluxToken;
   });
 
   it('should allow an address to pause itself', async () => {
@@ -34,8 +40,7 @@ describe('HodlClickerRush Pause', () => {
   it('should prevent a paused address from burning tokens', async () => {
     const damAmount = ethers.parseEther('1000000');
 
-    await depositFor(owner, damAmount);
-    await setupBurnableAddress(addr1, damAmount);
+    await setupDefaultScenario(hodlClickerRush, fluxToken, damToken, owner, addr1, damAmount);
 
     await hodlClickerRush.connect(addr1).setPaused(true);
 
@@ -46,8 +51,7 @@ describe('HodlClickerRush Pause', () => {
   it('should allow an unpaused address to burn tokens', async () => {
     const damAmount = ethers.parseEther('1000000');
 
-    await depositFor(owner, damAmount);
-    await setupBurnableAddress(addr1, damAmount);
+    await setupDefaultScenario(hodlClickerRush, fluxToken, damToken, owner, addr1, damAmount);
 
     await hodlClickerRush.connect(addr1).setPaused(false);
 

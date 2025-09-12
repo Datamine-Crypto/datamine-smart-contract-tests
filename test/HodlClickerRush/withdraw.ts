@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { setupHodlClickerRushTests } from '../helpers';
+import { setupHodlClickerRushTests, depositFor, setupBurnableAddress } from '../helpers';
 
 describe('HodlClickerRush Withdraw', () => {
-  let hodlClickerRush: any, owner: any, addr1: any, addr2: any, depositFor: any, setupBurnableAddress: any;
+  let hodlClickerRush: any, owner: any, addr1: any, addr2: any, damToken: any, fluxToken: any;
 
   beforeEach(async () => {
     const setup = await setupHodlClickerRushTests();
@@ -11,17 +11,17 @@ describe('HodlClickerRush Withdraw', () => {
     owner = setup.owner;
     addr1 = setup.addr1;
     addr2 = setup.addr2;
-    depositFor = setup.depositFor;
-    setupBurnableAddress = setup.setupBurnableAddress;
+    damToken = setup.damToken;
+    fluxToken = setup.fluxToken;
   });
 
   it('should allow a user to withdraw earned rewards', async () => {
     const damAmount = ethers.parseEther('1000000');
 
-    await depositFor(owner, damAmount);
-    await setupBurnableAddress(addr1, damAmount);
+    await depositFor(hodlClickerRush, fluxToken, damToken, owner, damAmount);
+    await setupBurnableAddress(damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
     await hodlClickerRush.connect(owner).burnTokens(addr1.address);
-    await depositFor(addr2, damAmount);
+    await depositFor(hodlClickerRush, fluxToken, damToken, addr2, damAmount);
     await hodlClickerRush.connect(addr2).burnTokens(addr1.address);
 
     const initialRewardsAmount = (await hodlClickerRush.addressLocks(addr2.address)).rewardsAmount;
@@ -41,10 +41,10 @@ describe('HodlClickerRush Withdraw', () => {
   it('should not allow withdrawing more than earned rewards', async () => {
     const damAmount = ethers.parseEther('1000000');
 
-    await depositFor(owner, damAmount);
-    await setupBurnableAddress(addr1, damAmount);
+    await depositFor(hodlClickerRush, fluxToken, damToken, owner, damAmount);
+    await setupBurnableAddress(damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
     await hodlClickerRush.connect(owner).burnTokens(addr1.address);
-    await depositFor(addr2, damAmount);
+    await depositFor(hodlClickerRush, fluxToken, damToken, addr2, damAmount);
     await hodlClickerRush.connect(addr2).burnTokens(addr1.address);
 
     await hodlClickerRush.connect(addr2).withdrawAll();

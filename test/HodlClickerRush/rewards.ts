@@ -1,18 +1,15 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { setupHodlClickerRushTests, mineBlocks } from '../helpers';
+import {
+  setupHodlClickerRushTests,
+  mineBlocks,
+  depositFor,
+  setupBurnableAddress,
+  setupDefaultScenario,
+} from '../helpers';
 
 describe('HodlClickerRush Rewards', () => {
-  let hodlClickerRush: any,
-    fluxToken: any,
-    damToken: any,
-    owner: any,
-    addr1: any,
-    addr2: any,
-    addr3: any,
-    addr4: any,
-    depositFor: any,
-    setupBurnableAddress: any;
+  let hodlClickerRush: any, fluxToken: any, damToken: any, owner: any, addr1: any, addr2: any, addr3: any, addr4: any;
 
   beforeEach(async () => {
     const setup = await setupHodlClickerRushTests();
@@ -24,15 +21,12 @@ describe('HodlClickerRush Rewards', () => {
     addr2 = setup.addr2;
     addr3 = setup.addr3;
     addr4 = setup.addr4;
-    depositFor = setup.depositFor;
-    setupBurnableAddress = setup.setupBurnableAddress;
   });
 
   it('should give a jackpot for the first burn in a block', async () => {
     const damAmount = ethers.parseEther('1000000');
 
-    await depositFor(owner, damAmount);
-    await setupBurnableAddress(addr1, damAmount);
+    await setupDefaultScenario(hodlClickerRush, fluxToken, damToken, owner, addr1, damAmount);
 
     const burnTx = await hodlClickerRush.connect(addr2).burnTokens(addr1.address);
     const receipt = await burnTx.wait();
@@ -46,10 +40,9 @@ describe('HodlClickerRush Rewards', () => {
   it('should give a tip bonus even if nothing is minted', async () => {
     const damAmount = ethers.parseEther('1000000');
 
-    await depositFor(owner, damAmount);
-    await setupBurnableAddress(addr1, damAmount);
+    await setupDefaultScenario(hodlClickerRush, fluxToken, damToken, owner, addr1, damAmount);
     await hodlClickerRush.connect(addr2).burnTokens(addr1.address);
-    await depositFor(addr3, damAmount);
+    await depositFor(hodlClickerRush, fluxToken, damToken, addr3, damAmount);
 
     await ethers.provider.send('evm_setAutomine', [false]);
 
@@ -72,9 +65,9 @@ describe('HodlClickerRush Rewards', () => {
   it('should give a tip bonus based on holdings in a new block', async () => {
     const damAmount = ethers.parseEther('1000000');
 
-    await depositFor(owner, damAmount);
-    await depositFor(addr2, damAmount);
-    await setupBurnableAddress(addr1, damAmount);
+    await depositFor(hodlClickerRush, fluxToken, damToken, owner, damAmount);
+    await depositFor(hodlClickerRush, fluxToken, damToken, addr2, damAmount);
+    await setupBurnableAddress(damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
     await hodlClickerRush.connect(owner).burnTokens(addr1.address);
 
     const totalTips = BigInt(await hodlClickerRush.totalTips());
@@ -94,12 +87,12 @@ describe('HodlClickerRush Rewards', () => {
   it('should only give one tip bonus per block even if burning for multiple addresses (different burnToAddress)', async () => {
     const damAmount = ethers.parseEther('1000000');
 
-    await depositFor(owner, damAmount);
-    await setupBurnableAddress(addr1, damAmount);
+    await depositFor(hodlClickerRush, fluxToken, damToken, owner, damAmount);
+    await setupBurnableAddress(damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
     await hodlClickerRush.connect(owner).burnTokens(addr1.address);
-    await setupBurnableAddress(addr4, damAmount);
+    await setupBurnableAddress(damToken, fluxToken, owner, addr4, damAmount, hodlClickerRush);
     await hodlClickerRush.connect(owner).burnTokens(addr4.address);
-    await depositFor(addr2, damAmount);
+    await depositFor(hodlClickerRush, fluxToken, damToken, addr2, damAmount);
 
     await ethers.provider.send('evm_setAutomine', [false]);
 
