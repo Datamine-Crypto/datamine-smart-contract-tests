@@ -58,3 +58,21 @@ export async function setupHodlClickerRushTests() {
     addr4,
   };
 }
+
+export async function setupPlayerForHodlClicker(
+  hodlClickerRush: any,
+  fluxToken: any,
+  damToken: any,
+  user: any,
+  damAmount: any,
+  minterAddress: any,
+) {
+  const [owner] = await ethers.getSigners();
+  await damToken.connect(owner).transfer(user.address, damAmount);
+  await lockTokens(fluxToken, damToken, user, damAmount, minterAddress);
+  await mineBlocks(1000);
+  const userFluxBalance = await fluxToken.balanceOf(user.address);
+  await fluxToken.connect(user).authorizeOperator(hodlClickerRush.target);
+  return userFluxBalance;
+}
+
