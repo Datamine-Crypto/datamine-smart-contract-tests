@@ -344,6 +344,15 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
         _erc1820.setInterfaceImplementer(address(this), TOKENS_RECIPIENT_INTERFACE_HASH, address(this));
     }
 
+    function getTipBonus(address _address) public view returns (uint256) {
+        AddressLock storage burnFromAddressLock = addressLocks[_address];
+        uint256 tipBonus = 0;
+        if (totalContractRewardsAmount > 0) {
+            tipBonus = (totalTips * burnFromAddressLock.rewardsAmount) / totalContractRewardsAmount;
+        }
+        return tipBonus;
+    }
+
     // --- Main Functions ---
     /**
      * @notice Burns tokens for a target address.
@@ -361,13 +370,7 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
 
         // All burners get a bonus from the total tips pool. Percent is based on their current reward balance
         if (currentBlock > burnFromAddressLock.lastTipBonusBlock) {
-
-            // Tip bonus is based off percantage of your share in the pool
-            // For example if you win 3 LOCK jackpot and there are 10 LOCK of rewards you now get 30% of the tip pool every block
-            uint256 tipBonus = 0;
-            if (totalContractRewardsAmount > 0) {
-                tipBonus = (totalTips * burnFromAddressLock.rewardsAmount) / totalContractRewardsAmount;
-            }
+            uint256 tipBonus = getTipBonus(_msgSender());
 
             if (tipBonus > 0) {
 

@@ -111,4 +111,29 @@ describe('HodlClickerRush Rewards', () => {
     expect(tipBonusAwarded1).to.not.be.undefined;
     expect(tipBonusAwarded2).to.be.undefined;
   });
+
+  it('should correctly calculate tip bonus using getTipBonus function', async () => {
+    const damAmount = ethers.parseEther('1000000');
+
+    // Setup initial state for totalTips and totalContractRewardsAmount
+    await depositFor(hodlClickerRush, fluxToken, damToken, owner, damAmount); // This will increase totalContractRewardsAmount
+    await setupBurnableAddress(damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
+    await hodlClickerRush.connect(owner).burnTokens(addr1.address); // This will increase totalTips
+
+    // Deposit some rewards for addr2 to set its rewardsAmount
+    await depositFor(hodlClickerRush, fluxToken, damToken, addr2, ethers.parseEther('100000'));
+
+    const totalTips = BigInt(await hodlClickerRush.totalTips());
+    const totalContractRewardsAmount = BigInt(await hodlClickerRush.totalContractRewardsAmount());
+    const addr2RewardsAmount = BigInt((await hodlClickerRush.addressLocks(addr2.address)).rewardsAmount);
+
+    let expectedTipBonus = 0n;
+    if (totalContractRewardsAmount > 0) {
+      expectedTipBonus = (totalTips * addr2RewardsAmount) / totalContractRewardsAmount;
+    }
+
+    const calculatedTipBonus = await hodlClickerRush.getTipBonus(addr2.address);
+
+    expect(calculatedTipBonus).to.equal(expectedTipBonus);
+  });
 });
