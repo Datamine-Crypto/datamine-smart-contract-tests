@@ -1,7 +1,7 @@
-import { expect } from "chai";
-import { setupHodlClickerRushTests } from "../helpers";
+import { expect } from 'chai';
+import { setupHodlClickerRushTests } from '../helpers';
 
-describe("HodlClickerRush Deployment", () => {
+describe('HodlClickerRush Deployment', () => {
   let hodlClickerRush: any;
 
   beforeEach(async () => {
@@ -9,7 +9,7 @@ describe("HodlClickerRush Deployment", () => {
     hodlClickerRush = setup.hodlClickerRush;
   });
 
-  it("Should initialize with totalTips equal to 0", async () => {
+  it('Should initialize with totalTips equal to 0', async () => {
     expect(await hodlClickerRush.totalTips()).to.equal(0);
   });
 });

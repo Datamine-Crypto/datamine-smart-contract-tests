@@ -15,7 +15,7 @@ export async function setupPlayerForHodlClicker(
   damToken: any,
   player: any,
   damAmount: any,
-  minter: any
+  minter: any,
 ) {
   await damToken.transfer(player.address, damAmount);
   await lockTokens(fluxToken, damToken, player, damAmount, minter);

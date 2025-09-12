@@ -1,9 +1,18 @@
-import { expect } from "chai";
-import { ethers } from "hardhat";
-import { setupHodlClickerRushTests, mineBlocks } from "../helpers";
+import { expect } from 'chai';
+import { ethers } from 'hardhat';
+import { setupHodlClickerRushTests, mineBlocks } from '../helpers';
 
-describe("HodlClickerRush Rewards", () => {
-  let hodlClickerRush: any, fluxToken: any, damToken: any, owner: any, addr1: any, addr2: any, addr3: any, addr4: any, depositFor: any, setupBurnableAddress: any;
+describe('HodlClickerRush Rewards', () => {
+  let hodlClickerRush: any,
+    fluxToken: any,
+    damToken: any,
+    owner: any,
+    addr1: any,
+    addr2: any,
+    addr3: any,
+    addr4: any,
+    depositFor: any,
+    setupBurnableAddress: any;
 
   beforeEach(async () => {
     const setup = await setupHodlClickerRushTests();
@@ -19,8 +28,8 @@ describe("HodlClickerRush Rewards", () => {
     setupBurnableAddress = setup.setupBurnableAddress;
   });
 
-  it("should give a jackpot for the first burn in a block", async () => {
-    const damAmount = ethers.parseEther("1000000");
+  it('should give a jackpot for the first burn in a block', async () => {
+    const damAmount = ethers.parseEther('1000000');
 
     await depositFor(owner, damAmount);
     await setupBurnableAddress(addr1, damAmount);
@@ -34,22 +43,22 @@ describe("HodlClickerRush Rewards", () => {
     expect(burnOperationResult.jackpotAmount).to.be.gt(0);
   });
 
-  it("should give a tip bonus even if nothing is minted", async () => {
-    const damAmount = ethers.parseEther("1000000");
+  it('should give a tip bonus even if nothing is minted', async () => {
+    const damAmount = ethers.parseEther('1000000');
 
     await depositFor(owner, damAmount);
     await setupBurnableAddress(addr1, damAmount);
     await hodlClickerRush.connect(addr2).burnTokens(addr1.address);
     await depositFor(addr3, damAmount);
 
-    await ethers.provider.send("evm_setAutomine", [false]);
+    await ethers.provider.send('evm_setAutomine', [false]);
 
     const gasLimit = 300000;
     const burn1Tx = await hodlClickerRush.connect(addr2).burnTokens(addr1.address, { gasLimit: gasLimit });
     const burn2Tx = await hodlClickerRush.connect(addr2).burnTokens(addr1.address, { gasLimit: gasLimit });
 
     await mineBlocks(1);
-    await ethers.provider.send("evm_setAutomine", [true]);
+    await ethers.provider.send('evm_setAutomine', [true]);
 
     const [receipt1, receipt2] = await Promise.all([burn1Tx.wait(), burn2Tx.wait()]);
 
@@ -59,9 +68,9 @@ describe("HodlClickerRush Rewards", () => {
     expect(tipBonusAwarded1).to.not.be.undefined;
     expect(tipBonusAwarded2).to.be.undefined;
   });
-  
-  it("should give a tip bonus based on holdings in a new block", async () => {
-    const damAmount = ethers.parseEther("1000000");
+
+  it('should give a tip bonus based on holdings in a new block', async () => {
+    const damAmount = ethers.parseEther('1000000');
 
     await depositFor(owner, damAmount);
     await depositFor(addr2, damAmount);
@@ -82,8 +91,8 @@ describe("HodlClickerRush Rewards", () => {
     expect(tipBonusAwarded.tipBonus).to.equal(expectedTipBonus);
   });
 
-  it("should only give one tip bonus per block even if burning for multiple addresses (different burnToAddress)", async () => {
-    const damAmount = ethers.parseEther("1000000");
+  it('should only give one tip bonus per block even if burning for multiple addresses (different burnToAddress)', async () => {
+    const damAmount = ethers.parseEther('1000000');
 
     await depositFor(owner, damAmount);
     await setupBurnableAddress(addr1, damAmount);
@@ -92,14 +101,14 @@ describe("HodlClickerRush Rewards", () => {
     await hodlClickerRush.connect(owner).burnTokens(addr4.address);
     await depositFor(addr2, damAmount);
 
-    await ethers.provider.send("evm_setAutomine", [false]);
+    await ethers.provider.send('evm_setAutomine', [false]);
 
     const gasLimit = 300000;
     const burnTx1 = await hodlClickerRush.connect(addr2).burnTokens(addr1.address, { gasLimit: gasLimit });
     const burnTx2 = await hodlClickerRush.connect(addr2).burnTokens(addr4.address, { gasLimit: gasLimit });
 
     await mineBlocks(1);
-    await ethers.provider.send("evm_setAutomine", [true]);
+    await ethers.provider.send('evm_setAutomine', [true]);
 
     const [receipt1, receipt2] = await Promise.all([burnTx1.wait(), burnTx2.wait()]);
 

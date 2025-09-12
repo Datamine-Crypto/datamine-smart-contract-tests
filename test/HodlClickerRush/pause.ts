@@ -1,8 +1,8 @@
-import { expect } from "chai";
-import { ethers } from "hardhat";
-import { setupHodlClickerRushTests } from "../helpers";
+import { expect } from 'chai';
+import { ethers } from 'hardhat';
+import { setupHodlClickerRushTests } from '../helpers';
 
-describe("HodlClickerRush Pause", () => {
+describe('HodlClickerRush Pause', () => {
   let hodlClickerRush: any, owner: any, addr1: any, addr2: any, depositFor: any, setupBurnableAddress: any;
 
   beforeEach(async () => {
@@ -15,13 +15,13 @@ describe("HodlClickerRush Pause", () => {
     setupBurnableAddress = setup.setupBurnableAddress;
   });
 
-  it("should allow an address to pause itself", async () => {
+  it('should allow an address to pause itself', async () => {
     await hodlClickerRush.connect(addr1).setPaused(true);
     const addr1Lock = await hodlClickerRush.addressLocks(addr1.address);
     expect(addr1Lock.isPaused).to.be.true;
   });
 
-  it("should allow an address to unpause itself", async () => {
+  it('should allow an address to unpause itself', async () => {
     await hodlClickerRush.connect(addr1).setPaused(true);
     let addr1Lock = await hodlClickerRush.addressLocks(addr1.address);
     expect(addr1Lock.isPaused).to.be.true;
@@ -31,8 +31,8 @@ describe("HodlClickerRush Pause", () => {
     expect(addr1Lock.isPaused).to.be.false;
   });
 
-  it("should prevent a paused address from burning tokens", async () => {
-    const damAmount = ethers.parseEther("1000000");
+  it('should prevent a paused address from burning tokens', async () => {
+    const damAmount = ethers.parseEther('1000000');
 
     await depositFor(owner, damAmount);
     await setupBurnableAddress(addr1, damAmount);
@@ -43,8 +43,8 @@ describe("HodlClickerRush Pause", () => {
     expect(burnOperationResult.resultCode).to.equal(4); // ValidatorPaused
   });
 
-  it("should allow an unpaused address to burn tokens", async () => {
-    const damAmount = ethers.parseEther("1000000");
+  it('should allow an unpaused address to burn tokens', async () => {
+    const damAmount = ethers.parseEther('1000000');
 
     await depositFor(owner, damAmount);
     await setupBurnableAddress(addr1, damAmount);
@@ -55,13 +55,13 @@ describe("HodlClickerRush Pause", () => {
     expect(burnOperationResult.resultCode).to.equal(0); // Success
   });
 
-  it("should emit PausedChanged event", async () => {
+  it('should emit PausedChanged event', async () => {
     await expect(hodlClickerRush.connect(addr1).setPaused(true))
-      .to.emit(hodlClickerRush, "PausedChanged")
+      .to.emit(hodlClickerRush, 'PausedChanged')
       .withArgs(addr1.address, true);
 
     await expect(hodlClickerRush.connect(addr1).setPaused(false))
-      .to.emit(hodlClickerRush, "PausedChanged")
+      .to.emit(hodlClickerRush, 'PausedChanged')
       .withArgs(addr1.address, false);
   });
 });

@@ -1,8 +1,8 @@
-import { expect } from "chai";
-import { ethers } from "hardhat";
-import { setupHodlClickerRushTests } from "../helpers";
+import { expect } from 'chai';
+import { ethers } from 'hardhat';
+import { setupHodlClickerRushTests } from '../helpers';
 
-describe("HodlClickerRush Withdraw", () => {
+describe('HodlClickerRush Withdraw', () => {
   let hodlClickerRush: any, owner: any, addr1: any, addr2: any, depositFor: any, setupBurnableAddress: any;
 
   beforeEach(async () => {
@@ -15,8 +15,8 @@ describe("HodlClickerRush Withdraw", () => {
     setupBurnableAddress = setup.setupBurnableAddress;
   });
 
-  it("should allow a user to withdraw earned rewards", async () => {
-    const damAmount = ethers.parseEther("1000000");
+  it('should allow a user to withdraw earned rewards', async () => {
+    const damAmount = ethers.parseEther('1000000');
 
     await depositFor(owner, damAmount);
     await setupBurnableAddress(addr1, damAmount);
@@ -38,8 +38,8 @@ describe("HodlClickerRush Withdraw", () => {
     expect(finalTotalContractRewardsAmount).to.equal(initialTotalContractRewardsAmount - initialRewardsAmount);
   });
 
-  it("should not allow withdrawing more than earned rewards", async () => {
-    const damAmount = ethers.parseEther("1000000");
+  it('should not allow withdrawing more than earned rewards', async () => {
+    const damAmount = ethers.parseEther('1000000');
 
     await depositFor(owner, damAmount);
     await setupBurnableAddress(addr1, damAmount);
@@ -50,10 +50,10 @@ describe("HodlClickerRush Withdraw", () => {
     await hodlClickerRush.connect(addr2).withdrawAll();
     const addr2RewardsAfter = (await hodlClickerRush.addressLocks(addr2.address)).rewardsAmount;
     expect(addr2RewardsAfter).to.equal(0);
-    await expect(hodlClickerRush.connect(addr2).withdrawAll()).to.be.revertedWith("No rewards to withdraw");
+    await expect(hodlClickerRush.connect(addr2).withdrawAll()).to.be.revertedWith('No rewards to withdraw');
   });
 
-  it("should not allow withdrawing zero amount", async () => {
-    await expect(hodlClickerRush.connect(addr1).withdrawAll()).to.be.revertedWith("No rewards to withdraw");
+  it('should not allow withdrawing zero amount', async () => {
+    await expect(hodlClickerRush.connect(addr1).withdrawAll()).to.be.revertedWith('No rewards to withdraw');
   });
 });

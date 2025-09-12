@@ -1,8 +1,8 @@
-import { expect } from "chai";
-import { ethers } from "hardhat";
-import { setupHodlClickerRushTests } from "../helpers";
+import { expect } from 'chai';
+import { ethers } from 'hardhat';
+import { setupHodlClickerRushTests } from '../helpers';
 
-describe("HodlClickerRush Simple Burn", () => {
+describe('HodlClickerRush Simple Burn', () => {
   let hodlClickerRush: any, owner: any, addr1: any, addr2: any, depositFor: any, setupBurnableAddress: any;
 
   beforeEach(async () => {
@@ -15,8 +15,8 @@ describe("HodlClickerRush Simple Burn", () => {
     setupBurnableAddress = setup.setupBurnableAddress;
   });
 
-  it("should return InsufficientContractBalance if not enough FLUX is deposited", async () => {
-    const damAmount = ethers.parseEther("1000000");
+  it('should return InsufficientContractBalance if not enough FLUX is deposited', async () => {
+    const damAmount = ethers.parseEther('1000000');
     await setupBurnableAddress(addr1, damAmount);
 
     const burnOperationResult = await hodlClickerRush.connect(addr2).burnTokens.staticCall(addr1.address);
@@ -24,8 +24,8 @@ describe("HodlClickerRush Simple Burn", () => {
     expect(burnOperationResult.resultCode).to.equal(3);
   });
 
-  it("should successfully burn tokens if enough FLUX is deposited", async () => {
-    const damAmount = ethers.parseEther("1000000");
+  it('should successfully burn tokens if enough FLUX is deposited', async () => {
+    const damAmount = ethers.parseEther('1000000');
 
     await depositFor(addr1, damAmount);
     await setupBurnableAddress(addr2, damAmount);
