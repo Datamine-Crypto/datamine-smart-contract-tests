@@ -136,4 +136,22 @@ describe('HodlClickerRush Rewards', () => {
 
     expect(calculatedTipBonus).to.equal(expectedTipBonus);
   });
+
+  it('should correctly calculate total tip and jackpot amount using getTipAndJackpotAmount function', async () => {
+    const damAmount = ethers.parseEther('1000000');
+    await depositFor(hodlClickerRush, fluxToken, damToken, owner, damAmount);
+
+    // Set rewardsPercent for addr1
+    await hodlClickerRush.connect(addr1).deposit(0, 500, 0, 0); // 5% rewardsPercent
+
+    const amountToMint = ethers.parseEther('1000'); // Example amount to mint
+
+    const expectedTotalTipAmount = (amountToMint * 500n) / 10000n;
+    const expectedJackpotAmount = expectedTotalTipAmount / 2n;
+
+    const [totalTipAmount, jackpotAmount] = await hodlClickerRush.getTipAndJackpotAmount(addr1.address, amountToMint);
+
+    expect(totalTipAmount).to.equal(expectedTotalTipAmount);
+    expect(jackpotAmount).to.equal(expectedJackpotAmount);
+  });
 });

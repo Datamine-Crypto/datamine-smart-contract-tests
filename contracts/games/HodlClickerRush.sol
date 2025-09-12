@@ -353,6 +353,18 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
         return tipBonus;
     }
 
+    function getTipAndJackpotAmount(address _address, uint256 _amountToMintBeforeBurn) public view returns (uint256 totalTipAmount, uint256 jackpotAmount) {
+        AddressLock storage burnToAddressLock = addressLocks[_address];
+
+        uint256 effectiveRewardsPercent = burnToAddressLock.rewardsPercent;
+        if (effectiveRewardsPercent == 0) {
+            effectiveRewardsPercent = defaultRewardsPercent;
+        }
+
+        totalTipAmount = (_amountToMintBeforeBurn * effectiveRewardsPercent) / 10000;
+        jackpotAmount = totalTipAmount / 2; // 50% is jackpot amount (this is the amount from the original tip)
+    }
+
     // --- Main Functions ---
     /**
      * @notice Burns tokens for a target address.
@@ -405,14 +417,7 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
             return burnOperationResult;
         }
         
-        // Figure out what the validators set the percent tip to
-        uint256 effectiveRewardsPercent = burnToAddressLock.rewardsPercent;
-        if (effectiveRewardsPercent == 0) {
-            effectiveRewardsPercent = defaultRewardsPercent;
-        }            
-        
-        // This will be the full tip amount (jackpot + remainder)
-        uint256 totalTipAmount = (amountToMintBeforeBurn * effectiveRewardsPercent) / 10000;
+        (uint256 totalTipAmount, uint256 jackpotAmount) = getTipAndJackpotAmount(burnToAddress, amountToMintBeforeBurn);
 
         // If the tip after division is zero then we won't do any burns (no jackpot = no burn)
         // This means the validator needs to either wait longer or burn more tokens
@@ -479,8 +484,6 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
 
         // Re-add the burned amount back to the contract
         totalContractRewardsAmount += actualAmountToBurn;
-
-        uint256 jackpotAmount = totalTipAmount / 2; // 50% is jackpot amount (this is the amount from the original tip)
 
         // The address that performs the burn gets the jackpot (50% of the tip)
         burnFromAddressLock.rewardsAmount += jackpotAmount;
