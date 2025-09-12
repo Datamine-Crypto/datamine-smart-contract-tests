@@ -1,12 +1,12 @@
 import { expect } from "chai";
-import { hodlClickerRushFixture } from "../helpers";
+import { setupHodlClickerRushTests } from "../helpers";
 
 describe("HodlClickerRush Deployment", () => {
   let hodlClickerRush: any;
 
   beforeEach(async () => {
-    const fixture = await hodlClickerRushFixture();
-    hodlClickerRush = fixture.hodlClickerRush;
+    const setup = await setupHodlClickerRushTests();
+    hodlClickerRush = setup.hodlClickerRush;
   });
 
   it("Should initialize with totalTips equal to 0", async () => {

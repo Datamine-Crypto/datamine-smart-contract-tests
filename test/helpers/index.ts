@@ -8,3 +8,4 @@ export * from './deployHelpers';
 export * from './setupHelpers';
 export * from './commonTests';
 export * from './fixtures';
+export * from './hodlClickerRush';

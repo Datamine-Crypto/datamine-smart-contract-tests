@@ -1,24 +1,18 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-
-import { hodlClickerRushFixture, setupPlayerForHodlClicker } from "../helpers";
+import { setupHodlClickerRushTests, setupPlayerForHodlClicker } from "../helpers";
 
 describe("HodlClickerRush Deposit", () => {
-  let hodlClickerRush: any;
-  let fluxToken: any;
-  let damToken: any;
-  let owner: any;
-  let addr1: any;
-  let addr2: any;
+  let hodlClickerRush: any, fluxToken: any, damToken: any, owner: any, addr1: any, addr2: any;
 
   beforeEach(async () => {
-    const fixture = await hodlClickerRushFixture();
-    hodlClickerRush = fixture.hodlClickerRush;
-    fluxToken = fixture.fluxToken;
-    damToken = fixture.damToken;
-    owner = fixture.owner;
-    addr1 = fixture.addr1;
-    addr2 = fixture.addr2;
+    const setup = await setupHodlClickerRushTests();
+    hodlClickerRush = setup.hodlClickerRush;
+    fluxToken = setup.fluxToken;
+    damToken = setup.damToken;
+    owner = setup.owner;
+    addr1 = setup.addr1;
+    addr2 = setup.addr2;
   });
 
   it("should allow depositing with maximum rewardsPercent (10000)", async () => {
