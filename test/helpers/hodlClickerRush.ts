@@ -1,7 +1,18 @@
 import { ethers } from 'hardhat';
-import { hodlClickerRushFixture } from './fixtures';
+import { hodlClickerRushFixture } from './fixtures/hodlClickerRush';
 import { lockTokens, mineBlocks, setupPlayerForHodlClicker } from './';
 
+/**
+ * @notice Deposits a specified amount of FLUX tokens into the HodlClickerRush contract for a user.
+ * This function handles the necessary setup, including transferring DAM, locking it for FLUX,
+ * and authorizing the HodlClickerRush contract as an operator for the user's FLUX tokens.
+ * @param hodlClickerRush The HodlClickerRush contract instance.
+ * @param fluxToken The FluxToken contract instance.
+ * @param damToken The DamToken contract instance.
+ * @param user The signer/address representing the user.
+ * @param amount The amount of DAM to process for deposit (will be converted to FLUX).
+ * @returns The user's FLUX balance after setup.
+ */
 export async function depositFor(hodlClickerRush: any, fluxToken: any, damToken: any, user: any, amount: any) {
   const userFluxBalance = await setupPlayerForHodlClicker(
     hodlClickerRush,
@@ -15,6 +26,17 @@ export async function depositFor(hodlClickerRush: any, fluxToken: any, damToken:
   return userFluxBalance;
 }
 
+/**
+ * @notice Sets up an address to be burnable by the HodlClickerRush contract.
+ * This involves transferring DAM to the user, locking it to mint FLUX,
+ * and setting the HodlClickerRush contract as the minter for the user's FLUX.
+ * @param damToken The DamToken contract instance.
+ * @param fluxToken The FluxToken contract instance.
+ * @param owner The owner/deployer signer (used for initial DAM transfer).
+ * @param user The signer/address to set up as burnable.
+ * @param amount The amount of DAM to transfer and lock.
+ * @param hodlClickerRush The HodlClickerRush contract instance.
+ */
 export async function setupBurnableAddress(
   damToken: any,
   fluxToken: any,
@@ -28,6 +50,16 @@ export async function setupBurnableAddress(
   await mineBlocks(1000);
 }
 
+/**
+ * @notice Sets up a default scenario for HodlClickerRush tests.
+ * This includes depositing tokens for the owner and setting up a burnable address.
+ * @param hodlClickerRush The HodlClickerRush contract instance.
+ * @param fluxToken The FluxToken contract instance.
+ * @param damToken The DamToken contract instance.
+ * @param owner The owner/deployer signer.
+ * @param user The user/address to set up as burnable.
+ * @param amount The amount of DAM to use for setup.
+ */
 export async function setupDefaultScenario(
   hodlClickerRush: any,
   fluxToken: any,
@@ -40,6 +72,11 @@ export async function setupDefaultScenario(
   await setupBurnableAddress(damToken, fluxToken, owner, user, amount, hodlClickerRush);
 }
 
+/**
+ * @notice Sets up the HodlClickerRush test environment.
+ * Deploys necessary contracts and provides common signers.
+ * @returns An object containing contract instances and signers.
+ */
 export async function setupHodlClickerRushTests() {
   const fixture = await hodlClickerRushFixture();
   const { hodlClickerRush, fluxToken, damToken, owner, addr1, addr2 } = fixture;
@@ -59,6 +96,17 @@ export async function setupHodlClickerRushTests() {
   };
 }
 
+/**
+ * @notice Sets up a player for HodlClickerRush by transferring DAM, locking it for FLUX,
+ * mining blocks for minting, and authorizing the HodlClickerRush contract as an operator.
+ * @param hodlClickerRush The HodlClickerRush contract instance.
+ * @param fluxToken The FluxToken contract instance.
+ * @param damToken The DamToken contract instance.
+ * @param user The signer/address representing the player.
+ * @param damAmount The amount of DAM to transfer and lock.
+ * @param minterAddress The address to be designated as the minter for the locked FLUX.
+ * @returns The user's FLUX balance after setup.
+ */
 export async function setupPlayerForHodlClicker(
   hodlClickerRush: any,
   fluxToken: any,

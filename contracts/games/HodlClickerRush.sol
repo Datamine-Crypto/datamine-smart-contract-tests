@@ -237,6 +237,7 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
         bool isPaused;
         uint256 minBurnAmount;
         uint256 lastTipBonusBlock; // Track blocks so validators can only collect once per block   
+        uint256 startingTotalTips; // Tracks tips at start of deposit so on withdraw you are given % extra 
     }
 
     /**
@@ -344,15 +345,14 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
         _erc1820.setInterfaceImplementer(address(this), TOKENS_RECIPIENT_INTERFACE_HASH, address(this));
     }
 
-    function getTipBonus(address _address) public view returns (uint256) {
-        AddressLock storage burnFromAddressLock = addressLocks[_address];
-        uint256 tipBonus = 0;
-        if (totalContractRewardsAmount > 0) {
-            tipBonus = (totalTips * burnFromAddressLock.rewardsAmount) / totalContractRewardsAmount;
-        }
-        return tipBonus;
-    }
 
+    /**
+     * @notice Calculates the total tip amount and jackpot amount for a burn operation.
+     * @param _address The address whose rewards percent settings are used.
+     * @param _amountToMintBeforeBurn The amount of tokens that can be minted before the burn.
+     * @return totalTipAmount The calculated total tip amount.
+     * @return jackpotAmount The calculated jackpot amount (50% of totalTipAmount).
+     */
     function getTipAndJackpotAmount(address _address, uint256 _amountToMintBeforeBurn) public view returns (uint256 totalTipAmount, uint256 jackpotAmount) {
         AddressLock storage burnToAddressLock = addressLocks[_address];
 
@@ -379,31 +379,6 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
         // We'll store the results of the burn in a struct. Then we fill out all the props in the struct as there is a lot of logic here
         BurnOperationResult memory burnOperationResult;
         burnOperationResult.burnToAddress = burnToAddress;
-
-        // All burners get a bonus from the total tips pool. Percent is based on their current reward balance
-        if (currentBlock > burnFromAddressLock.lastTipBonusBlock) {
-            uint256 tipBonus = getTipBonus(_msgSender());
-
-            if (tipBonus > 0) {
-
-                burnFromAddressLock.rewardsAmount += tipBonus;
-                totalContractRewardsAmount += tipBonus; // Increases global rewards inside the contract
-
-                totalTips -= tipBonus;
-                burnFromAddressLock.lastTipBonusBlock = currentBlock;
-
-                // Store for returning results
-                burnOperationResult.tipBonus = tipBonus;
-
-                // Issue a new event for tip collected
-                emit TipBonusAwarded(
-                    burnToAddress,
-                    _msgSender(),
-                    currentBlock,
-                    tipBonus
-                );
-            }
-        }
         
         AddressLock storage burnToAddressLock = addressLocks[burnToAddress];
 
@@ -417,6 +392,7 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
             return burnOperationResult;
         }
         
+        // Use the helper function to calculate total tip and jackpot amounts
         (uint256 totalTipAmount, uint256 jackpotAmount) = getTipAndJackpotAmount(burnToAddress, amountToMintBeforeBurn);
 
         // If the tip after division is zero then we won't do any burns (no jackpot = no burn)
@@ -529,16 +505,28 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
     }
 
     function withdrawAll() public nonReentrant {
-        AddressLock storage senderAddressLock = addressLocks[_msgSender()];
-        uint256 amountToSend = senderAddressLock.rewardsAmount;
-        require(amountToSend > 0, "No rewards to withdraw");
+        AddressLock storage senderAddressLock = addressLocks[msg.sender];
+        require(senderAddressLock.rewardsAmount > 0, "No rewards to withdraw");
+
+        uint256 rewardsToWithdraw = senderAddressLock.rewardsAmount;
+        uint256 tipBonus = 0;
+
+        if (totalContractRewardsAmount > 0 && totalTips > senderAddressLock.startingTotalTips) {
+            tipBonus = ((totalTips - senderAddressLock.startingTotalTips) * rewardsToWithdraw) / totalContractRewardsAmount;
+        }
+
+        if (tipBonus > 0) {
+            totalTips -= tipBonus;
+        }
 
         senderAddressLock.rewardsAmount = 0;
-        totalContractRewardsAmount -= amountToSend; // Update total contract rewards
+        totalContractRewardsAmount -= rewardsToWithdraw;
 
-        fluxToken.send(_msgSender(), amountToSend, "");
+        uint256 finalAmountToWithdraw = rewardsToWithdraw + tipBonus;
 
-        emit Withdrawn(_msgSender(), amountToSend);
+        fluxToken.send(_msgSender(), finalAmountToWithdraw, "");
+
+        emit Withdrawn(_msgSender(), finalAmountToWithdraw);
     }
 
     function deposit(uint256 amountToDeposit, uint256 rewardsPercent, uint256 minBlockNumber, uint256 minBurnAmount) public nonReentrant {
@@ -550,6 +538,8 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
         senderAddressLock.rewardsPercent = rewardsPercent;
         senderAddressLock.minBlockNumber = minBlockNumber;
         senderAddressLock.minBurnAmount = minBurnAmount;
+        senderAddressLock.lastTipBonusBlock = block.number; // Reset the block number to avoid gaming tip bonus pool
+        senderAddressLock.startingTotalTips = totalTips; 
 
         totalContractRewardsAmount += amountToDeposit; // Update total contract rewards
 
@@ -621,7 +611,7 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
         uint256 amount,
         bytes calldata userData,
         bytes calldata operatorData
-    ) external override {
+    ) external pure override {
         require(amount > 0, "Must receive a positive number of tokens");
     }
 }

@@ -101,4 +101,27 @@ describe('HodlClickerRush Deposit', () => {
     const addr1Lock = await hodlClickerRush.addressLocks(addr1.address);
     expect(addr1Lock.rewardsAmount).to.equal(0);
   });
+
+  it('should update lastTipBonusBlock on deposit', async () => {
+    const damAmount = ethers.parseEther('1000000');
+    const addr1FluxBalance = await setupPlayerForHodlClicker(
+      hodlClickerRush,
+      fluxToken,
+      damToken,
+      addr1,
+      damAmount,
+      addr1.address,
+    );
+
+    const initialLastTipBonusBlock = (await hodlClickerRush.addressLocks(addr1.address)).lastTipBonusBlock;
+
+    const tx = await hodlClickerRush.connect(addr1).deposit(addr1FluxBalance, 10000, 0, 0);
+    const receipt = await tx.wait();
+    const blockNumber = receipt.blockNumber;
+
+    const finalLastTipBonusBlock = (await hodlClickerRush.addressLocks(addr1.address)).lastTipBonusBlock;
+
+    expect(finalLastTipBonusBlock).to.be.gt(initialLastTipBonusBlock);
+    expect(finalLastTipBonusBlock).to.equal(blockNumber);
+  });
 });
