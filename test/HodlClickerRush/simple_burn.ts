@@ -19,7 +19,7 @@ describe('HodlClickerRush Simple Burn', () => {
     const damAmount = ethers.parseEther('1000000');
     await setupBurnableAddress(damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
 
-    const burnOperationResult = await hodlClickerRush.connect(addr2).burnTokens.staticCall(addr1.address);
+    const burnOperationResult = await hodlClickerRush.connect(addr2).burnTokens.staticCall(0, addr1.address);
 
     expect(burnOperationResult.resultCode).to.equal(BurnResultCode.InsufficientContractBalance);
   });
@@ -30,7 +30,7 @@ describe('HodlClickerRush Simple Burn', () => {
     await depositFor(hodlClickerRush, fluxToken, damToken, addr1, damAmount);
     await setupBurnableAddress(damToken, fluxToken, owner, addr2, damAmount, hodlClickerRush);
 
-    const burnOperationResult = await hodlClickerRush.connect(owner).burnTokens.staticCall(addr2.address);
+    const burnOperationResult = await hodlClickerRush.connect(owner).burnTokens.staticCall(0, addr2.address);
 
     expect(burnOperationResult.resultCode).to.equal(BurnResultCode.Success);
   });

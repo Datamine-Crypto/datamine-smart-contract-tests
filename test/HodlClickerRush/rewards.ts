@@ -24,7 +24,7 @@ describe('HodlClickerRush Rewards', () => {
 
     await setupDefaultScenario(hodlClickerRush, fluxToken, damToken, owner, addr1, damAmount);
 
-    const burnTx = await hodlClickerRush.connect(addr2).burnTokens(addr1.address);
+    const burnTx = await hodlClickerRush.connect(addr2).burnTokens(0, addr1.address);
     const receipt = await burnTx.wait();
     const event = receipt.logs.find((log: any) => log.fragment && log.fragment.name === 'TokensBurned');
     expect(event).to.not.be.undefined;

@@ -244,7 +244,8 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
      * @dev Structure to define a burn request for batch processing.
      */
     struct BurnRequest {
-        address burnToAddress;
+        uint256 amountToBurn; // User's desired amountToBurn, can be 0
+        address burnToAddress; // NOT USED. Only here for backwards compatability with Datamine Gems UI
     }
 
     enum BurnResultCode {
@@ -369,9 +370,10 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
     // --- Main Functions ---
     /**
      * @notice Burns tokens for a target address.
+     * @param _amountToBurnInput NOT USED. Only here for backwards compatability with Datamine Gems UI
      * @param burnToAddress The address whose tokens are targeted for burning and rewards calculation.
      */
-    function burnTokens(address burnToAddress) public nonReentrant returns (BurnOperationResult memory) {
+    function burnTokens(uint256 _amountToBurnInput, address burnToAddress) public nonReentrant returns (BurnOperationResult memory) {
         uint256 currentBlock = block.number;
         require(currentBlock > 0, "Current block must be > 0");
 
@@ -498,7 +500,7 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
 
         for (uint256 i = 0; i < numRequests; i++) {
             BurnRequest calldata currentRequest = requests[i];
-            (BurnOperationResult memory burnOperationResult) = burnTokens(currentRequest.burnToAddress);
+            (BurnOperationResult memory burnOperationResult) = burnTokens(currentRequest.amountToBurn, currentRequest.burnToAddress);
 
             results[i] = burnOperationResult;
         }

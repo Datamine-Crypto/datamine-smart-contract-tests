@@ -33,7 +33,7 @@ describe('HodlClickerRush Burn Edge Cases', () => {
     await fluxToken.connect(addr1).lock(hodlClickerRush.target, damAmount);
     // Do NOT mine blocks, so getMintAmount will be 0
 
-    const burnOperationResult = await hodlClickerRush.connect(addr2).burnTokens.staticCall(addr1.address);
+    const burnOperationResult = await hodlClickerRush.connect(addr2).burnTokens.staticCall(0, addr1.address);
     expect(burnOperationResult.resultCode).to.equal(BurnResultCode.NothingToMint);
   });
 
@@ -51,7 +51,7 @@ describe('HodlClickerRush Burn Edge Cases', () => {
 
     await hodlClickerRush.connect(addr1).deposit(0, 500, minBlockNumber, 0); // Update minBlockNumber
 
-    const burnOperationResult = await hodlClickerRush.connect(addr2).burnTokens.staticCall(addr1.address);
+    const burnOperationResult = await hodlClickerRush.connect(addr2).burnTokens.staticCall(0, addr1.address);
     expect(burnOperationResult.resultCode).to.equal(BurnResultCode.ValidatorMinBlockNotMet);
   });
 
@@ -68,7 +68,7 @@ describe('HodlClickerRush Burn Edge Cases', () => {
 
     await hodlClickerRush.connect(addr1).deposit(0, 500, 0, minBurnAmount); // Update minBurnAmount
 
-    const burnOperationResult = await hodlClickerRush.connect(addr2).burnTokens.staticCall(addr1.address);
+    const burnOperationResult = await hodlClickerRush.connect(addr2).burnTokens.staticCall(0, addr1.address);
     expect(burnOperationResult.resultCode).to.equal(BurnResultCode.ValidatorMinBurnAmountNotMet);
   });
 });

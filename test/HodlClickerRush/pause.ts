@@ -44,7 +44,7 @@ describe('HodlClickerRush Pause', () => {
 
     await hodlClickerRush.connect(addr1).setPaused(true);
 
-    const burnOperationResult = await hodlClickerRush.connect(addr2).burnTokens.staticCall(addr1.address);
+    const burnOperationResult = await hodlClickerRush.connect(addr2).burnTokens.staticCall(0, addr1.address);
     expect(burnOperationResult.resultCode).to.equal(BurnResultCode.ValidatorPaused);
   });
 
@@ -55,7 +55,7 @@ describe('HodlClickerRush Pause', () => {
 
     await hodlClickerRush.connect(addr1).setPaused(false);
 
-    const burnOperationResult = await hodlClickerRush.connect(addr2).burnTokens.staticCall(addr1.address);
+    const burnOperationResult = await hodlClickerRush.connect(addr2).burnTokens.staticCall(0, addr1.address);
     expect(burnOperationResult.resultCode).to.equal(BurnResultCode.Success);
   });
 

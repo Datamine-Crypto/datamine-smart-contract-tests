@@ -133,7 +133,7 @@ describe('HodlClickerRush Deposit', () => {
 
     // Generate some totalTips
     await setupBurnableAddress(damToken, fluxToken, owner, addr2, damAmount, hodlClickerRush);
-    await hodlClickerRush.connect(owner).burnTokens(addr2.address);
+    await hodlClickerRush.connect(owner).burnTokens(0, addr2.address);
     const totalTips = await hodlClickerRush.totalTips();
     expect(totalTips).to.be.gt(0);
 

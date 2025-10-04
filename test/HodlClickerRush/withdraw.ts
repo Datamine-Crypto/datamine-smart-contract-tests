@@ -25,7 +25,7 @@ describe('HodlClickerRush Withdraw', () => {
 
     // 2. owner generates some totalTips by burning
     await setupBurnableAddress(damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
-    await hodlClickerRush.connect(owner).burnTokens(addr1.address);
+    await hodlClickerRush.connect(owner).burnTokens(0, addr1.address);
 
     const totalTipsAfterBurn = await hodlClickerRush.totalTips();
     expect(totalTipsAfterBurn).to.be.gt(0);
@@ -64,9 +64,9 @@ describe('HodlClickerRush Withdraw', () => {
 
     await depositFor(hodlClickerRush, fluxToken, damToken, owner, damAmount);
     await setupBurnableAddress(damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
-    await hodlClickerRush.connect(owner).burnTokens(addr1.address);
+    await hodlClickerRush.connect(owner).burnTokens(0, addr1.address);
     await depositFor(hodlClickerRush, fluxToken, damToken, addr2, damAmount);
-    await hodlClickerRush.connect(addr2).burnTokens(addr1.address);
+    await hodlClickerRush.connect(addr2).burnTokens(0, addr1.address);
 
     await hodlClickerRush.connect(addr2).withdrawAll();
     const addr2RewardsAfter = (await hodlClickerRush.addressLocks(addr2.address)).rewardsAmount;
