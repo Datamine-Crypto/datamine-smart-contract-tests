@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { setupHodlClickerRushTests, setupPlayerForHodlClicker } from '../helpers';
+import { setupHodlClickerRushTests, setupPlayerForHodlClicker, setupBurnableAddress, depositFor } from '../helpers';
 
 describe('HodlClickerRush Deposit', () => {
   let hodlClickerRush: any, fluxToken: any, damToken: any, owner: any, addr1: any, addr2: any;
@@ -28,7 +28,7 @@ describe('HodlClickerRush Deposit', () => {
 
     await expect(hodlClickerRush.connect(addr1).deposit(addr1FluxBalance, 10000, 0, 0))
       .to.emit(hodlClickerRush, 'Deposited')
-      .withArgs(addr1.address, addr1FluxBalance, 10000, addr1FluxBalance, 0, 0);
+      .withArgs(addr1.address, addr1FluxBalance, 10000, addr1FluxBalance, 0, 0, 0);
 
     const addr1Lock = await hodlClickerRush.addressLocks(addr1.address);
     expect(addr1Lock.rewardsPercent).to.equal(10000);
@@ -47,7 +47,7 @@ describe('HodlClickerRush Deposit', () => {
 
     await expect(hodlClickerRush.connect(addr1).deposit(addr1FluxBalance, 0, 0, 0))
       .to.emit(hodlClickerRush, 'Deposited')
-      .withArgs(addr1.address, addr1FluxBalance, 0, addr1FluxBalance, 0, 0);
+      .withArgs(addr1.address, addr1FluxBalance, 0, addr1FluxBalance, 0, 0, 0);
 
     const addr1Lock = await hodlClickerRush.addressLocks(addr1.address);
     expect(addr1Lock.rewardsPercent).to.equal(0);
@@ -96,7 +96,7 @@ describe('HodlClickerRush Deposit', () => {
 
     await expect(hodlClickerRush.connect(addr1).deposit(0, 500, 0, 0))
       .to.emit(hodlClickerRush, 'Deposited')
-      .withArgs(addr1.address, 0, 500, 0, 0, 0); // rewardsAmount should be 0 if initial deposit is 0
+      .withArgs(addr1.address, 0, 500, 0, 0, 0, 0); // rewardsAmount should be 0 if initial deposit is 0
 
     const addr1Lock = await hodlClickerRush.addressLocks(addr1.address);
     expect(addr1Lock.rewardsAmount).to.equal(0);
@@ -123,5 +123,34 @@ describe('HodlClickerRush Deposit', () => {
 
     expect(finalLastTipBonusBlock).to.be.gt(initialLastTipBonusBlock);
     expect(finalLastTipBonusBlock).to.equal(blockNumber);
+  });
+
+  it('should store startingTotalTips correctly when totalTips is not zero', async () => {
+    const damAmount = ethers.parseEther('1000000');
+
+    // Deposit some funds into the contract first
+    await depositFor(hodlClickerRush, fluxToken, damToken, owner, damAmount);
+
+    // Generate some totalTips
+    await setupBurnableAddress(damToken, fluxToken, owner, addr2, damAmount, hodlClickerRush);
+    await hodlClickerRush.connect(owner).burnTokens(addr2.address);
+    const totalTips = await hodlClickerRush.totalTips();
+    expect(totalTips).to.be.gt(0);
+
+    const addr1FluxBalance = await setupPlayerForHodlClicker(
+      hodlClickerRush,
+      fluxToken,
+      damToken,
+      addr1,
+      damAmount,
+      addr1.address,
+    );
+
+    await expect(hodlClickerRush.connect(addr1).deposit(addr1FluxBalance, 500, 0, 0))
+      .to.emit(hodlClickerRush, 'Deposited')
+      .withArgs(addr1.address, addr1FluxBalance, 500, addr1FluxBalance, 0, 0, totalTips);
+
+    const addr1Lock = await hodlClickerRush.addressLocks(addr1.address);
+    expect(addr1Lock.startingTotalTips).to.equal(totalTips);
   });
 });

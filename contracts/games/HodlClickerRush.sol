@@ -307,14 +307,15 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
         uint256 tipBonus
     );
 
-    event Withdrawn(address indexed user, uint256 amount);
+    event Withdrawn(address indexed user, uint256 amount, uint256 tipBonus);
     event Deposited(
         address indexed user,
         uint256 amountDeposited,
         uint256 rewardsPercent,
         uint256 totalRewardsAmount,
         uint256 minBlockNumber,
-        uint256 minBurnAmount
+        uint256 minBurnAmount,
+        uint256 startingTotalTips
     );
     event PausedChanged(address indexed user, bool isPaused);
     event NormalMint(
@@ -526,7 +527,7 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
 
         fluxToken.send(_msgSender(), finalAmountToWithdraw, "");
 
-        emit Withdrawn(_msgSender(), finalAmountToWithdraw);
+        emit Withdrawn(_msgSender(), finalAmountToWithdraw, tipBonus);
     }
 
     function deposit(uint256 amountToDeposit, uint256 rewardsPercent, uint256 minBlockNumber, uint256 minBurnAmount) public nonReentrant {
@@ -553,7 +554,8 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
             rewardsPercent,
             senderAddressLock.rewardsAmount,
             minBlockNumber,
-            minBurnAmount
+            minBurnAmount,
+            senderAddressLock.startingTotalTips
         );
     }
 

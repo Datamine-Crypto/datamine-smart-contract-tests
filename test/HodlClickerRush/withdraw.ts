@@ -45,7 +45,7 @@ describe('HodlClickerRush Withdraw', () => {
     const withdrawTx = await hodlClickerRush.connect(addr2).withdrawAll();
     await expect(withdrawTx)
         .to.emit(hodlClickerRush, 'Withdrawn')
-        .withArgs(addr2.address, initialRewardsAmount + expectedTipBonus);
+        .withArgs(addr2.address, initialRewardsAmount + expectedTipBonus, expectedTipBonus);
 
     // 6. Check final state
     const finalRewardsAmount = (await hodlClickerRush.addressLocks(addr2.address)).rewardsAmount;
