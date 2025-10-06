@@ -15,48 +15,42 @@ describe('HodlClickerRush Withdraw', () => {
     fluxToken = setup.fluxToken;
   });
 
-  it('should allow a user to withdraw earned rewards and their share of tips', async () => {
+  it('should allow a user to withdraw their proportional share of rewards', async () => {
     const damAmount = ethers.parseEther('1000000');
 
-    // 1. addr2 deposits, startingTotalTips for addr2 is 0
+    // 1. addr2 deposits
     await depositFor(hodlClickerRush, fluxToken, damToken, addr2, damAmount);
-    const addr2AddressLockInitial = await hodlClickerRush.addressLocks(addr2.address);
-    expect(addr2AddressLockInitial.startingTotalTips).to.equal(0);
 
-    // 2. owner generates some totalTips by burning
+    // 2. owner generates some rewards, making totalContractRewardsAmount > totalContractLockedAmount
+    await depositFor(hodlClickerRush, fluxToken, damToken, owner, damAmount);
     await setupBurnableAddress(damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
     await hodlClickerRush.connect(owner).burnTokens(0, addr1.address);
 
-    const totalTipsAfterBurn = await hodlClickerRush.totalTips();
-    expect(totalTipsAfterBurn).to.be.gt(0);
-
     // 3. Get state before withdrawal
     const initialRewardsAmount = (await hodlClickerRush.addressLocks(addr2.address)).rewardsAmount;
+    const initialTotalContractLockedAmount = await hodlClickerRush.totalContractLockedAmount();
     const initialTotalContractRewardsAmount = await hodlClickerRush.totalContractRewardsAmount();
-    const initialTotalTips = await hodlClickerRush.totalTips();
-    const addr2StartingTotalTips = (await hodlClickerRush.addressLocks(addr2.address)).startingTotalTips;
-
-    // 4. Calculate expected tipBonus
-    const expectedTipBonus = ((initialTotalTips - addr2StartingTotalTips) * initialRewardsAmount) / initialTotalContractRewardsAmount;
-
     const initialFluxBalance = await fluxToken.balanceOf(addr2.address);
+
+    // 4. Calculate expected withdraw amount
+    const expectedWithdrawAmount = (initialRewardsAmount * initialTotalContractRewardsAmount) / initialTotalContractLockedAmount;
 
     // 5. Withdraw
     const withdrawTx = await hodlClickerRush.connect(addr2).withdrawAll();
     await expect(withdrawTx)
         .to.emit(hodlClickerRush, 'Withdrawn')
-        .withArgs(addr2.address, initialRewardsAmount + expectedTipBonus, expectedTipBonus);
+        .withArgs(addr2.address, expectedWithdrawAmount, initialRewardsAmount);
 
     // 6. Check final state
     const finalRewardsAmount = (await hodlClickerRush.addressLocks(addr2.address)).rewardsAmount;
+    const finalTotalContractLockedAmount = await hodlClickerRush.totalContractLockedAmount();
     const finalTotalContractRewardsAmount = await hodlClickerRush.totalContractRewardsAmount();
-    const finalTotalTips = await hodlClickerRush.totalTips();
     const finalFluxBalance = await fluxToken.balanceOf(addr2.address);
 
     expect(finalRewardsAmount).to.equal(0);
-    expect(finalTotalContractRewardsAmount).to.equal(initialTotalContractRewardsAmount - initialRewardsAmount);
-    expect(finalTotalTips).to.equal(initialTotalTips - expectedTipBonus);
-    expect(finalFluxBalance).to.equal(initialFluxBalance + initialRewardsAmount + expectedTipBonus);
+    expect(finalTotalContractLockedAmount).to.equal(initialTotalContractLockedAmount - initialRewardsAmount);
+    expect(finalTotalContractRewardsAmount).to.equal(initialTotalContractRewardsAmount - expectedWithdrawAmount);
+    expect(finalFluxBalance).to.equal(initialFluxBalance + expectedWithdrawAmount);
   });
 
   it('should not allow withdrawing more than earned rewards', async () => {
@@ -66,7 +60,6 @@ describe('HodlClickerRush Withdraw', () => {
     await setupBurnableAddress(damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
     await hodlClickerRush.connect(owner).burnTokens(0, addr1.address);
     await depositFor(hodlClickerRush, fluxToken, damToken, addr2, damAmount);
-    await hodlClickerRush.connect(addr2).burnTokens(0, addr1.address);
 
     await hodlClickerRush.connect(addr2).withdrawAll();
     const addr2RewardsAfter = (await hodlClickerRush.addressLocks(addr2.address)).rewardsAmount;

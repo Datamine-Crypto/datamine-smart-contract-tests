@@ -1,8 +1,3 @@
-// Forced recompile
-/**
- *Submitted for verification at Arbiscan.io on 2025-06-01
-*/
-
 // SPDX-License-Identifier: MIT
 
 /*
@@ -20,7 +15,7 @@
 ================================================================================
 */
 
-pragma solidity ^0.8.20; // Updated Solidity version
+pragma solidity ^0.8.30; // Updated Solidity version
 
 // Import OpenZeppelin's Context contract to use _msgSender()
 // OpenZeppelin Contracts v4.4.1 (utils/Context.sol)
@@ -236,8 +231,6 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
         uint256 minBlockNumber;
         bool isPaused;
         uint256 minBurnAmount;
-        uint256 lastTipBonusBlock; // Track blocks so validators can only collect once per block   
-        uint256 startingTotalTips; // Tracks tips at start of deposit so on withdraw you are given % extra 
     }
 
     /**
@@ -262,7 +255,6 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
      * @dev Structure to hold the result of a single burn operation within a batch.
      */
     struct BurnOperationResult {
-        uint256 tipBonus;        // The tip amount calculated for this operation
         BurnResultCode resultCode; // Empty/0 would mean success. This helps track reason for failure
         uint256 actualAmountBurned; // The actual amount that was burned
         address burnToAddress;   // Who received the burn
@@ -301,14 +293,7 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
         uint256 amountToMintAfterBurn
     );
 
-    event TipBonusAwarded(
-        address indexed burnToAddress,
-        address indexed caller,
-        uint256 currentBlock,
-        uint256 tipBonus
-    );
-
-    event Withdrawn(address indexed user, uint256 amount, uint256 tipBonus);
+    event Withdrawn(address indexed user, uint256 amount, uint256 originalRewardsAmount);
     event Deposited(
         address indexed user,
         uint256 amountDeposited,
@@ -316,7 +301,7 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
         uint256 totalRewardsAmount,
         uint256 minBlockNumber,
         uint256 minBurnAmount,
-        uint256 startingTotalTips
+        uint256 actualAmountDeposited
     );
     event PausedChanged(address indexed user, bool isPaused);
     event NormalMint(
@@ -331,11 +316,11 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
 
     uint256 public defaultRewardsPercent = 500; // Default 5.00% (500 / 10000)
 
-    // How much of the total balance is for tip bonuses
-    uint256 public totalTips;
-
     // How much of the balance in this contract is for rewards that can be withdrawn (across all participants)
     uint256 public totalContractRewardsAmount;
+    
+    // How much of the balance in this contract was ued for original deposits
+    uint256 public totalContractLockedAmount;
 
     IERC1820Registry private constant _erc1820 = IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
     bytes32 private constant TOKENS_RECIPIENT_INTERFACE_HASH = keccak256("ERC777TokensRecipient");
@@ -467,11 +452,14 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
         // The address that performs the burn gets the jackpot (50% of the tip)
         burnFromAddressLock.rewardsAmount += jackpotAmount;
         totalContractRewardsAmount += jackpotAmount; // Increases global rewards inside the contract
+        totalContractLockedAmount += jackpotAmount; // Increase original locked amount by jackpot amount
 
-        // The raminder of funds is added back as totalTips (for bonuses)
+        // The reminder of funds is added back as totalTips (for bonuses)
         uint256 totalTipToAddAmount = amountToMintAfterBurn - actualAmountToBurn - jackpotAmount; 
 
-        totalTips += totalTipToAddAmount;
+        // The remainder of rewards is added to total pool
+        // Notice we don't increase totalContractLockedAmount by this amount
+        totalContractRewardsAmount += totalTipToAddAmount;
 
         burnOperationResult.totalTipAmount = totalTipAmount;
         burnOperationResult.jackpotAmount = jackpotAmount;
@@ -511,25 +499,18 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
         AddressLock storage senderAddressLock = addressLocks[msg.sender];
         require(senderAddressLock.rewardsAmount > 0, "No rewards to withdraw");
 
-        uint256 rewardsToWithdraw = senderAddressLock.rewardsAmount;
-        uint256 tipBonus = 0;
+        uint256 originalRewardsAmount = senderAddressLock.rewardsAmount;
 
-        if (totalContractRewardsAmount > 0 && totalTips > senderAddressLock.startingTotalTips) {
-            tipBonus = ((totalTips - senderAddressLock.startingTotalTips) * rewardsToWithdraw) / totalContractRewardsAmount;
-        }
-
-        if (tipBonus > 0) {
-            totalTips -= tipBonus;
-        }
+        // Increase the reward to include rewards from fees (so 100 lock deposited might be 102 now)
+        uint256 rewardsToWithdraw = (originalRewardsAmount * totalContractRewardsAmount) / totalContractLockedAmount;
 
         senderAddressLock.rewardsAmount = 0;
         totalContractRewardsAmount -= rewardsToWithdraw;
+        totalContractLockedAmount -= originalRewardsAmount;
 
-        uint256 finalAmountToWithdraw = rewardsToWithdraw + tipBonus;
+        fluxToken.send(_msgSender(), rewardsToWithdraw, "");
 
-        fluxToken.send(_msgSender(), finalAmountToWithdraw, "");
-
-        emit Withdrawn(_msgSender(), finalAmountToWithdraw, tipBonus);
+        emit Withdrawn(_msgSender(), rewardsToWithdraw, originalRewardsAmount);
     }
 
     function deposit(uint256 amountToDeposit, uint256 rewardsPercent, uint256 minBlockNumber, uint256 minBurnAmount) public nonReentrant {
@@ -537,14 +518,27 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
         require(rewardsPercent <= 10000, "Rewards % must be <= 10000"); // User can set to 0
 
         AddressLock storage senderAddressLock = addressLocks[_msgSender()];
-        senderAddressLock.rewardsAmount += amountToDeposit;
+
+        // By default your reward grows by 100% of your deposit (if there are no other deposits)
+        uint256 actualAmountToDeposit = amountToDeposit;
+
+        // Figure our actual amount to deposit that is based on the difference between locked / rewards amount
+        // What this means if you deposit 100 tokens, you might actually only see 97.5 tokens because the remainder comes from the contract rewards
+        // So when you withdraw you still get 100 tokens back
+        if (totalContractLockedAmount > 0 && totalContractRewardsAmount > 0) {
+            actualAmountToDeposit = (amountToDeposit * totalContractLockedAmount) / totalContractRewardsAmount;
+        }
+
+        require(actualAmountToDeposit >= 0, "Deposit amount must be >= 0");
+
+        senderAddressLock.rewardsAmount += actualAmountToDeposit;
         senderAddressLock.rewardsPercent = rewardsPercent;
         senderAddressLock.minBlockNumber = minBlockNumber;
         senderAddressLock.minBurnAmount = minBurnAmount;
-        senderAddressLock.lastTipBonusBlock = block.number; // Reset the block number to avoid gaming tip bonus pool
-        senderAddressLock.startingTotalTips = totalTips; 
 
+        // Notice that we use two different amounts here
         totalContractRewardsAmount += amountToDeposit; // Update total contract rewards
+        totalContractLockedAmount += actualAmountToDeposit; // Update total contract rewards
 
         if (amountToDeposit > 0) {
             fluxToken.operatorSend(_msgSender(), address(this), amountToDeposit, "", "");
@@ -557,7 +551,7 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
             senderAddressLock.rewardsAmount,
             minBlockNumber,
             minBurnAmount,
-            senderAddressLock.startingTotalTips
+            actualAmountToDeposit
         );
     }
 

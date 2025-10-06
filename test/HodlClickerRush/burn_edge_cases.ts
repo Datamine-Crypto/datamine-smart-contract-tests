@@ -49,6 +49,7 @@ describe('HodlClickerRush Burn Edge Cases', () => {
     const currentBlock = await ethers.provider.getBlockNumber();
     const minBlockNumber = currentBlock + 100; // Set minBlockNumber in the future
 
+    await fluxToken.connect(addr1).authorizeOperator(hodlClickerRush.target);
     await hodlClickerRush.connect(addr1).deposit(0, 500, minBlockNumber, 0); // Update minBlockNumber
 
     const burnOperationResult = await hodlClickerRush.connect(addr2).burnTokens.staticCall(0, addr1.address);
@@ -66,6 +67,7 @@ describe('HodlClickerRush Burn Edge Cases', () => {
 
     const minBurnAmount = ethers.parseEther('1000000'); // Set a very high minBurnAmount
 
+    await fluxToken.connect(addr1).authorizeOperator(hodlClickerRush.target);
     await hodlClickerRush.connect(addr1).deposit(0, 500, 0, minBurnAmount); // Update minBurnAmount
 
     const burnOperationResult = await hodlClickerRush.connect(addr2).burnTokens.staticCall(0, addr1.address);

@@ -9,7 +9,8 @@ describe('HodlClickerRush Deployment', () => {
     hodlClickerRush = setup.hodlClickerRush;
   });
 
-  it('Should initialize with totalTips equal to 0', async () => {
-    expect(await hodlClickerRush.totalTips()).to.equal(0);
+  it('Should initialize with zero balances', async () => {
+    expect(await hodlClickerRush.totalContractLockedAmount()).to.equal(0);
+    expect(await hodlClickerRush.totalContractRewardsAmount()).to.equal(0);
   });
 });

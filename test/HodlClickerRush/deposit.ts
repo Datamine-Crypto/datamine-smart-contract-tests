@@ -15,7 +15,7 @@ describe('HodlClickerRush Deposit', () => {
     addr2 = setup.addr2;
   });
 
-  it('should allow depositing with maximum rewardsPercent (10000)', async () => {
+  it('should allow depositing and calculate actualAmountToDeposit correctly when contract is empty', async () => {
     const damAmount = ethers.parseEther('1000000');
     const addr1FluxBalance = await setupPlayerForHodlClicker(
       hodlClickerRush,
@@ -28,14 +28,27 @@ describe('HodlClickerRush Deposit', () => {
 
     await expect(hodlClickerRush.connect(addr1).deposit(addr1FluxBalance, 10000, 0, 0))
       .to.emit(hodlClickerRush, 'Deposited')
-      .withArgs(addr1.address, addr1FluxBalance, 10000, addr1FluxBalance, 0, 0, 0);
+      .withArgs(addr1.address, addr1FluxBalance, 10000, addr1FluxBalance, 0, 0, addr1FluxBalance);
 
     const addr1Lock = await hodlClickerRush.addressLocks(addr1.address);
-    expect(addr1Lock.rewardsPercent).to.equal(10000);
+    expect(addr1Lock.rewardsAmount).to.equal(addr1FluxBalance);
   });
 
-  it('should allow depositing with zero rewardsPercent', async () => {
+  it('should calculate actualAmountToDeposit correctly when rewards have been added to the pool', async () => {
     const damAmount = ethers.parseEther('1000000');
+
+    // First, owner deposits to add to the locked and rewards amount
+    await depositFor(hodlClickerRush, fluxToken, damToken, owner, damAmount);
+
+    // Then, a burn happens which adds to the rewards pool, making rewards > locked
+    await setupBurnableAddress(damToken, fluxToken, owner, addr2, damAmount, hodlClickerRush);
+    await hodlClickerRush.connect(owner).burnTokens(0, addr2.address);
+
+    const totalContractLockedAmount = await hodlClickerRush.totalContractLockedAmount();
+    const totalContractRewardsAmount = await hodlClickerRush.totalContractRewardsAmount();
+    expect(totalContractRewardsAmount).to.be.gt(totalContractLockedAmount);
+
+    // Now, addr1 deposits
     const addr1FluxBalance = await setupPlayerForHodlClicker(
       hodlClickerRush,
       fluxToken,
@@ -45,12 +58,14 @@ describe('HodlClickerRush Deposit', () => {
       addr1.address,
     );
 
-    await expect(hodlClickerRush.connect(addr1).deposit(addr1FluxBalance, 0, 0, 0))
+    const expectedActualAmount = (addr1FluxBalance * totalContractLockedAmount) / totalContractRewardsAmount;
+
+    await expect(hodlClickerRush.connect(addr1).deposit(addr1FluxBalance, 500, 0, 0))
       .to.emit(hodlClickerRush, 'Deposited')
-      .withArgs(addr1.address, addr1FluxBalance, 0, addr1FluxBalance, 0, 0, 0);
+      .withArgs(addr1.address, addr1FluxBalance, 500, expectedActualAmount, 0, 0, expectedActualAmount);
 
     const addr1Lock = await hodlClickerRush.addressLocks(addr1.address);
-    expect(addr1Lock.rewardsPercent).to.equal(0);
+    expect(addr1Lock.rewardsAmount).to.equal(expectedActualAmount);
   });
 
   it('should revert when depositing with rewardsPercent above maximum', async () => {
@@ -88,69 +103,5 @@ describe('HodlClickerRush Deposit', () => {
     const addr1Lock = await hodlClickerRush.addressLocks(addr1.address);
     expect(addr1Lock.minBlockNumber).to.equal(testMinBlockNumber);
     expect(addr1Lock.minBurnAmount).to.equal(testMinBurnAmount);
-  });
-
-  it('should emit Deposited event with correct arguments for zero deposit amount', async () => {
-    // No need to transfer DAM or mint FLUX if depositing 0 amount
-    await fluxToken.connect(addr1).authorizeOperator(hodlClickerRush.target);
-
-    await expect(hodlClickerRush.connect(addr1).deposit(0, 500, 0, 0))
-      .to.emit(hodlClickerRush, 'Deposited')
-      .withArgs(addr1.address, 0, 500, 0, 0, 0, 0); // rewardsAmount should be 0 if initial deposit is 0
-
-    const addr1Lock = await hodlClickerRush.addressLocks(addr1.address);
-    expect(addr1Lock.rewardsAmount).to.equal(0);
-  });
-
-  it('should update lastTipBonusBlock on deposit', async () => {
-    const damAmount = ethers.parseEther('1000000');
-    const addr1FluxBalance = await setupPlayerForHodlClicker(
-      hodlClickerRush,
-      fluxToken,
-      damToken,
-      addr1,
-      damAmount,
-      addr1.address,
-    );
-
-    const initialLastTipBonusBlock = (await hodlClickerRush.addressLocks(addr1.address)).lastTipBonusBlock;
-
-    const tx = await hodlClickerRush.connect(addr1).deposit(addr1FluxBalance, 10000, 0, 0);
-    const receipt = await tx.wait();
-    const blockNumber = receipt.blockNumber;
-
-    const finalLastTipBonusBlock = (await hodlClickerRush.addressLocks(addr1.address)).lastTipBonusBlock;
-
-    expect(finalLastTipBonusBlock).to.be.gt(initialLastTipBonusBlock);
-    expect(finalLastTipBonusBlock).to.equal(blockNumber);
-  });
-
-  it('should store startingTotalTips correctly when totalTips is not zero', async () => {
-    const damAmount = ethers.parseEther('1000000');
-
-    // Deposit some funds into the contract first
-    await depositFor(hodlClickerRush, fluxToken, damToken, owner, damAmount);
-
-    // Generate some totalTips
-    await setupBurnableAddress(damToken, fluxToken, owner, addr2, damAmount, hodlClickerRush);
-    await hodlClickerRush.connect(owner).burnTokens(0, addr2.address);
-    const totalTips = await hodlClickerRush.totalTips();
-    expect(totalTips).to.be.gt(0);
-
-    const addr1FluxBalance = await setupPlayerForHodlClicker(
-      hodlClickerRush,
-      fluxToken,
-      damToken,
-      addr1,
-      damAmount,
-      addr1.address,
-    );
-
-    await expect(hodlClickerRush.connect(addr1).deposit(addr1FluxBalance, 500, 0, 0))
-      .to.emit(hodlClickerRush, 'Deposited')
-      .withArgs(addr1.address, addr1FluxBalance, 500, addr1FluxBalance, 0, 0, totalTips);
-
-    const addr1Lock = await hodlClickerRush.addressLocks(addr1.address);
-    expect(addr1Lock.startingTotalTips).to.equal(totalTips);
   });
 });

@@ -19,18 +19,28 @@ describe('HodlClickerRush Rewards', () => {
     addr2 = setup.addr2;
   });
 
-  it('should give a jackpot for the first burn in a block', async () => {
+  it('should give a jackpot and update rewards correctly', async () => {
     const damAmount = ethers.parseEther('1000000');
 
     await setupDefaultScenario(hodlClickerRush, fluxToken, damToken, owner, addr1, damAmount);
 
+    const initialTotalLocked = await hodlClickerRush.totalContractLockedAmount();
+    const initialTotalRewards = await hodlClickerRush.totalContractRewardsAmount();
+    const initialAddr2Rewards = (await hodlClickerRush.addressLocks(addr2.address)).rewardsAmount;
+
     const burnTx = await hodlClickerRush.connect(addr2).burnTokens(0, addr1.address);
     const receipt = await burnTx.wait();
     const event = receipt.logs.find((log: any) => log.fragment && log.fragment.name === 'TokensBurned');
-    expect(event).to.not.be.undefined;
-    const burnOperationResult = event.args;
+    const { jackpotAmount, totalTipToAddAmount } = event.args;
 
-    expect(burnOperationResult.jackpotAmount).to.be.gt(0);
+    const finalTotalLocked = await hodlClickerRush.totalContractLockedAmount();
+    const finalTotalRewards = await hodlClickerRush.totalContractRewardsAmount();
+    const finalAddr2Rewards = (await hodlClickerRush.addressLocks(addr2.address)).rewardsAmount;
+
+    expect(jackpotAmount).to.be.gt(0);
+    expect(finalAddr2Rewards).to.equal(initialAddr2Rewards + jackpotAmount);
+    expect(finalTotalLocked).to.equal(initialTotalLocked + jackpotAmount);
+    expect(finalTotalRewards).to.equal(initialTotalRewards + jackpotAmount + totalTipToAddAmount);
   });
 
   /**
@@ -43,6 +53,7 @@ describe('HodlClickerRush Rewards', () => {
     await depositFor(hodlClickerRush, fluxToken, damToken, owner, damAmount);
 
     // Set rewardsPercent for addr1
+    await fluxToken.connect(addr1).authorizeOperator(hodlClickerRush.target);
     await hodlClickerRush.connect(addr1).deposit(0, 500, 0, 0); // 5% rewardsPercent
 
     const amountToMint = ethers.parseEther('1000'); // Example amount to mint
