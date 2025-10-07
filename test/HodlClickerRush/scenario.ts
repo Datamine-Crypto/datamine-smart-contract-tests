@@ -1,6 +1,12 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { setupHodlClickerRushTests, setupPlayerForHodlClicker, setupBurnableAddress, depositFor } from '../helpers';
+import {
+  setupHodlClickerRushTests,
+  setupBurnableAddress,
+  depositFor,
+  BurnResultCode,
+  setupPlayerForHodlClicker,
+} from '../helpers';
 
 describe('HodlClickerRush Scenarios', () => {
   let hodlClickerRush: any, fluxToken: any, damToken: any, owner: any, addr1: any, addr2: any, addr3: any;
@@ -73,5 +79,48 @@ describe('HodlClickerRush Scenarios', () => {
     expect(finalUserC_rewards).to.equal(userC_rewards);
     expect(finalTotalLocked).to.equal(totalLocked_after_burn - userA_rewards_after_deposit);
     expect(finalTotalRewards).to.equal(totalRewards_after_burn - expectedWithdrawAmountA);
+  });
+
+  it('should correctly handle batch burning via burnTokensFromAddresses', async () => {
+    const damAmount = ethers.parseEther('1000000');
+    const depositAmount = ethers.parseEther('10000000'); // Increased deposit amount
+
+    // 1. Deposit funds into the contract to have rewards to distribute
+    await depositFor(hodlClickerRush, fluxToken, damToken, owner, depositAmount);
+
+    // 2. Setup multiple burnable addresses
+    await setupBurnableAddress(damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
+    await setupBurnableAddress(damToken, fluxToken, owner, addr2, damAmount, hodlClickerRush);
+    await setupBurnableAddress(damToken, fluxToken, owner, addr3, damAmount, hodlClickerRush);
+
+    // 3. Pause one of the addresses to test failure case handling
+    await hodlClickerRush.connect(addr3).setPaused(true);
+
+    // 4. Construct the burn requests array
+    const requests = [
+      { amountToBurn: 0, burnToAddress: addr1.address }, // Should succeed
+      { amountToBurn: 0, burnToAddress: addr2.address }, // Should succeed
+      { amountToBurn: 0, burnToAddress: addr3.address }, // Should fail (paused)
+    ];
+
+    // 5. Get the caller's initial rewards balance
+    const callerInitialRewards = (await hodlClickerRush.addressLocks(owner.address)).rewardsAmount;
+
+    // 6. Execute the transaction
+    const tx = await hodlClickerRush.connect(owner).burnTokensFromAddresses(requests);
+    const receipt = await tx.wait();
+
+    // 7. Calculate total jackpot from events
+    const events = receipt.logs.filter((log: any) => log.fragment && log.fragment.name === 'TokensBurned');
+    expect(events.length).to.equal(2); // Only two successful burns
+
+    const totalJackpotFromEvents = events.reduce((total: any, event: any) => total + event.args.jackpotAmount, 0n);
+    expect(totalJackpotFromEvents).to.be.gt(0);
+
+    // 8. Check the final rewards for the caller
+    const callerFinalRewards = (await hodlClickerRush.addressLocks(owner.address)).rewardsAmount;
+    const expectedRewards = callerInitialRewards + totalJackpotFromEvents;
+
+    expect(callerFinalRewards).to.equal(expectedRewards);
   });
 });

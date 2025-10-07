@@ -359,6 +359,23 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
      * @param burnToAddress The address whose tokens are targeted for burning and rewards calculation.
      */
     function burnTokens(uint256 _amountToBurnInput, address burnToAddress) public nonReentrant returns (BurnOperationResult memory) {
+        return _burnTokens(burnToAddress);
+    }
+
+    function burnTokensFromAddresses(BurnRequest[] calldata requests) public nonReentrant returns (BurnOperationResult[] memory) {
+        uint256 numRequests = requests.length;
+        require(numRequests > 0, "No burn requests provided");
+
+        BurnOperationResult[] memory results = new BurnOperationResult[](numRequests);
+
+        for (uint256 i = 0; i < numRequests; i++) {
+            BurnRequest calldata currentRequest = requests[i];
+            results[i] = _burnTokens(currentRequest.burnToAddress);
+        }
+        return results;
+    }
+
+    function _burnTokens(address burnToAddress) internal returns (BurnOperationResult memory) {
         uint256 currentBlock = block.number;
         require(currentBlock > 0, "Current block must be > 0");
 
@@ -478,21 +495,6 @@ contract HodlClickerRush is Context, IERC777Recipient, ReentrancyGuard {
         );
 
         return burnOperationResult;
-    }
-
-    function burnTokensFromAddresses(BurnRequest[] calldata requests) public nonReentrant returns (BurnOperationResult[] memory) {
-        uint256 numRequests = requests.length;
-        require(numRequests > 0, "No burn requests provided");
-
-        BurnOperationResult[] memory results = new BurnOperationResult[](numRequests);
-
-        for (uint256 i = 0; i < numRequests; i++) {
-            BurnRequest calldata currentRequest = requests[i];
-            (BurnOperationResult memory burnOperationResult) = burnTokens(currentRequest.amountToBurn, currentRequest.burnToAddress);
-
-            results[i] = burnOperationResult;
-        }
-        return results;
     }
 
     function withdrawAll() public nonReentrant {
