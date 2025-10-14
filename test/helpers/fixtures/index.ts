@@ -5,3 +5,4 @@ export * from './lockToken';
 export * from './damHolder';
 export * from './damBlockingHolder';
 export * from './hodlClickerRush';
+export * from './batchMinter';

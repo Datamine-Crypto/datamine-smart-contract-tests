@@ -113,6 +113,7 @@ export enum ContractNames {
   DamBlockingHolder = 'DamBlockingHolder',
   DamHolder = 'DamHolder',
   LockToken = 'LockToken',
+  BatchMinter = 'BatchMinter',
 }
 
 /**
