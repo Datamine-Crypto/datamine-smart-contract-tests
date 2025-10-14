@@ -163,7 +163,7 @@ interface IERC1820Registry {
     function implementsERC165Interface(address account, bytes4 interfaceId) external view returns (bool);
 
     /**
-     * @notice Checks whether a contract implements an ERC165 interface or not without using nor updating the cache.
+     * @notice Checks whether a contract implements an ERC165 interface or not without using or updating the cache.
      * @param account Address of the contract to check.
      * @param interfaceId ERC165 interface to check.
      * @return True if `account` implements `interfaceId`, false otherwise.
@@ -255,6 +255,7 @@ contract BatchMinter is IERC777Recipient, Context, ReentrancyGuard {
                     fluxToken.transfer(targetAddress, amountToMint);
                     uint256 afterSendBalance = fluxToken.balanceOf(address(this));
                     require(afterSendBalance == beforeBalance, "Expected contract balance mismatch after send");
+                    break; // Exit loop after one iteration if not burning (to prevent re-entrancy attacks)
                 }
             }
         }
