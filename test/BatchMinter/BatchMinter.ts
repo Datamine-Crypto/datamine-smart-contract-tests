@@ -87,7 +87,7 @@ describe('BatchMinter', function () {
   });
 
   describe('Yield Comparison', function () {
-    it('should calculate burn multiplier for normal minting', async function () {
+    it('should calculate total burned amount for normal minting', async function () {
       const { damToken, fluxToken, owner, user1, user3 } = await loadFixture(
         deployBatchMinterFixture
       );
@@ -105,6 +105,7 @@ describe('BatchMinter', function () {
 
       // Now, user1's scenario
       await damToken.connect(owner).transfer(user1.address, lockAmount);
+      const initialBurnedAmount = (await fluxToken.addressLocks(user1.address)).burnedAmount;
       const lockBlock1 = await lockTokens(fluxToken, damToken, user1, lockAmount, user1.address);
 
       const mintingPeriod = 100;
@@ -115,11 +116,12 @@ describe('BatchMinter', function () {
       const user1FluxBalance = await fluxToken.balanceOf(user1.address);
       await fluxToken.connect(user1).burnToAddress(user1.address, user1FluxBalance);
 
-      const burnMultiplier = await fluxToken.getAddressBurnMultiplier(user1.address);
-      console.log(`Burn multiplier for normal mint (user1): ${Number(burnMultiplier)}`);
+      const finalBurnedAmount = (await fluxToken.addressLocks(user1.address)).burnedAmount;
+      const totalBurned = finalBurnedAmount - initialBurnedAmount;
+      console.log(`Total burned for normal mint (user1): ${ethers.formatUnits(totalBurned, 18)}`);
     });
 
-    it('should calculate burn multiplier for batch minting', async function () {
+    it('should calculate total burned amount for batch minting', async function () {
       const { damToken, fluxToken, batchMinter, owner, user2, user3 } = await loadFixture(
         deployBatchMinterFixture
       );
@@ -137,6 +139,7 @@ describe('BatchMinter', function () {
 
       // Now, user2's scenario
       await damToken.connect(owner).transfer(user2.address, lockAmount);
+      const initialBurnedAmount = (await fluxToken.addressLocks(user2.address)).burnedAmount;
       const lockBlock2 = await lockTokens(fluxToken, damToken, user2, lockAmount, batchMinter.target);
 
       const mintingPeriod = 100;
@@ -148,8 +151,9 @@ describe('BatchMinter', function () {
       }
       await batchMinter.connect(user2).batchMint(user2.address, blockNumbers);
 
-      const burnMultiplier = await fluxToken.getAddressBurnMultiplier(user2.address);
-      console.log(`Burn multiplier for batch mint (user2): ${Number(burnMultiplier)}`);
+      const finalBurnedAmount = (await fluxToken.addressLocks(user2.address)).burnedAmount;
+      const totalBurned = finalBurnedAmount - initialBurnedAmount;
+      console.log(`Total burned for batch mint (user2): ${ethers.formatUnits(totalBurned, 18)}`);
     });
   });
 });
