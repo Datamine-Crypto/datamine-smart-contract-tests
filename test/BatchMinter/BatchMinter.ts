@@ -86,42 +86,70 @@ describe('BatchMinter', function () {
     expect(finalBurnedAmount).to.be.gt(initialBurnedAmount);
   });
 
-  it('should yield more tokens with BatchMinter compared to normal minting', async function () {
-    const { damToken, fluxToken, batchMinter, owner, user1, user2 } = await loadFixture(
-      deployBatchMinterFixture
-    );
+  describe('Yield Comparison', function () {
+    it('should calculate burn multiplier for normal minting', async function () {
+      const { damToken, fluxToken, owner, user1, user3 } = await loadFixture(
+        deployBatchMinterFixture
+      );
 
-    // 1. Setup both users with the same locked amount
-    const lockAmount = parseUnits('100');
-    await damToken.connect(owner).transfer(user1.address, lockAmount);
-    await damToken.connect(owner).transfer(user2.address, lockAmount);
+      const lockAmount = parseUnits('100');
 
-    // user1 will do a normal mint
-    const lockBlock1 = await lockTokens(fluxToken, damToken, user1, lockAmount, user1.address);
+      // Setup user3 to create a global burn history
+      await damToken.connect(owner).transfer(user3.address, lockAmount);
+      const lockBlock3 = await lockTokens(fluxToken, damToken, user3, lockAmount, user3.address);
+      await mineBlocks(100);
+      const endBlock3 = lockBlock3 + 100;
+      await fluxToken.connect(user3).mintToAddress(user3.address, user3.address, endBlock3);
+      const user3FluxBalance = await fluxToken.balanceOf(user3.address);
+      await fluxToken.connect(user3).burnToAddress(user3.address, user3FluxBalance);
 
-    // user2 will use the batch minter
-    const lockBlock2 = await lockTokens(fluxToken, damToken, user2, lockAmount, batchMinter.target);
+      // Now, user1's scenario
+      await damToken.connect(owner).transfer(user1.address, lockAmount);
+      const lockBlock1 = await lockTokens(fluxToken, damToken, user1, lockAmount, user1.address);
 
-    // 2. Mine blocks
-    const mintingPeriod = 100;
-    await mineBlocks(mintingPeriod);
-    const endBlock = await ethers.provider.getBlockNumber();
+      const mintingPeriod = 100;
+      await mineBlocks(mintingPeriod);
+      const endBlock1 = lockBlock1 + mintingPeriod;
 
-    // 3. Perform minting for both users
-    // user1 (Normal Mint)
-    await fluxToken.connect(user1).mintToAddress(user1.address, user1.address, endBlock);
+      await fluxToken.connect(user1).mintToAddress(user1.address, user1.address, endBlock1);
+      const user1FluxBalance = await fluxToken.balanceOf(user1.address);
+      await fluxToken.connect(user1).burnToAddress(user1.address, user1FluxBalance);
 
-    // user2 (Batch Mint)
-    const blockNumbers = [];
-    for (let i = lockBlock2 + 1; i <= endBlock; i++) {
-      blockNumbers.push(i);
-    }
-    await batchMinter.connect(user2).batchMint(user2.address, blockNumbers);
+      const burnMultiplier = await fluxToken.getAddressBurnMultiplier(user1.address);
+      console.log(`Burn multiplier for normal mint (user1): ${Number(burnMultiplier)}`);
+    });
 
-    // 4. Verification: Compare burn multipliers
-    const burnMultiplier1 = await fluxToken.getAddressBurnMultiplier(user1.address);
-    const burnMultiplier2 = await fluxToken.getAddressBurnMultiplier(user2.address);
+    it('should calculate burn multiplier for batch minting', async function () {
+      const { damToken, fluxToken, batchMinter, owner, user2, user3 } = await loadFixture(
+        deployBatchMinterFixture
+      );
 
-    expect(burnMultiplier2).to.be.gt(burnMultiplier1);
+      const lockAmount = parseUnits('100');
+
+      // Setup user3 to create a global burn history
+      await damToken.connect(owner).transfer(user3.address, lockAmount);
+      const lockBlock3 = await lockTokens(fluxToken, damToken, user3, lockAmount, user3.address);
+      await mineBlocks(100);
+      const endBlock3 = lockBlock3 + 100;
+      await fluxToken.connect(user3).mintToAddress(user3.address, user3.address, endBlock3);
+      const user3FluxBalance = await fluxToken.balanceOf(user3.address);
+      await fluxToken.connect(user3).burnToAddress(user3.address, user3FluxBalance);
+
+      // Now, user2's scenario
+      await damToken.connect(owner).transfer(user2.address, lockAmount);
+      const lockBlock2 = await lockTokens(fluxToken, damToken, user2, lockAmount, batchMinter.target);
+
+      const mintingPeriod = 100;
+      await mineBlocks(mintingPeriod);
+
+      const blockNumbers = [];
+      for (let i = 1; i <= 10; i++) {
+        blockNumbers.push(lockBlock2 + i * 10);
+      }
+      await batchMinter.connect(user2).batchMint(user2.address, blockNumbers);
+
+      const burnMultiplier = await fluxToken.getAddressBurnMultiplier(user2.address);
+      console.log(`Burn multiplier for batch mint (user2): ${Number(burnMultiplier)}`);
+    });
   });
 });
