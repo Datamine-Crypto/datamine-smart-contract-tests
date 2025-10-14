@@ -204,7 +204,7 @@ interface IFluxToken {
     function addressLocks(address account) external view returns (AddressLock memory); // Added addressLocks mapping getter
 }
 
-contract BatchMinter is IERC777Recipient, Context {
+contract BatchMinter is IERC777Recipient, Context, ReentrancyGuard {
     IFluxToken public fluxToken;
 
     struct AddressMintSettings {
@@ -222,11 +222,11 @@ contract BatchMinter is IERC777Recipient, Context {
         _erc1820.setInterfaceImplementer(address(this), TOKENS_RECIPIENT_INTERFACE_HASH, address(this));
     }
 
-    function setDelegatedMinter(address delegatedMinter) public {
+    function setDelegatedMinter(address delegatedMinter) public nonReentrant {
         addressMintSettings[_msgSender()].delegatedMinter = delegatedMinter;
     }
 
-    function batchMint(address burnToAddress, uint256[] calldata blockNumbers, bool shouldBurn, address targetAddress) external {
+    function batchMint(address burnToAddress, uint256[] calldata blockNumbers, bool shouldBurn, address targetAddress) external nonReentrant {
         address effectiveMinter = addressMintSettings[burnToAddress].delegatedMinter;
         if (effectiveMinter == address(0)) {
             effectiveMinter = burnToAddress;
