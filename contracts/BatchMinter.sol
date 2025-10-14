@@ -163,7 +163,7 @@ interface IERC1820Registry {
     function implementsERC165Interface(address account, bytes4 interfaceId) external view returns (bool);
 
     /**
-     * @notice Checks whether a contract implements an ERC165 interface or not without using or updating the cache.
+     * @notice Checks whether a contract implements an ERC165 interface or not without using nor updating the cache.
      * @param account Address of the contract to check.
      * @param interfaceId ERC165 interface to check.
      * @return True if `account` implements `interfaceId`, false otherwise.
@@ -192,6 +192,7 @@ interface IFluxToken {
     function mintToAddress(address _sourceAddress, address _targetAddress, uint256 _targetBlock) external;
     function getMintAmount(address _sourceAddress, uint256 _targetBlock) external view returns (uint256);
     function send(address _to, uint256 _amount, bytes memory _data) external;
+    function transfer(address recipient, uint256 amount) external returns (bool);
     function operatorSend(
         address sender,
         address recipient,
@@ -225,7 +226,7 @@ contract BatchMinter is IERC777Recipient, Context {
         addressMintSettings[_msgSender()].delegatedMinter = delegatedMinter;
     }
 
-    function batchMint(address burnToAddress, uint256[] calldata blockNumbers) external {
+    function batchMint(address burnToAddress, uint256[] calldata blockNumbers, bool shouldBurn, address targetAddress) external {
         address effectiveMinter = addressMintSettings[burnToAddress].delegatedMinter;
         if (effectiveMinter == address(0)) {
             effectiveMinter = burnToAddress;
@@ -245,10 +246,16 @@ contract BatchMinter is IERC777Recipient, Context {
                 uint256 afterMintBalance = fluxToken.balanceOf(address(this));
                 require(afterMintBalance == beforeBalance + amountToMint, "Expected contract balance mismatch after mint");
 
-                fluxToken.burnToAddress(burnToAddress, amountToMint);
-
-                uint256 afterBurnBalance = fluxToken.balanceOf(address(this));
-                require(afterBurnBalance == beforeBalance, "Expected contract balance mismatch after burn");
+                if (shouldBurn) {
+                    fluxToken.burnToAddress(burnToAddress, amountToMint);
+                    uint256 afterBurnBalance = fluxToken.balanceOf(address(this));
+                    require(afterBurnBalance == beforeBalance, "Expected contract balance mismatch after burn");
+                } else {
+                    require(targetAddress != address(0), "Target address cannot be zero");
+                    fluxToken.transfer(targetAddress, amountToMint);
+                    uint256 afterSendBalance = fluxToken.balanceOf(address(this));
+                    require(afterSendBalance == beforeBalance, "Expected contract balance mismatch after send");
+                }
             }
         }
     }
