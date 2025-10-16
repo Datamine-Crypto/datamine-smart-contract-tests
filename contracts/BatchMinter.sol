@@ -226,7 +226,7 @@ contract BatchMinter is IERC777Recipient, Context, ReentrancyGuard {
         addressMintSettings[_msgSender()].delegatedMinter = delegatedMinter;
     }
 
-    function batchMint(address burnToAddress, uint256[] calldata blockNumbers, bool shouldBurn, address targetAddress) external nonReentrant {
+    function batchBurn(address burnToAddress, uint256[] calldata blockNumbers) external nonReentrant {
         address effectiveMinter = addressMintSettings[burnToAddress].delegatedMinter;
         if (effectiveMinter == address(0)) {
             effectiveMinter = burnToAddress;
@@ -246,18 +246,34 @@ contract BatchMinter is IERC777Recipient, Context, ReentrancyGuard {
                 uint256 afterMintBalance = fluxToken.balanceOf(address(this));
                 require(afterMintBalance == beforeBalance + amountToMint, "Expected contract balance mismatch after mint");
 
-                if (shouldBurn) {
-                    fluxToken.burnToAddress(burnToAddress, amountToMint);
-                    uint256 afterBurnBalance = fluxToken.balanceOf(address(this));
-                    require(afterBurnBalance == beforeBalance, "Expected contract balance mismatch after burn");
-                } else {
-                    require(targetAddress != address(0), "Target address cannot be zero");
-                    fluxToken.transfer(targetAddress, amountToMint);
-                    uint256 afterSendBalance = fluxToken.balanceOf(address(this));
-                    require(afterSendBalance == beforeBalance, "Expected contract balance mismatch after send");
-                    break; // Exit loop after one iteration if not burning (to prevent re-entrancy attacks)
-                }
+                fluxToken.burnToAddress(burnToAddress, amountToMint);
+                uint256 afterBurnBalance = fluxToken.balanceOf(address(this));
+                require(afterBurnBalance == beforeBalance, "Expected contract balance mismatch after burn");
             }
+        }
+    }
+
+    function normalMintTo(address burnToAddress, uint256 blockNumber, address targetAddress) external nonReentrant {
+        address effectiveMinter = addressMintSettings[burnToAddress].delegatedMinter;
+        if (effectiveMinter == address(0)) {
+            effectiveMinter = burnToAddress;
+        }
+        require(effectiveMinter == _msgSender(), "Caller is not the delegated minter");
+        require(targetAddress != address(0), "Target address cannot be zero");
+
+        uint256 amountToMint = fluxToken.getMintAmount(burnToAddress, blockNumber);
+
+        if (amountToMint > 0) {
+            uint256 beforeBalance = fluxToken.balanceOf(address(this));
+
+            fluxToken.mintToAddress(burnToAddress, address(this), blockNumber);
+
+            uint256 afterMintBalance = fluxToken.balanceOf(address(this));
+            require(afterMintBalance == beforeBalance + amountToMint, "Expected contract balance mismatch after mint");
+
+            fluxToken.transfer(targetAddress, amountToMint);
+            uint256 afterSendBalance = fluxToken.balanceOf(address(this));
+            require(afterSendBalance == beforeBalance, "Expected contract balance mismatch after send");
         }
     }
 

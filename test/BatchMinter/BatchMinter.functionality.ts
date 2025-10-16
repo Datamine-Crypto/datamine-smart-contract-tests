@@ -9,7 +9,7 @@ import {
 } from '../helpers';
 
 describe('BatchMinter Functionality', function () {
-  it('should allow a user to batch mint and burn when no delegated minter is set', async function () {
+  it('should allow a user to batch burn when no delegated minter is set', async function () {
     const { damToken, fluxToken, batchMinter, owner, user1 } = await loadFixture(
       deployBatchMinterFixture
     );
@@ -24,7 +24,7 @@ describe('BatchMinter Functionality', function () {
     await mineBlocks(blocksToMine);
     const endBlock = await ethers.provider.getBlockNumber();
 
-    // 3. Prepare block numbers for batchMint
+    // 3. Prepare block numbers for batchBurn
     const blockNumbers = [];
     for (let i = lockBlock + 1; i <= endBlock; i++) {
       blockNumbers.push(i);
@@ -34,8 +34,8 @@ describe('BatchMinter Functionality', function () {
     const initialBurnedAmount = (await fluxToken.addressLocks(user1.address)).burnedAmount;
     const initialBatchMinterBalance = await fluxToken.balanceOf(batchMinter.target);
 
-    // 5. Call batchMint
-    await batchMinter.connect(user1).batchMint(user1.address, blockNumbers, true, user1.address);
+    // 5. Call batchBurn
+    await batchMinter.connect(user1).batchBurn(user1.address, blockNumbers);
 
     // 6. Verify final state
     const finalBurnedAmount = (await fluxToken.addressLocks(user1.address)).burnedAmount;
@@ -45,7 +45,7 @@ describe('BatchMinter Functionality', function () {
     expect(finalBurnedAmount).to.be.gt(initialBurnedAmount);
   });
 
-  it('should allow a delegated minter to batch mint and burn', async function () {
+  it('should allow a delegated minter to batch burn', async function () {
     const { damToken, fluxToken, batchMinter, owner, user1, user2 } = await loadFixture(
       deployBatchMinterFixture
     );
@@ -65,7 +65,7 @@ describe('BatchMinter Functionality', function () {
     await mineBlocks(blocksToMine);
     const endBlock = await ethers.provider.getBlockNumber();
 
-    // 4. Prepare block numbers for batchMint
+    // 4. Prepare block numbers for batchBurn
     const blockNumbers = [];
     for (let i = lockBlock + 1; i <= endBlock; i++) {
       blockNumbers.push(i);
@@ -75,8 +75,8 @@ describe('BatchMinter Functionality', function () {
     const initialBurnedAmount = (await fluxToken.addressLocks(user1.address)).burnedAmount;
     const initialBatchMinterBalance = await fluxToken.balanceOf(batchMinter.target);
 
-    // 6. user2 calls batchMint for user1
-    await batchMinter.connect(user2).batchMint(user1.address, blockNumbers, true, user1.address);
+    // 6. user2 calls batchBurn for user1
+    await batchMinter.connect(user2).batchBurn(user1.address, blockNumbers);
 
     // 7. Verify final state
     const finalBurnedAmount = (await fluxToken.addressLocks(user1.address)).burnedAmount;
@@ -86,7 +86,7 @@ describe('BatchMinter Functionality', function () {
     expect(finalBurnedAmount).to.be.gt(initialBurnedAmount);
   });
 
-  it('should send tokens to targetAddress when shouldBurn is false', async function () {
+  it('should send tokens to targetAddress with normalMintTo', async function () {
     const { damToken, fluxToken, batchMinter, owner, user1, user2 } = await loadFixture(
       deployBatchMinterFixture
     );
@@ -94,26 +94,20 @@ describe('BatchMinter Functionality', function () {
     // 1. Setup user1 with locked DAM and set BatchMinter as the FluxToken minter
     const lockAmount = parseUnits('100');
     await damToken.connect(owner).transfer(user1.address, lockAmount);
-    const lockBlock = await lockTokens(fluxToken, damToken, user1, lockAmount, batchMinter.target);
+    await lockTokens(fluxToken, damToken, user1, lockAmount, batchMinter.target);
 
     // 2. Mine blocks
     const blocksToMine = 10;
     await mineBlocks(blocksToMine);
     const endBlock = await ethers.provider.getBlockNumber();
 
-    // 3. Prepare block numbers
-    const blockNumbers = [];
-    for (let i = lockBlock + 1; i <= endBlock; i++) {
-      blockNumbers.push(i);
-    }
-
-    // 4. Get initial balance of target address (user2)
+    // 3. Get initial balance of target address (user2)
     const initialTargetBalance = await fluxToken.balanceOf(user2.address);
 
-    // 5. Call batchMint with shouldBurn = false
-    await batchMinter.connect(user1).batchMint(user1.address, blockNumbers, false, user2.address);
+    // 4. Call normalMintTo
+    await batchMinter.connect(user1).normalMintTo(user1.address, endBlock, user2.address);
 
-    // 6. Verify final balance of target address
+    // 5. Verify final balance of target address
     const finalTargetBalance = await fluxToken.balanceOf(user2.address);
     expect(finalTargetBalance).to.be.gt(initialTargetBalance);
   });

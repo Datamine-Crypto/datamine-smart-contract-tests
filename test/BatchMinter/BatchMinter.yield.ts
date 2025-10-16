@@ -44,7 +44,7 @@ describe('BatchMinter Yield Comparison', function () {
     console.log(`Total burned for normal mint (user1): ${ethers.formatUnits(totalBurned, 18)}`);
   });
 
-  it('should calculate total burned amount for batch minting', async function () {
+  it('should calculate total burned amount for batch burning', async function () {
     const { damToken, fluxToken, batchMinter, owner, user2, user3 } = await loadFixture(
       deployBatchMinterFixture
     );
@@ -74,10 +74,10 @@ describe('BatchMinter Yield Comparison', function () {
     for (let i = 1; i <= 10; i++) {
       blockNumbers.push(lockBlock2 + i * 30);
     }
-    await batchMinter.connect(user2).batchMint(user2.address, blockNumbers, true, user2.address);
+    await batchMinter.connect(user2).batchBurn(user2.address, blockNumbers);
 
     const finalBurnedAmount = (await fluxToken.addressLocks(user2.address)).burnedAmount;
     const totalBurned = finalBurnedAmount - initialBurnedAmount;
-    console.log(`Total burned for batch mint (user2): ${ethers.formatUnits(totalBurned, 18)}`);
+    console.log(`Total burned for batch burn (user2): ${ethers.formatUnits(totalBurned, 18)}`);
   });
 });
