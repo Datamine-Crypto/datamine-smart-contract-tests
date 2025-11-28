@@ -1,4 +1,3 @@
-import hre from 'hardhat';
 import { ethers as ethersLib } from 'ethers';
 
 /**
@@ -21,14 +20,14 @@ import { ethers as ethersLib } from 'ethers';
  * @returns The block number after the lock transaction.
  */
 export async function lockTokens(ethers: any, token: any, damToken: any, user: any, amount: any, minterAddress?: any) {
-  const minter = minterAddress || user.address;
-  // Authorize the target token contract to spend DAM tokens on behalf of the user.
-  // This is required for the `lock` function to pull DAM tokens from the user.
-  await damToken.connect(user).authorizeOperator(token.target);
-  // Execute the lock operation.
-  await token.connect(user).lock(minter, amount);
-  // Return the current block number to allow for time-dependent assertions in tests.
-  return await ethers.provider.getBlockNumber();
+	const minter = minterAddress || user.address;
+	// Authorize the target token contract to spend DAM tokens on behalf of the user.
+	// This is required for the `lock` function to pull DAM tokens from the user.
+	await damToken.connect(user).authorizeOperator(token.target);
+	// Execute the lock operation.
+	await token.connect(user).lock(minter, amount);
+	// Return the current block number to allow for time-dependent assertions in tests.
+	return await ethers.provider.getBlockNumber();
 }
 
 /**
@@ -40,12 +39,12 @@ export async function lockTokens(ethers: any, token: any, damToken: any, user: a
  * @returns The block number after mining.
  */
 export async function mineBlocks(ethers: any, blockCount: number): Promise<number> {
-  if (blockCount === 1) {
-    await ethers.provider.send('evm_mine', []);
-  } else {
-    await ethers.provider.send('hardhat_mine', ['0x' + blockCount.toString(16)]);
-  }
-  return await ethers.provider.getBlockNumber();
+	if (blockCount === 1) {
+		await ethers.provider.send('evm_mine', []);
+	} else {
+		await ethers.provider.send('hardhat_mine', ['0x' + blockCount.toString(16)]);
+	}
+	return await ethers.provider.getBlockNumber();
 }
 
 /**
@@ -57,7 +56,7 @@ export async function mineBlocks(ethers: any, blockCount: number): Promise<numbe
  * @returns The parsed amount as a BigInt.
  */
 export function parseUnits(amount: string, decimals: number = 18) {
-  return ethersLib.parseUnits(amount, decimals);
+	return ethersLib.parseUnits(amount, decimals);
 }
 
 /**
@@ -68,11 +67,11 @@ export function parseUnits(amount: string, decimals: number = 18) {
  * @returns A contract instance attached to the ERC1820 registry address.
  */
 export async function getERC1820Registry(ethers: any) {
-  const abi = [
-    'function getInterfaceImplementer(address account, bytes32 _interfaceHash) external view returns (address)',
-    'function setInterfaceImplementer(address account, bytes32 _interfaceHash, address implementer) external',
-  ];
-  return await ethers.getContractAt(abi, '0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24');
+	const abi = [
+		'function getInterfaceImplementer(address account, bytes32 _interfaceHash) external view returns (address)',
+		'function setInterfaceImplementer(address account, bytes32 _interfaceHash, address implementer) external',
+	];
+	return await ethers.getContractAt(abi, '0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24');
 }
 
 // --- Constants ---
@@ -110,15 +109,15 @@ export const TOKENS_RECIPIENT_INTERFACE_HASH = ethersLib.keccak256(ethersLib.toU
  * This improves type safety and reduces the chance of errors from misspelled contract names.
  */
 export enum ContractNames {
-  DamToken = 'DamToken',
-  FluxToken = 'FluxToken',
-  LockquidityFactory = 'LockquidityFactory',
-  LockquidityToken = 'LockquidityToken',
-  LockquidityVault = 'LockquidityVault',
-  DamBlockingHolder = 'DamBlockingHolder',
-  DamHolder = 'DamHolder',
-  LockToken = 'LockToken',
-  BatchMinter = 'BatchMinter',
+	DamToken = 'DamToken',
+	FluxToken = 'FluxToken',
+	LockquidityFactory = 'LockquidityFactory',
+	LockquidityToken = 'LockquidityToken',
+	LockquidityVault = 'LockquidityVault',
+	DamBlockingHolder = 'DamBlockingHolder',
+	DamHolder = 'DamHolder',
+	LockToken = 'LockToken',
+	BatchMinter = 'BatchMinter',
 }
 
 /**
@@ -126,17 +125,17 @@ export enum ContractNames {
  * This ensures that event assertions in tests are consistent and accurate, verifying contract behavior.
  */
 export enum EventNames {
-  Locked = 'Locked',
-  Unlocked = 'Unlocked',
-  TokensToSendHookExecuted = 'TokensToSendHookExecuted',
-  Transfer = 'Transfer',
-  Minted = 'Minted',
-  Burned = 'Burned',
-  Sent = 'Sent',
-  AuthorizedOperator = 'AuthorizedOperator',
-  RevokedOperator = 'RevokedOperator',
-  TokensReceivedCalled = 'TokensReceivedCalled',
-  TokensToSendCalled = 'TokensToSendCalled',
+	Locked = 'Locked',
+	Unlocked = 'Unlocked',
+	TokensToSendHookExecuted = 'TokensToSendHookExecuted',
+	Transfer = 'Transfer',
+	Minted = 'Minted',
+	Burned = 'Burned',
+	Sent = 'Sent',
+	AuthorizedOperator = 'AuthorizedOperator',
+	RevokedOperator = 'RevokedOperator',
+	TokensReceivedCalled = 'TokensReceivedCalled',
+	TokensToSendCalled = 'TokensToSendCalled',
 }
 
 /**
@@ -145,23 +144,23 @@ export enum EventNames {
  * and improves readability by clearly stating the expected reason for a revert.
  */
 export enum RevertMessages {
-  ERC777_TRANSFER_AMOUNT_EXCEEDS_BALANCE = 'ERC777: transfer amount exceeds balance',
-  ERC777_SEND_TO_THE_ZERO_ADDRESS = 'ERC777: send to the zero address',
-  ERC777_BURN_AMOUNT_EXCEEDS_BALANCE = 'ERC777: burn amount exceeds balance',
-  ERC777_AUTHORIZING_SELF_AS_OPERATOR = 'ERC777: authorizing self as operator',
-  ERC777_REVOKING_SELF_AS_OPERATOR = 'ERC777: revoking self as operator',
-  ERC777_CALLER_IS_NOT_AN_OPERATOR_FOR_HOLDER = 'ERC777: caller is not an operator for holder',
-  YOU_CAN_ONLY_LOCK_IN_UP_TO_100_ARBI_FLUX_DURING_FAILSAFE = 'You can only lock-in up to 100 ArbiFLUX during failsafe.',
-  YOU_CAN_ONLY_MINT_UP_TO_CURRENT_BLOCK = 'You can only mint up to current block',
-  YOU_CAN_ONLY_MINT_AHEAD_OF_LAST_MINT_BLOCK = 'You can only mint ahead of last mint block',
-  YOU_MUST_HAVE_LOCKED_IN_YOUR_ARBI_FLUX_TOKENS = 'You must have locked-in your ArbiFLUX tokens',
-  YOU_MUST_BE_THE_DELEGATED_MINTER_OF_THE_SOURCE_ADDRESS = 'You must be the delegated minter of the sourceAddress',
-  YOU_MUST_HAVE_UNLOCKED_YOUR_DAM_TOKENS = 'You must have unlocked your DAM tokens',
-  YOU_MUST_PROVIDE_A_POSITIVE_AMOUNT_TO_LOCK_IN = 'You must provide a positive amount to lock-in',
-  YOU_CAN_ONLY_LOCK_IN_UP_TO_100_DAM_DURING_FAILSAFE = 'You can only lock-in up to 100 DAM during failsafe.',
-  YOU_MUST_HAVE_LOCKED_IN_YOUR_DAM_TOKENS = 'You must have locked-in your DAM tokens',
-  YOU_CAN_ONLY_LOCK_IN_DAM_TOKENS = 'You can only lock-in DAM tokens',
-  ONLY_FLUX_CONTRACT_CAN_SEND_ITSELF_DAM_TOKENS = 'Only FLUX contract can send itself DAM tokens',
+	ERC777_TRANSFER_AMOUNT_EXCEEDS_BALANCE = 'ERC777: transfer amount exceeds balance',
+	ERC777_SEND_TO_THE_ZERO_ADDRESS = 'ERC777: send to the zero address',
+	ERC777_BURN_AMOUNT_EXCEEDS_BALANCE = 'ERC777: burn amount exceeds balance',
+	ERC777_AUTHORIZING_SELF_AS_OPERATOR = 'ERC777: authorizing self as operator',
+	ERC777_REVOKING_SELF_AS_OPERATOR = 'ERC777: revoking self as operator',
+	ERC777_CALLER_IS_NOT_AN_OPERATOR_FOR_HOLDER = 'ERC777: caller is not an operator for holder',
+	YOU_CAN_ONLY_LOCK_IN_UP_TO_100_ARBI_FLUX_DURING_FAILSAFE = 'You can only lock-in up to 100 ArbiFLUX during failsafe.',
+	YOU_CAN_ONLY_MINT_UP_TO_CURRENT_BLOCK = 'You can only mint up to current block',
+	YOU_CAN_ONLY_MINT_AHEAD_OF_LAST_MINT_BLOCK = 'You can only mint ahead of last mint block',
+	YOU_MUST_HAVE_LOCKED_IN_YOUR_ARBI_FLUX_TOKENS = 'You must have locked-in your ArbiFLUX tokens',
+	YOU_MUST_BE_THE_DELEGATED_MINTER_OF_THE_SOURCE_ADDRESS = 'You must be the delegated minter of the sourceAddress',
+	YOU_MUST_HAVE_UNLOCKED_YOUR_DAM_TOKENS = 'You must have unlocked your DAM tokens',
+	YOU_MUST_PROVIDE_A_POSITIVE_AMOUNT_TO_LOCK_IN = 'You must provide a positive amount to lock-in',
+	YOU_CAN_ONLY_LOCK_IN_UP_TO_100_DAM_DURING_FAILSAFE = 'You can only lock-in up to 100 DAM during failsafe.',
+	YOU_MUST_HAVE_LOCKED_IN_YOUR_DAM_TOKENS = 'You must have locked-in your DAM tokens',
+	YOU_CAN_ONLY_LOCK_IN_DAM_TOKENS = 'You can only lock-in DAM tokens',
+	ONLY_FLUX_CONTRACT_CAN_SEND_ITSELF_DAM_TOKENS = 'Only FLUX contract can send itself DAM tokens',
 }
 
 /**
@@ -170,16 +169,16 @@ export enum RevertMessages {
  * which is particularly useful for simulating various re-entrancy or hook-related interactions.
  */
 export enum UnitTestCases {
-  CallUnlockTokensToSendHook = 0,
-  CallSendTokensToSendHook = 1,
+	CallUnlockTokensToSendHook = 0,
+	CallSendTokensToSendHook = 1,
 }
 
 export enum BurnResultCode {
-  Success = 0,
-  NothingToMint = 1,
-  NothingToTip = 2,
-  InsufficientContractBalance = 3,
-  ValidatorPaused = 4,
-  ValidatorMinBlockNotMet = 5,
-  ValidatorMinBurnAmountNotMet = 6,
+	Success = 0,
+	NothingToMint = 1,
+	NothingToTip = 2,
+	InsufficientContractBalance = 3,
+	ValidatorPaused = 4,
+	ValidatorMinBlockNotMet = 5,
+	ValidatorMinBurnAmountNotMet = 6,
 }

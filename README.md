@@ -42,13 +42,13 @@ yarn test
 Or, to run tests with detailed stack traces:
 
 ```bash
-yarn hardhat test --show-stack-traces
+npx hardhat test --show-stack-traces
 ```
 
 To run a specific test file:
 
 ```bash
-yarn hardhat test test/DamBlockingHolderContractTests.ts
+npx hardhat test test/DamBlockingHolderContractTests.ts
 ```
 
 ### Linting and Formatting

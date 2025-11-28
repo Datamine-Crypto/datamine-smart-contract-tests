@@ -2,27 +2,27 @@ import { expect } from 'chai';
 import { deployDamTokenFixture, parseUnits, loadFixture } from '../helpers/index.js';
 
 describe('DamToken Deployment', function () {
-  describe('Deployment', function () {
-    it('Should have the correct name and symbol', async function () {
-      const { damToken } = await loadFixture(deployDamTokenFixture);
-      // Verify the token's identity to ensure it's correctly initialized as "Datamine" with symbol "DAM".
-      expect(await damToken.name()).to.equal('Datamine');
-      expect(await damToken.symbol()).to.equal('DAM');
-    });
+	describe('Deployment', function () {
+		it('Should have the correct name and symbol', async function () {
+			const { damToken } = await loadFixture(deployDamTokenFixture);
+			// Verify the token's identity to ensure it's correctly initialized as "Datamine" with symbol "DAM".
+			expect(await damToken.name()).to.equal('Datamine');
+			expect(await damToken.symbol()).to.equal('DAM');
+		});
 
-    it('Should assign the total supply of tokens to the owner', async function () {
-      const { damToken, owner } = await loadFixture(deployDamTokenFixture);
-      const ownerBalance = await damToken.balanceOf(owner.address);
-      // This test confirms that the entire initial token supply is correctly allocated to the deployer (owner) upon
-      // contract creation. This is fundamental for establishing the initial distribution and control of the token supply.
-      expect(await damToken.totalSupply()).to.equal(ownerBalance);
-    });
+		it('Should assign the total supply of tokens to the owner', async function () {
+			const { damToken, owner } = await loadFixture(deployDamTokenFixture);
+			const ownerBalance = await damToken.balanceOf(owner.address);
+			// This test confirms that the entire initial token supply is correctly allocated to the deployer (owner) upon
+			// contract creation. This is fundamental for establishing the initial distribution and control of the token supply.
+			expect(await damToken.totalSupply()).to.equal(ownerBalance);
+		});
 
-    it('Should have the correct initial supply', async function () {
-      const { damToken } = await loadFixture(deployDamTokenFixture);
-      const expectedSupply = parseUnits('25000000');
-      // Verify that the total supply minted at deployment matches the expected fixed amount.
-      expect(await damToken.totalSupply()).to.equal(expectedSupply);
-    });
-  });
+		it('Should have the correct initial supply', async function () {
+			const { damToken } = await loadFixture(deployDamTokenFixture);
+			const expectedSupply = parseUnits('25000000');
+			// Verify that the total supply minted at deployment matches the expected fixed amount.
+			expect(await damToken.totalSupply()).to.equal(expectedSupply);
+		});
+	});
 });

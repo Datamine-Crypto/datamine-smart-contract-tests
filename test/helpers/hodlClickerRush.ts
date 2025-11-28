@@ -1,4 +1,3 @@
-import hre from 'hardhat';
 import { hodlClickerRushFixture } from './fixtures/hodlClickerRush.js';
 import { lockTokens, mineBlocks } from './common.js';
 
@@ -15,24 +14,24 @@ import { lockTokens, mineBlocks } from './common.js';
  * @returns The user's FLUX balance after setup.
  */
 export async function depositFor(
-  ethers: any,
-  hodlClickerRush: any,
-  fluxToken: any,
-  damToken: any,
-  user: any,
-  amount: any,
+	ethers: any,
+	hodlClickerRush: any,
+	fluxToken: any,
+	damToken: any,
+	user: any,
+	amount: any
 ) {
-  const userFluxBalance = await setupPlayerForHodlClickerRush(
-    ethers,
-    hodlClickerRush,
-    fluxToken,
-    damToken,
-    user,
-    amount,
-    user.address,
-  );
-  await hodlClickerRush.connect(user).deposit(userFluxBalance, 0, 0, 0);
-  return userFluxBalance;
+	const userFluxBalance = await setupPlayerForHodlClickerRush(
+		ethers,
+		hodlClickerRush,
+		fluxToken,
+		damToken,
+		user,
+		amount,
+		user.address
+	);
+	await hodlClickerRush.connect(user).deposit(userFluxBalance, 0, 0, 0);
+	return userFluxBalance;
 }
 
 /**
@@ -48,17 +47,17 @@ export async function depositFor(
  * @param hodlClickerRush The HodlClickerRush contract instance.
  */
 export async function setupBurnableAddress(
-  ethers: any,
-  damToken: any,
-  fluxToken: any,
-  owner: any,
-  user: any,
-  amount: any,
-  hodlClickerRush: any,
+	ethers: any,
+	damToken: any,
+	fluxToken: any,
+	owner: any,
+	user: any,
+	amount: any,
+	hodlClickerRush: any
 ) {
-  await damToken.connect(owner).transfer(user.address, amount);
-  await lockTokens(ethers, fluxToken, damToken, user, amount, hodlClickerRush.target);
-  await mineBlocks(ethers, 1000);
+	await damToken.connect(owner).transfer(user.address, amount);
+	await lockTokens(ethers, fluxToken, damToken, user, amount, hodlClickerRush.target);
+	await mineBlocks(ethers, 1000);
 }
 
 /**
@@ -73,16 +72,16 @@ export async function setupBurnableAddress(
  * @param amount The amount of DAM to use for setup.
  */
 export async function setupDefaultScenario(
-  ethers: any,
-  hodlClickerRush: any,
-  fluxToken: any,
-  damToken: any,
-  owner: any,
-  user: any,
-  amount: any,
+	ethers: any,
+	hodlClickerRush: any,
+	fluxToken: any,
+	damToken: any,
+	owner: any,
+	user: any,
+	amount: any
 ) {
-  await depositFor(ethers, hodlClickerRush, fluxToken, damToken, owner, amount);
-  await setupBurnableAddress(ethers, damToken, fluxToken, owner, user, amount, hodlClickerRush);
+	await depositFor(ethers, hodlClickerRush, fluxToken, damToken, owner, amount);
+	await setupBurnableAddress(ethers, damToken, fluxToken, owner, user, amount, hodlClickerRush);
 }
 
 /**
@@ -91,23 +90,23 @@ export async function setupDefaultScenario(
  * @returns An object containing contract instances and signers.
  */
 export async function setupHodlClickerRushTests() {
-  const fixture = await hodlClickerRushFixture();
-  const { hodlClickerRush, fluxToken, damToken, owner, addr1, addr2, ethers } = fixture as any;
-  const signers = await ethers.getSigners();
-  const addr3 = signers[3];
-  const addr4 = signers[4];
+	const fixture = await hodlClickerRushFixture();
+	const { hodlClickerRush, fluxToken, damToken, owner, addr1, addr2, ethers } = fixture as any;
+	const signers = await ethers.getSigners();
+	const addr3 = signers[3];
+	const addr4 = signers[4];
 
-  return {
-    hodlClickerRush,
-    fluxToken,
-    damToken,
-    owner,
-    addr1,
-    addr2,
-    addr3,
-    addr4,
-    ethers,
-  };
+	return {
+		hodlClickerRush,
+		fluxToken,
+		damToken,
+		owner,
+		addr1,
+		addr2,
+		addr3,
+		addr4,
+		ethers,
+	};
 }
 
 /**
@@ -123,21 +122,21 @@ export async function setupHodlClickerRushTests() {
  * @returns The user's FLUX balance after setup.
  */
 export async function setupPlayerForHodlClickerRush(
-  ethers: any,
-  hodlClickerRush: any,
-  fluxToken: any,
-  damToken: any,
-  user: any,
-  damAmount: any,
-  minterAddress: any,
+	ethers: any,
+	hodlClickerRush: any,
+	fluxToken: any,
+	damToken: any,
+	user: any,
+	damAmount: any,
+	minterAddress: any
 ) {
-  const [owner] = await ethers.getSigners();
-  await damToken.connect(owner).transfer(user.address, damAmount);
-  await lockTokens(ethers, fluxToken, damToken, user, damAmount, minterAddress);
-  await mineBlocks(ethers, 1000);
-  const currentBlock = await ethers.provider.getBlockNumber();
-  await fluxToken.connect(user).mintToAddress(user.address, user.address, currentBlock);
-  const userFluxBalance = await fluxToken.balanceOf(user.address);
-  await fluxToken.connect(user).authorizeOperator(hodlClickerRush.target);
-  return userFluxBalance;
+	const [owner] = await ethers.getSigners();
+	await damToken.connect(owner).transfer(user.address, damAmount);
+	await lockTokens(ethers, fluxToken, damToken, user, damAmount, minterAddress);
+	await mineBlocks(ethers, 1000);
+	const currentBlock = await ethers.provider.getBlockNumber();
+	await fluxToken.connect(user).mintToAddress(user.address, user.address, currentBlock);
+	const userFluxBalance = await fluxToken.balanceOf(user.address);
+	await fluxToken.connect(user).authorizeOperator(hodlClickerRush.target);
+	return userFluxBalance;
 }

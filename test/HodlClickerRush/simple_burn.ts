@@ -1,36 +1,34 @@
 import { expect } from 'chai';
 import {
-  hodlClickerRushFixture,
-  setupBurnableAddress,
-  depositFor,
-  BurnResultCode,
-  loadFixture,
+	hodlClickerRushFixture,
+	setupBurnableAddress,
+	depositFor,
+	BurnResultCode,
+	loadFixture,
 } from '../helpers/index.js';
 
 describe('HodlClickerRush Simple Burn', () => {
-  it('should return InsufficientContractBalance if not enough FLUX is deposited', async () => {
-    const { hodlClickerRush, fluxToken, damToken, owner, addr1, addr2, ethers } = await loadFixture(
-      hodlClickerRushFixture,
-    );
-    const damAmount = ethers.parseEther('1000000');
-    await setupBurnableAddress(ethers, damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
+	it('should return InsufficientContractBalance if not enough FLUX is deposited', async () => {
+		const { hodlClickerRush, fluxToken, damToken, owner, addr1, addr2, ethers } =
+			await loadFixture(hodlClickerRushFixture);
+		const damAmount = ethers.parseEther('1000000');
+		await setupBurnableAddress(ethers, damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
 
-    const burnOperationResult = await hodlClickerRush.connect(addr2).burnTokens.staticCall(0, addr1.address);
+		const burnOperationResult = await hodlClickerRush.connect(addr2).burnTokens.staticCall(0, addr1.address);
 
-    expect(burnOperationResult.resultCode).to.equal(BurnResultCode.InsufficientContractBalance);
-  });
+		expect(burnOperationResult.resultCode).to.equal(BurnResultCode.InsufficientContractBalance);
+	});
 
-  it('should successfully burn tokens if enough FLUX is deposited', async () => {
-    const { hodlClickerRush, fluxToken, damToken, owner, addr1, addr2, ethers } = await loadFixture(
-      hodlClickerRushFixture,
-    );
-    const damAmount = ethers.parseEther('1000000');
+	it('should successfully burn tokens if enough FLUX is deposited', async () => {
+		const { hodlClickerRush, fluxToken, damToken, owner, addr1, addr2, ethers } =
+			await loadFixture(hodlClickerRushFixture);
+		const damAmount = ethers.parseEther('1000000');
 
-    await depositFor(ethers, hodlClickerRush, fluxToken, damToken, addr1, damAmount);
-    await setupBurnableAddress(ethers, damToken, fluxToken, owner, addr2, damAmount, hodlClickerRush);
+		await depositFor(ethers, hodlClickerRush, fluxToken, damToken, addr1, damAmount);
+		await setupBurnableAddress(ethers, damToken, fluxToken, owner, addr2, damAmount, hodlClickerRush);
 
-    const burnOperationResult = await hodlClickerRush.connect(owner).burnTokens.staticCall(0, addr2.address);
+		const burnOperationResult = await hodlClickerRush.connect(owner).burnTokens.staticCall(0, addr2.address);
 
-    expect(burnOperationResult.resultCode).to.equal(BurnResultCode.Success);
-  });
+		expect(burnOperationResult.resultCode).to.equal(BurnResultCode.Success);
+	});
 });

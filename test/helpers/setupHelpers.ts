@@ -1,6 +1,5 @@
-import hre from 'hardhat';
 import { expect } from 'chai';
-import { mineBlocks, EMPTY_BYTES, EventNames, ZERO_ADDRESS, lockTokens } from './common.js';
+import { mineBlocks, EMPTY_BYTES, lockTokens } from './common.js';
 
 /**
  * @dev This file centralizes helper functions for setting up specific test scenarios.
@@ -10,22 +9,22 @@ import { mineBlocks, EMPTY_BYTES, EventNames, ZERO_ADDRESS, lockTokens } from '.
  */
 
 export async function setupPlayerForHodlClicker(
-  ethers: any,
-  hodlClickerRush: any,
-  fluxToken: any,
-  damToken: any,
-  player: any,
-  damAmount: any,
-  minter: any,
+	ethers: any,
+	hodlClickerRush: any,
+	fluxToken: any,
+	damToken: any,
+	player: any,
+	damAmount: any,
+	minter: any
 ) {
-  await damToken.transfer(player.address, damAmount);
-  await lockTokens(ethers, fluxToken, damToken, player, damAmount, minter);
-  await mineBlocks(ethers, 1000);
-  const currentBlock = await ethers.provider.getBlockNumber();
-  await fluxToken.connect(player).mintToAddress(player.address, player.address, currentBlock);
-  const playerFluxBalance = await fluxToken.balanceOf(player.address);
-  await fluxToken.connect(player).authorizeOperator(hodlClickerRush.target);
-  return playerFluxBalance;
+	await damToken.transfer(player.address, damAmount);
+	await lockTokens(ethers, fluxToken, damToken, player, damAmount, minter);
+	await mineBlocks(ethers, 1000);
+	const currentBlock = await ethers.provider.getBlockNumber();
+	await fluxToken.connect(player).mintToAddress(player.address, player.address, currentBlock);
+	const playerFluxBalance = await fluxToken.balanceOf(player.address);
+	await fluxToken.connect(player).authorizeOperator(hodlClickerRush.target);
+	return playerFluxBalance;
 }
 
 /**
@@ -43,29 +42,29 @@ export async function setupPlayerForHodlClicker(
  * @param unitTestCase The specific unit test case to execute (enum value).
  */
 export async function setupDamBlockingHolderTest(
-  damBlockingHolder: any,
-  owner: any,
-  damToken: any,
-  lockquidityToken: any,
-  initialAmount: any,
-  lockAmount: any,
-  hookSendAmount: any,
-  unitTestCase: any,
+	damBlockingHolder: any,
+	owner: any,
+	damToken: any,
+	lockquidityToken: any,
+	initialAmount: any,
+	lockAmount: any,
+	hookSendAmount: any,
+	unitTestCase: any
 ) {
-  await damBlockingHolder.connect(owner).setUnitTestCase(unitTestCase);
-  expect(await damBlockingHolder.unitTestCase()).to.equal(unitTestCase);
+	await damBlockingHolder.connect(owner).setUnitTestCase(unitTestCase);
+	expect(await damBlockingHolder.unitTestCase()).to.equal(unitTestCase);
 
-  await damBlockingHolder.connect(owner).setHookSendAmount(hookSendAmount);
+	await damBlockingHolder.connect(owner).setHookSendAmount(hookSendAmount);
 
-  // Transfer initialAmount DAM from owner to DamBlockingHolder contract to provide it with funds for testing.
-  await damToken.connect(owner).transfer(damBlockingHolder.target, initialAmount);
+	// Transfer initialAmount DAM from owner to DamBlockingHolder contract to provide it with funds for testing.
+	await damToken.connect(owner).transfer(damBlockingHolder.target, initialAmount);
 
-  // Make sure it has initialAmount DAM to confirm the transfer was successful.
-  expect(await damToken.balanceOf(damBlockingHolder.target)).to.equal(initialAmount);
+	// Make sure it has initialAmount DAM to confirm the transfer was successful.
+	expect(await damToken.balanceOf(damBlockingHolder.target)).to.equal(initialAmount);
 
-  // DamBlockingHolder contract authorizes LockquidityToken. This is essential because
-  // LockquidityToken needs permission to take DAM from DamBlockingHolder during lock operations.
-  await damBlockingHolder.connect(owner).authorizeOperator(damToken.target, lockquidityToken.target);
+	// DamBlockingHolder contract authorizes LockquidityToken. This is essential because
+	// LockquidityToken needs permission to take DAM from DamBlockingHolder during lock operations.
+	await damBlockingHolder.connect(owner).authorizeOperator(damToken.target, lockquidityToken.target);
 }
 
 /**
@@ -79,17 +78,17 @@ export async function setupDamBlockingHolderTest(
  * @param damAmount The amount of DAM to send to the holder.
  */
 export async function setupDamAndFluxTokens(
-  damToken: any,
-  owner: any,
-  damHolderAddress: any,
-  fluxToken: any,
-  damAmount: any,
+	damToken: any,
+	owner: any,
+	damHolderAddress: any,
+	fluxToken: any,
+	damAmount: any
 ) {
-  // Send DAM tokens to the holder address to provide them with a balance.
-  await damToken.connect(owner).send(damHolderAddress.address, damAmount, EMPTY_BYTES);
-  // Authorize FluxToken as an operator. This grants FluxToken permission to move DAM tokens
-  // from the holder's address when they initiate a lock operation.
-  await damToken.connect(damHolderAddress).authorizeOperator(fluxToken.target);
+	// Send DAM tokens to the holder address to provide them with a balance.
+	await damToken.connect(owner).send(damHolderAddress.address, damAmount, EMPTY_BYTES);
+	// Authorize FluxToken as an operator. This grants FluxToken permission to move DAM tokens
+	// from the holder's address when they initiate a lock operation.
+	await damToken.connect(damHolderAddress).authorizeOperator(fluxToken.target);
 }
 
 /**
@@ -103,17 +102,17 @@ export async function setupDamAndFluxTokens(
  * @param amount The amount of DAM to transfer and prepare for locking.
  */
 export async function setupHolderForLocking(
-  owner: any,
-  damHolder: any,
-  damToken: any,
-  lockableToken: any,
-  amount: any,
+	owner: any,
+	damHolder: any,
+	damToken: any,
+	lockableToken: any,
+	amount: any
 ) {
-  // Transfer DAM from the owner to the DamHolder contract to provide it with funds.
-  await damToken.connect(owner).transfer(damHolder.target, amount);
-  // Authorize the LockableToken contract to spend DAM tokens on behalf of the DamHolder.
-  // This is a critical step to allow the locking contract to pull tokens from the holder.
-  await damHolder.connect(owner).authorizeOperator(damToken.target, lockableToken.target);
+	// Transfer DAM from the owner to the DamHolder contract to provide it with funds.
+	await damToken.connect(owner).transfer(damHolder.target, amount);
+	// Authorize the LockableToken contract to spend DAM tokens on behalf of the DamHolder.
+	// This is a critical step to allow the locking contract to pull tokens from the holder.
+	await damHolder.connect(owner).authorizeOperator(damToken.target, lockableToken.target);
 }
 
 /**
@@ -128,17 +127,17 @@ export async function setupHolderForLocking(
  * @returns The block number after the mint transaction.
  */
 export async function mintFluxTokens(
-  ethers: any,
-  fluxToken: any,
-  minter: any,
-  sourceAddress: any,
-  blocksToAdvance: number,
+	ethers: any,
+	fluxToken: any,
+	minter: any,
+	sourceAddress: any,
+	blocksToAdvance: number
 ) {
-  // Advance blocks to simulate time passing, which is necessary for minting rewards to accrue.
-  const mintBlock = await mineBlocks(ethers, blocksToAdvance);
-  // Perform the minting operation.
-  await fluxToken.connect(minter).mintToAddress(sourceAddress, minter.address, mintBlock);
-  return mintBlock;
+	// Advance blocks to simulate time passing, which is necessary for minting rewards to accrue.
+	const mintBlock = await mineBlocks(ethers, blocksToAdvance);
+	// Perform the minting operation.
+	await fluxToken.connect(minter).mintToAddress(sourceAddress, minter.address, mintBlock);
+	return mintBlock;
 }
 
 /**
@@ -153,15 +152,15 @@ export async function mintFluxTokens(
  * @returns The block number after the mint transaction.
  */
 export async function mintLockTokens(
-  ethers: any,
-  lockToken: any,
-  minter: any,
-  sourceAddress: any,
-  blocksToAdvance: number,
+	ethers: any,
+	lockToken: any,
+	minter: any,
+	sourceAddress: any,
+	blocksToAdvance: number
 ) {
-  // Advance blocks to simulate time passing, allowing minting rewards to accrue.
-  const mintBlock = await mineBlocks(ethers, blocksToAdvance);
-  // Perform the minting operation.
-  await lockToken.connect(minter).mintToAddress(sourceAddress, minter.address, mintBlock);
-  return mintBlock;
+	// Advance blocks to simulate time passing, allowing minting rewards to accrue.
+	const mintBlock = await mineBlocks(ethers, blocksToAdvance);
+	// Perform the minting operation.
+	await lockToken.connect(minter).mintToAddress(sourceAddress, minter.address, mintBlock);
+	return mintBlock;
 }

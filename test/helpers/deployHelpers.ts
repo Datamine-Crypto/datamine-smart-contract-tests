@@ -1,4 +1,3 @@
-import hre from 'hardhat';
 import { ContractNames } from './common.js';
 
 /**
@@ -17,9 +16,9 @@ import { ContractNames } from './common.js';
  * @returns The deployed DamToken contract instance.
  */
 export async function deployDamToken(ethers: any, signer?: any) {
-  const DamToken = await ethers.getContractFactory(ContractNames.DamToken);
-  const damToken = signer ? await DamToken.connect(signer).deploy() : await DamToken.deploy();
-  return damToken;
+	const DamToken = await ethers.getContractFactory(ContractNames.DamToken);
+	const damToken = signer ? await DamToken.connect(signer).deploy() : await DamToken.deploy();
+	return damToken;
 }
 
 /**
@@ -31,11 +30,11 @@ export async function deployDamToken(ethers: any, signer?: any) {
  * @returns An object containing the deployed factory, token, and vault instances.
  */
 export async function deployLockquidityContracts(ethers: any, damTokenAddress: string) {
-  const LockquidityFactory = await ethers.getContractFactory(ContractNames.LockquidityFactory);
-  const lockquidityFactory = await LockquidityFactory.deploy(damTokenAddress);
-  const lockquidityToken = await ethers.getContractAt(ContractNames.LockquidityToken, await lockquidityFactory.token());
-  const lockquidityVault = await ethers.getContractAt(ContractNames.LockquidityVault, await lockquidityFactory.vault());
-  return { lockquidityFactory, lockquidityToken, lockquidityVault };
+	const LockquidityFactory = await ethers.getContractFactory(ContractNames.LockquidityFactory);
+	const lockquidityFactory = await LockquidityFactory.deploy(damTokenAddress);
+	const lockquidityToken = await ethers.getContractAt(ContractNames.LockquidityToken, await lockquidityFactory.token());
+	const lockquidityVault = await ethers.getContractAt(ContractNames.LockquidityVault, await lockquidityFactory.vault());
+	return { lockquidityFactory, lockquidityToken, lockquidityVault };
 }
 
 /**
@@ -51,15 +50,15 @@ export async function deployLockquidityContracts(ethers: any, damTokenAddress: s
  * @returns The deployed FluxToken contract instance.
  */
 export async function deployFluxToken(
-  ethers: any,
-  damTokenAddress: string,
-  timeBonusStartBlock: number,
-  timeBonusEndBlock: number,
-  failsafeBlock: number,
+	ethers: any,
+	damTokenAddress: string,
+	timeBonusStartBlock: number,
+	timeBonusEndBlock: number,
+	failsafeBlock: number
 ) {
-  const FluxToken = await ethers.getContractFactory(ContractNames.FluxToken);
-  const fluxToken = await FluxToken.deploy(damTokenAddress, timeBonusStartBlock, timeBonusEndBlock, failsafeBlock);
-  return fluxToken;
+	const FluxToken = await ethers.getContractFactory(ContractNames.FluxToken);
+	const fluxToken = await FluxToken.deploy(damTokenAddress, timeBonusStartBlock, timeBonusEndBlock, failsafeBlock);
+	return fluxToken;
 }
 
 /**
@@ -71,9 +70,9 @@ export async function deployFluxToken(
  * @returns The deployed DamBlockingHolder contract instance.
  */
 export async function deployDamBlockingHolder(ethers: any, lockquidityTokenAddress: string) {
-  const DamBlockingHolder = await ethers.getContractFactory(ContractNames.DamBlockingHolder);
-  const damBlockingHolder = await DamBlockingHolder.deploy(lockquidityTokenAddress);
-  return damBlockingHolder;
+	const DamBlockingHolder = await ethers.getContractFactory(ContractNames.DamBlockingHolder);
+	const damBlockingHolder = await DamBlockingHolder.deploy(lockquidityTokenAddress);
+	return damBlockingHolder;
 }
 
 /**
@@ -84,9 +83,9 @@ export async function deployDamBlockingHolder(ethers: any, lockquidityTokenAddre
  * @returns The deployed DamHolder contract instance.
  */
 export async function deployDamHolder(ethers: any) {
-  const DamHolder = await ethers.getContractFactory(ContractNames.DamHolder);
-  const damHolder = await DamHolder.deploy();
-  return damHolder;
+	const DamHolder = await ethers.getContractFactory(ContractNames.DamHolder);
+	const damHolder = await DamHolder.deploy();
+	return damHolder;
 }
 
 /**
@@ -103,20 +102,20 @@ export async function deployDamHolder(ethers: any) {
  * @returns The deployed LockquidityToken contract instance.
  */
 export async function deployLockquidityToken(
-  ethers: any,
-  damTokenAddress: string,
-  timeBonusStartBlock: number,
-  timeBonusEndBlock: number,
-  failsafeBlock: number,
-  ownerAddress: string,
+	ethers: any,
+	damTokenAddress: string,
+	timeBonusStartBlock: number,
+	timeBonusEndBlock: number,
+	failsafeBlock: number,
+	ownerAddress: string
 ) {
-  const LockquidityToken = await ethers.getContractFactory(ContractNames.LockquidityToken);
-  const lockquidityToken = await LockquidityToken.deploy(
-    damTokenAddress,
-    timeBonusStartBlock,
-    timeBonusEndBlock,
-    failsafeBlock,
-    ownerAddress,
-  );
-  return lockquidityToken;
+	const LockquidityToken = await ethers.getContractFactory(ContractNames.LockquidityToken);
+	const lockquidityToken = await LockquidityToken.deploy(
+		damTokenAddress,
+		timeBonusStartBlock,
+		timeBonusEndBlock,
+		failsafeBlock,
+		ownerAddress
+	);
+	return lockquidityToken;
 }

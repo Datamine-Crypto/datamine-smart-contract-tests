@@ -436,16 +436,14 @@ Here is the overview of our new HODL Clicker game:
 
 Overall this is an evolution of Datamine Gems, a natural progression of GameFi to give players more choices.
 
-
 // 2025-10-23 updates:
 We wrote a new smart contract to fix minting to Smart Accounts (Externally Owned Account (EOA)). MetaMask recently launched an update where Smart Accounts are now default.
 
-Unfortunately due to ERC777 it is not possible to mint to these accounts. 
+Unfortunately due to ERC777 it is not possible to mint to these accounts.
 
 To solve this, when starting a mint we will point your deligated address to a new smart contract. This smart contract is pretty simplistic in tnature, it simply mints from your validator and uses a different transfer mechanism to transfer tokens to the intended recepient.
 
 This allows us to bypass ERC1820 registration requirement on the recepient, allowing our existing contracts to be compatible with ERC777.
-
 
 // 2025-10-25 updates, recorded a video and extracted the following key insights:
 
@@ -485,12 +483,14 @@ This allows us to bypass ERC1820 registration requirement on the recepient, allo
 - The yield mechanism from "proof-of-burn" is directly proportional: burning 10x more tokens results in 10x more yield compared to another user.
 
 Specific token metrics (as of the video):
+
 - Total Minted (5 years): ~10 million tokens.
 - Total Burned: 5.4 million tokens (54% of minted).
 - Current Supply: 4.8 million tokens.
 - FLUX (L1) Minting Cost: Can be around 10 cents per mint on Layer 1.
 
 Specifics of the LOCK (L2) tokenomics:
+
 - The "burn" mechanism for LOCK involves sending tokens to a smart contract that sells half for Ethereum and adds both back into a permanent, decentralized liquidity pool.
 - Approximately 95% of the LOCK market cap is backed by liquidity in this permanent pool.
 - LOCK Liquidity: $115,000.
@@ -524,6 +524,7 @@ Let's update frontend-only components (also include help articles) but don't upd
 However you can still change titles and string etc.
 
 // 2025-11-15 new video about yield:
+
 - The project's core concept is being reframed as adding a missing seventh property to money: "Yield".
 - This "Yield" property is contrasted with traditional investment. Instead of risking $100 to potentially get $80 back, the model is to destroy $100 to guarantee a permanent, dynamic "drip" of yield in return.
 - This yield is described as permanent and can be passed down to future generations ("to your kids").
@@ -536,6 +537,7 @@ However you can still change titles and string etc.
 - A "triple system" effect is the ultimate goal: 1) You receive yield, 2) You re-compound that yield to get more yield, and 3) The token price increases, making the value of your compounding yield also increase.
 
 // 2025-11-18 new video about Escape Velocity:
+
 - "Escape Velocity" Definition: The project defines "Escape Velocity" as the financial state where passive income fully covers all mandatory monthly expenses (resulting in $0 active income needed for survival).
 - Origin of Token Philosophy: The specific motivation for creating the Datamine token arose from the founder's 7-year personal finance practice of tracking "Escape Velocity" and finding a lack of suitable investment vehicles.
 - Critique of Existing Crypto Yields: The project was designed specifically because traditional crypto yield mechanisms (Masternodes and Staking) were viewed by the founder as unscalable and unsustainable due to inflation issues.

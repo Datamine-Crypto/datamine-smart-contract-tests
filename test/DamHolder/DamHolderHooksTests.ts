@@ -2,44 +2,44 @@ import { expect } from 'chai';
 import { deployDamHolderFixture, loadFixture, EventNames, setupHolderForLocking } from '../helpers/index.js';
 
 describe('DamHolder Hooks', function () {
-  describe('Hooks', function () {
-    it('Should emit TokensReceivedCalled event with correct arguments when receiving tokens', async function () {
-      const { damToken, owner, damHolder, ethers } = await loadFixture(deployDamHolderFixture);
-      const amountToSend = ethers.parseUnits('100', 18);
-      const userData = ethers.toUtf8Bytes('some user data');
-      // operatorData is empty for send, as per ERC777 standard for `send` function
-      const emptyOperatorData = ethers.toUtf8Bytes('');
+	describe('Hooks', function () {
+		it('Should emit TokensReceivedCalled event with correct arguments when receiving tokens', async function () {
+			const { damToken, owner, damHolder, ethers } = await loadFixture(deployDamHolderFixture);
+			const amountToSend = ethers.parseUnits('100', 18);
+			const userData = ethers.toUtf8Bytes('some user data');
+			// operatorData is empty for send, as per ERC777 standard for `send` function
+			const emptyOperatorData = ethers.toUtf8Bytes('');
 
-      // This test verifies that the `tokensReceived` hook on the `DamHolder` contract is correctly triggered
-      // and emits the `TokensReceivedCalled` event with accurate arguments when it receives tokens. This is crucial
-      // for confirming the proper implementation of ERC777 receiver hooks, which are vital for handling incoming
-      // token transfers and enabling custom logic upon receipt.
-      await expect(damToken.connect(owner).send(damHolder.target, amountToSend, userData)) // Use send to pass userData
-        .to.emit(damHolder, EventNames.TokensReceivedCalled)
-        .withArgs(owner.address, owner.address, damHolder.target, amountToSend, userData, emptyOperatorData);
-    });
+			// This test verifies that the `tokensReceived` hook on the `DamHolder` contract is correctly triggered
+			// and emits the `TokensReceivedCalled` event with accurate arguments when it receives tokens. This is crucial
+			// for confirming the proper implementation of ERC777 receiver hooks, which are vital for handling incoming
+			// token transfers and enabling custom logic upon receipt.
+			await expect(damToken.connect(owner).send(damHolder.target, amountToSend, userData)) // Use send to pass userData
+				.to.emit(damHolder, EventNames.TokensReceivedCalled)
+				.withArgs(owner.address, owner.address, damHolder.target, amountToSend, userData, emptyOperatorData);
+		});
 
-    it('Should emit TokensToSendCalled event with correct arguments when sending tokens', async function () {
-      const { owner, damHolder, damToken, lockquidityToken, ethers } = await loadFixture(deployDamHolderFixture);
-      const lockAmount = ethers.parseUnits('100', 18);
-      // userData and operatorData are empty for operatorSend called by LockquidityToken
-      const emptyBytes = ethers.toUtf8Bytes('');
+		it('Should emit TokensToSendCalled event with correct arguments when sending tokens', async function () {
+			const { owner, damHolder, damToken, lockquidityToken, ethers } = await loadFixture(deployDamHolderFixture);
+			const lockAmount = ethers.parseUnits('100', 18);
+			// userData and operatorData are empty for operatorSend called by LockquidityToken
+			const emptyBytes = ethers.toUtf8Bytes('');
 
-      // Setup holder with tokens and operator authorization
-      await setupHolderForLocking(owner, damHolder, damToken, lockquidityToken, lockAmount);
+			// Setup holder with tokens and operator authorization
+			await setupHolderForLocking(owner, damHolder, damToken, lockquidityToken, lockAmount);
 
-      // The lock action will send tokens from DamHolder, triggering the `tokensToSend` hook
-      // The lock function in DamHolder calls operatorSend with empty userData and operatorData
-      await expect(damHolder.connect(owner).lock(lockquidityToken.target, damHolder.target, lockAmount))
-        .to.emit(damHolder, EventNames.TokensToSendCalled)
-        .withArgs(
-          lockquidityToken.target,
-          damHolder.target,
-          lockquidityToken.target,
-          lockAmount,
-          emptyBytes,
-          emptyBytes,
-        );
-    });
-  });
+			// The lock action will send tokens from DamHolder, triggering the `tokensToSend` hook
+			// The lock function in DamHolder calls operatorSend with empty userData and operatorData
+			await expect(damHolder.connect(owner).lock(lockquidityToken.target, damHolder.target, lockAmount))
+				.to.emit(damHolder, EventNames.TokensToSendCalled)
+				.withArgs(
+					lockquidityToken.target,
+					damHolder.target,
+					lockquidityToken.target,
+					lockAmount,
+					emptyBytes,
+					emptyBytes
+				);
+		});
+	});
 });
