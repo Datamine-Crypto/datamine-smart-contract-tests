@@ -1,5 +1,5 @@
-import { EthereumProvider } from 'hardhat/types';
-import { ERC1820_ADDRESS, ERC1820_DEPLOYER, ERC1820_PAYLOAD } from './erc1820-data.js';
+import { EthereumProvider } from 'hardhat/types/providers';
+import { ERC1820_ADDRESS, ERC1820_DEPLOYER, ERC1820_PAYLOAD } from './erc1820-data';
 
 async function ensureERC1820(provider: EthereumProvider): Promise<void> {
 	const code = await provider.send('eth_getCode', [ERC1820_ADDRESS, 'latest']);

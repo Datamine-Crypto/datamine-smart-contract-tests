@@ -1,5 +1,5 @@
-import { deployLockquidityContracts, deployDamHolder } from '../deployHelpers.js';
-import { deployBaseFixture } from './base.js';
+import { deployLockquidityContracts, deployDamHolder } from '../deployHelpers';
+import { deployBaseFixture } from './base';
 
 export async function deployDamHolderFixture(connection: any) {
 	const { damToken, owner, addr1, ethers } = await deployBaseFixture(connection);

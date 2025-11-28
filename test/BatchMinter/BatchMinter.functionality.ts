@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { deployBatchMinterFixture, lockTokens, mineBlocks, parseUnits, loadFixture } from '../helpers/index.js';
+import { deployBatchMinterFixture, lockTokens, mineBlocks, parseUnits, loadFixture } from '../helpers/index';
 
 describe('BatchMinter Functionality', function () {
 	it('should allow a user to batch burn when no delegated minter is set', async function () {

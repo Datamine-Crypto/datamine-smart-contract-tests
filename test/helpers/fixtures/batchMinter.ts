@@ -1,6 +1,6 @@
-import { deployFluxToken } from '../deployHelpers.js';
-import { ContractNames } from '../common.js';
-import { deployBaseFixture } from './base.js';
+import { deployFluxToken } from '../deployHelpers';
+import { ContractNames } from '../common';
+import { deployBaseFixture } from './base';
 
 export async function deployBatchMinterFixture(connection: any) {
 	const { ethers } = connection;

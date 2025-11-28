@@ -5,7 +5,7 @@ import {
 	mintLockTokens,
 	lockTokens,
 	loadFixture,
-} from '../helpers/index.js';
+} from '../helpers/index';
 
 describe('LockToken Multipliers', function () {
 	describe('Multipliers', function () {

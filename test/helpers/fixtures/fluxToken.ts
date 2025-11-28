@@ -1,6 +1,6 @@
-import { deployFluxToken } from '../deployHelpers.js';
-import { lockTokens, parseUnits } from '../common.js';
-import { deployBaseFixture } from './base.js';
+import { deployFluxToken } from '../deployHelpers';
+import { lockTokens, parseUnits } from '../common';
+import { deployBaseFixture } from './base';
 
 export async function deployFluxTokenFixture(connection: any) {
 	const { damToken, owner, addr1, ethers } = await deployBaseFixture(connection);

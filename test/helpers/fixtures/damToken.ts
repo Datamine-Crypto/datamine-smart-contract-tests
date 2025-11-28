@@ -1,5 +1,5 @@
-import { deployDamToken } from '../deployHelpers.js';
-import { deployBaseFixture } from './base.js';
+import { deployDamToken } from '../deployHelpers';
+import { deployBaseFixture } from './base';
 
 export async function deployDamTokenFixture(connection: any) {
 	const { damToken, owner, addr1, addr2, ethers } = await deployBaseFixture(connection);

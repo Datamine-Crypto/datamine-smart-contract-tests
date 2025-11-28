@@ -1,5 +1,5 @@
-import { hodlClickerRushFixture } from './fixtures/hodlClickerRush.js';
-import { lockTokens, mineBlocks } from './common.js';
+import { hodlClickerRushFixture } from './fixtures/hodlClickerRush';
+import { lockTokens, mineBlocks } from './common';
 
 /**
  * @notice Deposits a specified amount of FLUX tokens into the HodlClickerRush contract for a user.

@@ -1,4 +1,4 @@
-import { deployDamToken } from '../deployHelpers.js';
+import { deployDamToken } from '../deployHelpers';
 
 // Base fixture for deploying DAM token and getting signers
 export async function deployBaseFixture(connection: any) {

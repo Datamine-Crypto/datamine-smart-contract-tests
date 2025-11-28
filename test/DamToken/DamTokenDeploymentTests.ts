@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { deployDamTokenFixture, parseUnits, loadFixture } from '../helpers/index.js';
+import { deployDamTokenFixture, parseUnits, loadFixture } from '../helpers/index';
 
 describe('DamToken Deployment', function () {
 	describe('Deployment', function () {

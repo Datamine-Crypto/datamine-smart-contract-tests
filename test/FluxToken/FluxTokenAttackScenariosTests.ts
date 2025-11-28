@@ -7,7 +7,7 @@ import {
 	mintFluxTokens,
 	deployFluxTokenFixture,
 	loadFixture,
-} from '../helpers/index.js';
+} from '../helpers/index';
 
 describe('FluxToken Attack Scenarios', function () {
 	describe('Attack Scenarios', function () {

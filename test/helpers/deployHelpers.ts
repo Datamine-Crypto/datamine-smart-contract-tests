@@ -1,4 +1,4 @@
-import { ContractNames } from './common.js';
+import { ContractNames } from './common';
 
 /**
  * @dev This file centralizes helper functions for deploying various smart contracts

@@ -5,7 +5,7 @@ import hardhatNetworkHelpers from '@nomicfoundation/hardhat-network-helpers';
 import hardhatChaiMatchers from '@nomicfoundation/hardhat-ethers-chai-matchers';
 
 import { defineConfig } from 'hardhat/config';
-import { erc1820Plugin } from './test/helpers/plugins/erc1820/erc1820-plugin.js';
+import { erc1820Plugin } from './test/helpers/plugins/erc1820/erc1820-plugin';
 
 export default defineConfig({
 	plugins: [

@@ -1,4 +1,4 @@
-import { deployBatchMinterFixture, lockTokens, mineBlocks, parseUnits, loadFixture } from '../helpers/index.js';
+import { deployBatchMinterFixture, lockTokens, mineBlocks, parseUnits, loadFixture } from '../helpers/index';
 
 describe('BatchMinter Yield Comparison', function () {
 	it('should calculate total burned amount for normal minting', async function () {

@@ -1,4 +1,4 @@
-import { parseUnits, testTokenBurn, deployDamTokenFixture, loadFixture } from '../helpers/index.js';
+import { parseUnits, testTokenBurn, deployDamTokenFixture, loadFixture } from '../helpers/index';
 
 describe('DamToken Burning', function () {
 	describe('Burning', function () {

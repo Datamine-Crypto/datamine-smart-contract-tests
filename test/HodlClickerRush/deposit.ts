@@ -5,7 +5,7 @@ import {
 	depositFor,
 	setupBurnableAddress,
 	loadFixture,
-} from '../helpers/index.js';
+} from '../helpers/index';
 
 describe('HodlClickerRush Deposit', () => {
 	it('should allow depositing and calculate actualAmountToDeposit correctly when contract is empty', async () => {

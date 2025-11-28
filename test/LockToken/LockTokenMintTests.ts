@@ -6,7 +6,7 @@ import {
 	mintLockTokens,
 	RevertMessages,
 	loadFixture,
-} from '../helpers/index.js';
+} from '../helpers/index';
 
 describe('LockToken Mint', function () {
 	describe('mintToAddress', function () {

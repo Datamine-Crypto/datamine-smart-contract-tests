@@ -7,7 +7,7 @@ import {
 	testTokenBurn,
 	deployDamTokenMigrationFixture,
 	loadFixture,
-} from '../helpers/index.js';
+} from '../helpers/index';
 
 /**
  * @dev Test suite for verifying the correct deployment and initial state of the DamToken contract,

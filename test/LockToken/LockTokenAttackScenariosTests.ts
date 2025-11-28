@@ -6,7 +6,7 @@ import {
 	mintLockTokens,
 	deployLockTokenFixture,
 	loadFixture,
-} from '../helpers/index.js';
+} from '../helpers/index';
 
 describe('LockToken Attack Scenarios', function () {
 	describe('Attack Scenarios', function () {

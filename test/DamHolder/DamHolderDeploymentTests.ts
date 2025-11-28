@@ -7,7 +7,7 @@ import {
 	TOKENS_RECIPIENT_INTERFACE_HASH,
 	setupHolderForLocking,
 	deployDamHolderFixture,
-} from '../helpers/index.js';
+} from '../helpers/index';
 
 describe('DamHolder Deployment', function () {
 	describe('Deployment', function () {

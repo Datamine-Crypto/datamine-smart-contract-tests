@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { lockTokens, deployLockTokenFixture, RevertMessages, loadFixture } from '../helpers/index.js';
+import { lockTokens, deployLockTokenFixture, RevertMessages, loadFixture } from '../helpers/index';
 
 describe('LockToken Unlock', function () {
 	describe('Unlock', function () {

@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { deployFluxTokenFixture, loadFixture, parseUnits, lockTokens } from '../helpers/index.js';
+import { deployFluxTokenFixture, loadFixture, parseUnits, lockTokens } from '../helpers/index';
 
 describe('FluxToken Deployment', function () {
 	describe('Deployment', function () {

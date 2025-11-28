@@ -5,7 +5,7 @@ import {
 	depositFor,
 	BurnResultCode,
 	loadFixture,
-} from '../helpers/index.js';
+} from '../helpers/index';
 
 describe('HodlClickerRush Simple Burn', () => {
 	it('should return InsufficientContractBalance if not enough FLUX is deposited', async () => {

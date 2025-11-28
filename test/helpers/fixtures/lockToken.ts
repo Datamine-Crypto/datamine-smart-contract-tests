@@ -1,7 +1,7 @@
-import { deployLockquidityContracts } from '../deployHelpers.js';
-import { lockTokens, parseUnits } from '../common.js';
-import { mintLockTokens } from '../setupHelpers.js';
-import { deployBaseFixture } from './base.js';
+import { deployLockquidityContracts } from '../deployHelpers';
+import { lockTokens, parseUnits } from '../common';
+import { mintLockTokens } from '../setupHelpers';
+import { deployBaseFixture } from './base';
 
 export async function deployLockTokenFixture(connection: any) {
 	const { damToken, owner, addr1, ethers } = await deployBaseFixture(connection);

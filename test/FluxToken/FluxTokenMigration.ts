@@ -9,7 +9,7 @@ import {
 	lockTokens,
 	mintFluxTokens,
 	loadFixture,
-} from '../helpers/index.js';
+} from '../helpers/index';
 
 /**
  * @dev Test suite for the FLUX Token migration and core functionalities.

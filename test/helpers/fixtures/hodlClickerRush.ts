@@ -1,4 +1,4 @@
-import { deployBaseFixture } from './base.js';
+import { deployBaseFixture } from './base';
 
 export async function hodlClickerRushFixture(connection: any) {
 	const { damToken, owner, addr1, addr2, addr3, ethers } = await deployBaseFixture(connection);

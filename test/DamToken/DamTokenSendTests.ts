@@ -7,7 +7,7 @@ import {
 	EventNames,
 	RevertMessages,
 	EMPTY_BYTES,
-} from '../helpers/index.js';
+} from '../helpers/index';
 
 describe('DamToken Send Operations', function () {
 	describe('send function tests', function () {

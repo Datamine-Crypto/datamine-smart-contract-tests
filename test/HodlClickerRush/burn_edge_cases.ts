@@ -5,7 +5,7 @@ import {
 	setupBurnableAddress,
 	BurnResultCode,
 	loadFixture,
-} from '../helpers/index.js';
+} from '../helpers/index';
 
 describe('HodlClickerRush Burn Edge Cases', () => {
 	/**

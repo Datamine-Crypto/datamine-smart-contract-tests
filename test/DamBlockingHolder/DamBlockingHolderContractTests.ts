@@ -7,7 +7,7 @@ import {
 	setupDamBlockingHolderTest,
 	deployReentrancyTestFixture,
 	loadFixture,
-} from '../helpers/index.js';
+} from '../helpers/index';
 
 /**
  * @dev This test suite focuses on re-entrancy attack vectors using ERC777 hooks within the DamBlockingHolder contract.

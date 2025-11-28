@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { mineBlocks, EMPTY_BYTES, lockTokens } from './common.js';
+import { mineBlocks, EMPTY_BYTES, lockTokens } from './common';
 
 /**
  * @dev This file centralizes helper functions for setting up specific test scenarios.

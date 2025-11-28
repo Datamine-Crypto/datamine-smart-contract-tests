@@ -6,7 +6,7 @@ import {
 	deployFluxTokenFixture,
 	deployFluxTokenAndLockFixture,
 	loadFixture,
-} from '../helpers/index.js';
+} from '../helpers/index';
 
 describe('FluxToken Mint', function () {
 	describe('mintToAddress', function () {

@@ -8,7 +8,19 @@ import unusedImports from 'eslint-plugin-unused-imports';
 export default tseslint.config(
 	// Global ignores
 	{
-		ignores: ['**/build/', '.yarn/', '.pnp.loader.mjs', '.pnp.cjs', '**/artifacts/'],
+		ignores: [
+			'**/build/', 
+			'.yarn/', 
+			'.pnp.loader.mjs', 
+			'.pnp.cjs', 
+			'**/artifacts/',
+			'node_modules/',
+			'coverage/',
+			'build/',
+			'artifacts/',
+			'cache/',
+			'typechain-types/',
+		],
 	},
 
 	// Base ESLint recommended rules

@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { deployLockTokenFixture, loadFixture, RevertMessages } from '../helpers/index.js';
+import { deployLockTokenFixture, loadFixture, RevertMessages } from '../helpers/index';
 
 describe('LockToken Failsafe', function () {
 	describe('Failsafe', function () {

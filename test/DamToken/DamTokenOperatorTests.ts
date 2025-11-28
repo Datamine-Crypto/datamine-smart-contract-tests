@@ -6,7 +6,7 @@ import {
 	EventNames,
 	RevertMessages,
 	EMPTY_BYTES,
-} from '../helpers/index.js';
+} from '../helpers/index';
 
 describe('DamToken Operator Operations', function () {
 	describe('authorizeOperator and revokeOperator tests', function () {

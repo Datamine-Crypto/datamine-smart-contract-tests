@@ -1,5 +1,5 @@
-import { deployLockquidityToken, deployDamBlockingHolder } from '../deployHelpers.js';
-import { deployBaseFixture } from './base.js';
+import { deployLockquidityToken, deployDamBlockingHolder } from '../deployHelpers';
+import { deployBaseFixture } from './base';
 
 export async function deployReentrancyTestFixture(connection: any) {
 	const { damToken, owner, addr1, ethers } = await deployBaseFixture(connection);

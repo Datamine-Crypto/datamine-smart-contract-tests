@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { hodlClickerRushFixture, depositFor, setupBurnableAddress, loadFixture } from '../helpers/index.js';
+import { hodlClickerRushFixture, depositFor, setupBurnableAddress, loadFixture } from '../helpers/index';
 
 describe('HodlClickerRush Scenarios', () => {
 	it('should correctly handle the user-specified reward scenario', async () => {
