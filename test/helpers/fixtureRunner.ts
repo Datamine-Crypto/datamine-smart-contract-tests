@@ -5,10 +5,21 @@ import fs from 'fs';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const wrappedFixtures = new Map<any, () => Promise<any>>();
 
+// Store a single connection to the network to avoid creating multiple connections (otherwise IERC1820 hook fires multiple times)
+let hreConnection: any = null;
+const getConnection = async () => {
+  if (hreConnection) {
+    return hreConnection;
+  }
+
+  hreConnection = await hre.network.connect();
+  return hreConnection;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const loadFixture = async (fixture: (connection: any) => Promise<any>) => {
   try {
-    const connection = await hre.network.connect();
+    const connection = await getConnection();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const hardhatLoadFixture = (connection as any).networkHelpers?.loadFixture;
 
