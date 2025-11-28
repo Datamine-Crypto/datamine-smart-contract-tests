@@ -1,13 +1,11 @@
-import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { parseUnits, EventNames, EMPTY_BYTES, setupHolderForLocking, deployDamHolderFixture } from '../helpers';
+import { deployDamHolderFixture, loadFixture, EventNames, setupHolderForLocking } from '../helpers/index.js';
 
 describe('DamHolder Hooks', function () {
   describe('Hooks', function () {
     it('Should emit TokensReceivedCalled event with correct arguments when receiving tokens', async function () {
-      const { damToken, owner, damHolder } = await loadFixture(deployDamHolderFixture);
-      const amountToSend = parseUnits('100');
+      const { damToken, owner, damHolder, ethers } = await loadFixture(deployDamHolderFixture);
+      const amountToSend = ethers.parseUnits('100', 18);
       const userData = ethers.toUtf8Bytes('some user data');
       // operatorData is empty for send, as per ERC777 standard for `send` function
       const emptyOperatorData = ethers.toUtf8Bytes('');
@@ -22,8 +20,8 @@ describe('DamHolder Hooks', function () {
     });
 
     it('Should emit TokensToSendCalled event with correct arguments when sending tokens', async function () {
-      const { owner, damHolder, damToken, lockquidityToken } = await loadFixture(deployDamHolderFixture);
-      const lockAmount = parseUnits('100');
+      const { owner, damHolder, damToken, lockquidityToken, ethers } = await loadFixture(deployDamHolderFixture);
+      const lockAmount = ethers.parseUnits('100', 18);
       // userData and operatorData are empty for operatorSend called by LockquidityToken
       const emptyBytes = ethers.toUtf8Bytes('');
 

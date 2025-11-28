@@ -1,29 +1,19 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { setupHodlClickerRushTests, depositFor, setupBurnableAddress } from '../helpers';
+import { hodlClickerRushFixture, depositFor, setupBurnableAddress, loadFixture } from '../helpers/index.js';
 
 describe('HodlClickerRush Withdraw', () => {
-  let hodlClickerRush: any, owner: any, addr1: any, addr2: any, damToken: any, fluxToken: any;
-
-  beforeEach(async () => {
-    const setup = await setupHodlClickerRushTests();
-    hodlClickerRush = setup.hodlClickerRush;
-    owner = setup.owner;
-    addr1 = setup.addr1;
-    addr2 = setup.addr2;
-    damToken = setup.damToken;
-    fluxToken = setup.fluxToken;
-  });
-
   it('should allow a user to withdraw their proportional share of rewards', async () => {
+    const { hodlClickerRush, fluxToken, damToken, owner, addr1, addr2, ethers } = await loadFixture(
+      hodlClickerRushFixture,
+    );
     const damAmount = ethers.parseEther('1000000');
 
     // 1. addr2 deposits
-    await depositFor(hodlClickerRush, fluxToken, damToken, addr2, damAmount);
+    await depositFor(ethers, hodlClickerRush, fluxToken, damToken, addr2, damAmount);
 
     // 2. owner generates some rewards, making totalContractRewardsAmount > totalContractLockedAmount
-    await depositFor(hodlClickerRush, fluxToken, damToken, owner, damAmount);
-    await setupBurnableAddress(damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
+    await depositFor(ethers, hodlClickerRush, fluxToken, damToken, owner, damAmount);
+    await setupBurnableAddress(ethers, damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
     await hodlClickerRush.connect(owner).burnTokens(0, addr1.address);
 
     // 3. Get state before withdrawal
@@ -33,13 +23,14 @@ describe('HodlClickerRush Withdraw', () => {
     const initialFluxBalance = await fluxToken.balanceOf(addr2.address);
 
     // 4. Calculate expected withdraw amount
-    const expectedWithdrawAmount = (initialRewardsAmount * initialTotalContractRewardsAmount) / initialTotalContractLockedAmount;
+    const expectedWithdrawAmount =
+      (initialRewardsAmount * initialTotalContractRewardsAmount) / initialTotalContractLockedAmount;
 
     // 5. Withdraw
     const withdrawTx = await hodlClickerRush.connect(addr2).withdrawAll();
     await expect(withdrawTx)
-        .to.emit(hodlClickerRush, 'Withdrawn')
-        .withArgs(addr2.address, expectedWithdrawAmount, initialRewardsAmount);
+      .to.emit(hodlClickerRush, 'Withdrawn')
+      .withArgs(addr2.address, expectedWithdrawAmount, initialRewardsAmount);
 
     // 6. Check final state
     const finalRewardsAmount = (await hodlClickerRush.addressLocks(addr2.address)).rewardsAmount;
@@ -54,12 +45,15 @@ describe('HodlClickerRush Withdraw', () => {
   });
 
   it('should not allow withdrawing more than earned rewards', async () => {
+    const { hodlClickerRush, fluxToken, damToken, owner, addr1, addr2, ethers } = await loadFixture(
+      hodlClickerRushFixture,
+    );
     const damAmount = ethers.parseEther('1000000');
 
-    await depositFor(hodlClickerRush, fluxToken, damToken, owner, damAmount);
-    await setupBurnableAddress(damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
+    await depositFor(ethers, hodlClickerRush, fluxToken, damToken, owner, damAmount);
+    await setupBurnableAddress(ethers, damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
     await hodlClickerRush.connect(owner).burnTokens(0, addr1.address);
-    await depositFor(hodlClickerRush, fluxToken, damToken, addr2, damAmount);
+    await depositFor(ethers, hodlClickerRush, fluxToken, damToken, addr2, damAmount);
 
     await hodlClickerRush.connect(addr2).withdrawAll();
     const addr2RewardsAfter = (await hodlClickerRush.addressLocks(addr2.address)).rewardsAmount;
@@ -68,6 +62,7 @@ describe('HodlClickerRush Withdraw', () => {
   });
 
   it('should not allow withdrawing zero amount', async () => {
+    const { hodlClickerRush, addr1 } = await loadFixture(hodlClickerRushFixture);
     await expect(hodlClickerRush.connect(addr1).withdrawAll()).to.be.revertedWith('No rewards to withdraw');
   });
 });

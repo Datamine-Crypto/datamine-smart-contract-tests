@@ -1,7 +1,12 @@
-import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { mineBlocks, parseUnits, RevertMessages, setupHolderForLocking, deployDamHolderFixture } from '../helpers';
+import {
+  deployDamHolderFixture,
+  parseUnits,
+  loadFixture,
+  mineBlocks,
+  RevertMessages,
+  setupHolderForLocking,
+} from '../helpers/index.js';
 
 describe('DamHolder Functionality', function () {
   describe('Functionality', function () {
@@ -43,7 +48,7 @@ describe('DamHolder Functionality', function () {
     });
 
     it('Should fail to lock more tokens than balance', async function () {
-      const { owner, damHolder, damToken, lockquidityToken } = await loadFixture(deployDamHolderFixture);
+      const { ethers, owner, damHolder, damToken, lockquidityToken } = await loadFixture(deployDamHolderFixture);
       const initialBalance = parseUnits('50');
       const lockAmount = parseUnits('51'); // More than balance
 
@@ -51,7 +56,7 @@ describe('DamHolder Functionality', function () {
       await setupHolderForLocking(owner, damHolder, damToken, lockquidityToken, initialBalance);
 
       // Fast-forward blocks to move past the failsafe period of the LockquidityToken
-      await mineBlocks(161280);
+      await mineBlocks(ethers, 161280);
 
       // Expect the lock to be reverted because the lock amount exceeds the holder's balance
       await expect(
@@ -60,12 +65,12 @@ describe('DamHolder Functionality', function () {
     });
 
     it('Should receive Ether via the receive() fallback function', async function () {
-      const { damHolder } = await loadFixture(deployDamHolderFixture);
+      const { ethers, damHolder } = await loadFixture(deployDamHolderFixture);
       const [owner] = await ethers.getSigners();
       const amount = ethers.parseEther('1.0');
 
       // Send Ether to the contract
-      await expect(owner.sendTransaction({ to: damHolder.target, value: amount })).to.not.be.reverted;
+      await owner.sendTransaction({ to: damHolder.target, value: amount });
 
       // Verify the contract's Ether balance
       expect(await ethers.provider.getBalance(damHolder.target)).to.equal(amount);
@@ -79,8 +84,7 @@ describe('DamHolder Functionality', function () {
       await setupHolderForLocking(owner, damHolder, damToken, lockquidityToken, lockAmount);
 
       // A different address (addrB) calls the lock function
-      await expect(damHolder.connect(addrB).lock(lockquidityToken.target, damHolder.target, lockAmount)).to.not.be
-        .reverted;
+      await damHolder.connect(addrB).lock(lockquidityToken.target, damHolder.target, lockAmount);
 
       // Verify tokens were moved correctly
       expect(await damToken.balanceOf(lockquidityToken.target)).to.equal(lockAmount);
@@ -120,7 +124,7 @@ describe('DamHolder Functionality', function () {
       // This test ensures that the `DamHolder` cannot authorize an operator for a non-ERC777 token (simulated by an EOA).
       // This is crucial for preventing misconfigurations and ensuring that operator authorizations are only attempted
       // with compatible token contracts.
-      await expect(damHolder.authorizeOperator(nonErc777TokenAddress, operator)).to.be.reverted;
+      await expect(damHolder.authorizeOperator(nonErc777TokenAddress, operator)).to.be.revertedWithoutReason();
     });
   });
 });

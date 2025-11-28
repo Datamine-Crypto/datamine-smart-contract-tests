@@ -1,21 +1,19 @@
-import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { parseUnits, RevertMessages, lockTokens, deployLockTokenFixture } from '../helpers';
+import { lockTokens, deployLockTokenFixture, RevertMessages, loadFixture } from '../helpers/index.js';
 
 describe('LockToken Unlock', function () {
   describe('Unlock', function () {
     it('Should allow a user to unlock their tokens', async function () {
-      const { lockquidityToken, damToken, owner } = await loadFixture(deployLockTokenFixture);
+      const { ethers, lockquidityToken, damToken, owner } = await loadFixture(deployLockTokenFixture);
       const lockAmount = ethers.parseUnits('100', 18);
 
-      await lockTokens(lockquidityToken, damToken, owner, lockAmount);
+      await lockTokens(ethers, lockquidityToken, damToken, owner, lockAmount);
 
       // Unlock tokens
       await lockquidityToken.connect(owner).unlock();
 
       // Verify that the user's DAM token balance is restored
-      expect(await damToken.balanceOf(owner.address)).to.equal(parseUnits('25000000')); // Initial balance
+      expect(await damToken.balanceOf(owner.address)).to.equal(ethers.parseUnits('25000000', 18)); // Initial balance
     });
 
     /**

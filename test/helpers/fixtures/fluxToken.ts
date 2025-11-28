@@ -1,26 +1,26 @@
-import { ethers } from 'hardhat';
-import { deployFluxToken } from '../deployHelpers';
-import { lockTokens, parseUnits } from '../common';
-import { deployBaseFixture } from './base';
+import hre from 'hardhat';
+import { deployFluxToken } from '../deployHelpers.js';
+import { lockTokens, parseUnits } from '../common.js';
+import { deployBaseFixture } from './base.js';
 
-export async function deployFluxTokenFixture() {
-  const { damToken, owner, addr1 } = await deployBaseFixture();
-  const fluxToken = await deployFluxToken(damToken.target, 5760, 161280, 0);
-  return { fluxToken, damToken, owner, otherAccount: addr1 };
+export async function deployFluxTokenFixture(connection: any) {
+  const { damToken, owner, addr1, ethers } = await deployBaseFixture(connection);
+  const fluxToken = await deployFluxToken(ethers, damToken.target, 5760, 161280, 0);
+  return { fluxToken, damToken, owner, otherAccount: addr1, ethers };
 }
 
-export async function deployFluxTokenAndLockFixture() {
-  const { fluxToken, damToken, owner, otherAccount } = await deployFluxTokenFixture();
+export async function deployFluxTokenAndLockFixture(connection: any) {
+  const { fluxToken, damToken, owner, otherAccount, ethers } = await deployFluxTokenFixture(connection);
   const lockAmount = parseUnits('100');
-  await lockTokens(fluxToken, damToken, owner, lockAmount);
-  return { fluxToken, damToken, owner, otherAccount, lockAmount };
+  await lockTokens(ethers, fluxToken, damToken, owner, lockAmount);
+  return { fluxToken, damToken, owner, otherAccount, lockAmount, ethers };
 }
 
-export async function deployFluxTokenAttackFixture() {
-  const { damToken, owner, addr1, addr2 } = await deployBaseFixture();
+export async function deployFluxTokenAttackFixture(connection: any) {
+  const { damToken, owner, addr1, addr2, ethers } = await deployBaseFixture(connection);
 
   // Deploy FluxToken with failsafe disabled (0) to simplify attack scenario setup.
-  const fluxToken = await deployFluxToken(damToken.target, 5760, 161280, 0);
+  const fluxToken = await deployFluxToken(ethers, damToken.target, 5760, 161280, 0);
 
   // Deploy the malicious UnlockAttacker contract, which is designed to attempt re-entrancy.
   const UnlockAttacker = await ethers.getContractFactory('UnlockAttacker');
@@ -29,17 +29,33 @@ export async function deployFluxTokenAttackFixture() {
   // Transfer DAM to attackerAccount for locking, so the attacker has tokens to interact with FluxToken.
   await damToken.connect(owner).transfer(addr1.address, parseUnits('1000'));
 
-  return { fluxToken, damToken, unlockAttacker, owner, attackerAccount: addr1, otherAccount: addr2 };
+  return {
+    fluxToken,
+    damToken,
+    unlockAttacker,
+    owner,
+    attackerAccount: addr1,
+    otherAccount: addr2,
+    ethers,
+  };
 }
 
-export async function deployFluxTokenMigrationFixture() {
-  const { damToken, owner, addr1, addr2, addr3 } = await deployBaseFixture();
+export async function deployFluxTokenMigrationFixture(connection: any) {
+  const { damToken, owner, addr1, addr2, addr3, ethers } = await deployBaseFixture(connection);
 
   // Deploy FluxToken with specific time bonus and failsafe parameters relevant for migration.
-  const fluxToken = await deployFluxToken(damToken.target, 5760, 161280, 161280);
+  const fluxToken = await deployFluxToken(ethers, damToken.target, 5760, 161280, 161280);
 
   // Transfer some DAM to the damHolder to have tokens available for locking tests.
   await damToken.connect(owner).transfer(addr1.address, parseUnits('1000'));
 
-  return { damToken, fluxToken, owner, damHolder: addr1, fluxMintReceiver: addr2, operator: addr3 };
+  return {
+    damToken,
+    fluxToken,
+    owner,
+    damHolder: addr1,
+    fluxMintReceiver: addr2,
+    operator: addr3,
+    ethers,
+  };
 }

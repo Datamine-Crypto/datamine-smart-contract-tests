@@ -1,23 +1,19 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import { setupHodlClickerRushTests, setupBurnableAddress, depositFor, BurnResultCode } from '../helpers';
+import {
+  hodlClickerRushFixture,
+  setupBurnableAddress,
+  depositFor,
+  BurnResultCode,
+  loadFixture,
+} from '../helpers/index.js';
 
 describe('HodlClickerRush Simple Burn', () => {
-  let hodlClickerRush: any, owner: any, addr1: any, addr2: any, damToken: any, fluxToken: any;
-
-  beforeEach(async () => {
-    const setup = await setupHodlClickerRushTests();
-    hodlClickerRush = setup.hodlClickerRush;
-    owner = setup.owner;
-    addr1 = setup.addr1;
-    addr2 = setup.addr2;
-    damToken = setup.damToken;
-    fluxToken = setup.fluxToken;
-  });
-
   it('should return InsufficientContractBalance if not enough FLUX is deposited', async () => {
+    const { hodlClickerRush, fluxToken, damToken, owner, addr1, addr2, ethers } = await loadFixture(
+      hodlClickerRushFixture,
+    );
     const damAmount = ethers.parseEther('1000000');
-    await setupBurnableAddress(damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
+    await setupBurnableAddress(ethers, damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
 
     const burnOperationResult = await hodlClickerRush.connect(addr2).burnTokens.staticCall(0, addr1.address);
 
@@ -25,10 +21,13 @@ describe('HodlClickerRush Simple Burn', () => {
   });
 
   it('should successfully burn tokens if enough FLUX is deposited', async () => {
+    const { hodlClickerRush, fluxToken, damToken, owner, addr1, addr2, ethers } = await loadFixture(
+      hodlClickerRushFixture,
+    );
     const damAmount = ethers.parseEther('1000000');
 
-    await depositFor(hodlClickerRush, fluxToken, damToken, addr1, damAmount);
-    await setupBurnableAddress(damToken, fluxToken, owner, addr2, damAmount, hodlClickerRush);
+    await depositFor(ethers, hodlClickerRush, fluxToken, damToken, addr1, damAmount);
+    await setupBurnableAddress(ethers, damToken, fluxToken, owner, addr2, damAmount, hodlClickerRush);
 
     const burnOperationResult = await hodlClickerRush.connect(owner).burnTokens.staticCall(0, addr2.address);
 

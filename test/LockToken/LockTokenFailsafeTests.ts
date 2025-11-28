@@ -1,6 +1,5 @@
-import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
-import { parseUnits, RevertMessages, deployLockTokenFixture } from '../helpers';
+import { deployLockTokenFixture, loadFixture, RevertMessages } from '../helpers/index.js';
 
 describe('LockToken Failsafe', function () {
   describe('Failsafe', function () {
@@ -9,9 +8,9 @@ describe('LockToken Failsafe', function () {
       // The failsafe limits the amount of tokens that can be locked during a specific period, acting as a protective measure
       // against large, sudden inflows that could destabilize the system or exploit vulnerabilities.
       // Ensuring this limit is enforced is vital for the overall security and stability of the token ecosystem.
-      const { lockquidityToken, damToken, owner } = await loadFixture(deployLockTokenFixture);
+      const { lockquidityToken, damToken, owner, ethers } = await loadFixture(deployLockTokenFixture);
 
-      const lockAmount = parseUnits('101');
+      const lockAmount = ethers.parseUnits('101', 18);
 
       await damToken.connect(owner).authorizeOperator(lockquidityToken.target);
       await expect(lockquidityToken.connect(owner).lock(owner.address, lockAmount)).to.be.revertedWith(

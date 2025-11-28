@@ -1,19 +1,19 @@
-import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import {
-  RevertMessages,
+  deployLockTokenAndLockFixture,
+  deployLockTokenFixture,
   mineBlocks,
   mintLockTokens,
-  deployLockTokenFixture,
-  deployLockTokenAndLockFixture,
-} from '../helpers';
+  RevertMessages,
+  loadFixture,
+} from '../helpers/index.js';
 
 describe('LockToken Mint', function () {
   describe('mintToAddress', function () {
     describe('With locked tokens', function () {
       it('Should revert if targetBlock is in the future', async function () {
-        const { lockquidityToken, owner } = await loadFixture(deployLockTokenAndLockFixture);
-        const futureBlock = (await mineBlocks(1)) + 100;
+        const { lockquidityToken, owner, ethers } = await loadFixture(deployLockTokenAndLockFixture);
+        const futureBlock = (await mineBlocks(ethers, 1)) + 100;
 
         await expect(
           lockquidityToken.connect(owner).mintToAddress(owner.address, owner.address, futureBlock),
@@ -21,12 +21,12 @@ describe('LockToken Mint', function () {
       });
 
       it('Should revert if targetBlock is before lastMintBlockNumber', async function () {
-        const { lockquidityToken, owner } = await loadFixture(deployLockTokenAndLockFixture);
+        const { lockquidityToken, owner, ethers } = await loadFixture(deployLockTokenAndLockFixture);
         // This test verifies that `mintToAddress` enforces a strictly increasing `targetBlock` number.
         // This prevents users from re-minting for past blocks, which could lead to double-counting rewards
         // or manipulating the minting history, thereby safeguarding the chronological integrity of token distribution.
-        const blockAfterLock = await mintLockTokens(lockquidityToken, owner, owner.address, 1);
-        const currentBlock = await mineBlocks(1);
+        const blockAfterLock = await mintLockTokens(ethers, lockquidityToken, owner, owner.address, 1);
+        const currentBlock = await mineBlocks(ethers, 1);
 
         await expect(
           lockquidityToken.connect(owner).mintToAddress(owner.address, owner.address, blockAfterLock),
@@ -34,8 +34,8 @@ describe('LockToken Mint', function () {
       });
 
       it('Should revert if caller is not the minterAddress', async function () {
-        const { lockquidityToken, owner, addrB } = await loadFixture(deployLockTokenAndLockFixture);
-        const block = await mineBlocks(1);
+        const { lockquidityToken, owner, addrB, ethers } = await loadFixture(deployLockTokenAndLockFixture);
+        const block = await mineBlocks(ethers, 1);
 
         await expect(
           lockquidityToken.connect(addrB).mintToAddress(owner.address, addrB.address, block),
@@ -44,9 +44,9 @@ describe('LockToken Mint', function () {
     });
 
     it('Should revert if sourceAddress has no locked tokens', async function () {
-      const { lockquidityToken, owner, addrB } = await loadFixture(deployLockTokenFixture);
+      const { lockquidityToken, owner, addrB, ethers } = await loadFixture(deployLockTokenFixture);
 
-      const block = await mineBlocks(0);
+      const block = await mineBlocks(ethers, 0);
 
       await expect(
         lockquidityToken.connect(owner).mintToAddress(addrB.address, owner.address, block),

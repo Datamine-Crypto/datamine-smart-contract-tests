@@ -1,6 +1,5 @@
-import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
-import { parseUnits, deployDamTokenFixture } from '../helpers';
+import { deployDamTokenFixture, parseUnits, loadFixture } from '../helpers/index.js';
 
 describe('DamToken Deployment', function () {
   describe('Deployment', function () {

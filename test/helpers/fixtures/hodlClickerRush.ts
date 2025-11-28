@@ -1,8 +1,8 @@
-import { ethers } from 'hardhat';
-import { deployBaseFixture } from './base';
+import hre from 'hardhat';
+import { deployBaseFixture } from './base.js';
 
-export async function hodlClickerRushFixture() {
-  const { damToken, owner, addr1, addr2, addr3 } = await deployBaseFixture();
+export async function hodlClickerRushFixture(connection: any) {
+  const { damToken, owner, addr1, addr2, addr3, ethers } = await deployBaseFixture(connection);
 
   const FluxToken = await ethers.getContractFactory('FluxToken');
   const fluxToken = await FluxToken.deploy(damToken.target, 1, 1, 1);
@@ -12,5 +12,14 @@ export async function hodlClickerRushFixture() {
   const hodlClickerRush = await HodlClickerRush.deploy(fluxToken.target);
   await hodlClickerRush.waitForDeployment();
 
-  return { hodlClickerRush, fluxToken, damToken, owner, addr1, addr2, addr3 };
+  return {
+    hodlClickerRush,
+    fluxToken,
+    damToken,
+    owner,
+    addr1,
+    addr2,
+    addr3,
+    ethers,
+  };
 }

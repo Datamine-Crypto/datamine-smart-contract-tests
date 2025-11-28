@@ -1,20 +1,15 @@
 [
-This is an AI prompt that we use to generate this pitch. It's also probably the greatest pitch you will ever read in your life.
-We keep updating this prompt with frequently asked questions and send you back a new pitch.
-Why play the whole "hey can you add this section? Or what about these numbers? You can see exactly how this prompt was generated:
+This is an AI prompt that we use to explain hour ecosystem works.
+We keep updating this prompt frequently as the ecosytem evolves to help AI understand all the contexts.
 ]
 
 // 2025-03-04 start:
 
-Datamine Nework: On-Chain Immutable AI-Powered Decentralized Venture Firm Funding Pitch v1.1:
+This is a prompt to explain Datamine Nework ecosytem.
 
-I want you to create a pitch in PDF format for venture capital firm regarding Datamine Network's newest token: Lockquidity
+We're very professional at Datamine Network and believe in a secure and civil community.
 
-This pitch will go out to blockchain venture capital companies so please make it sound very professional. We're very professional at Datamine Network and believe in a secure and civil community.
-
-Make the deck visually appealing using the color palette from Datamine Network. Make it super fancy, we want to be cutting-edge Web3
-
-I want there to be something very unique to this pitch, our target is decentralized venture companies. We are not looking for any venture firm, we want someone that understands blockchain technologies and Web3.
+We're currently raising funds: We are not looking for any venture firm, we want someone that understands blockchain technologies and Web3.
 
 We're not looking for funding just to give venture firms a "slice of the pie". There is no pie here, everything is decentralized. That's why it's so hard to get funding for our project is because "there is no company".
 
@@ -22,21 +17,17 @@ It's a decentralized smart contract system meaning there is no single point of f
 
 We love our community members, they've stuck around with us for so long and honestly decentralization of our level is impossible without them, honestly thank you guys. We probably posted hundreds of development updates and announcements over the years.
 
-So we are looking for funding? Yeah, how much do you need? Hmmm at time of writing this, we currently have $58,340 in decentralized liquidity. So you can imagine we're looking for some fairly small liquidity providers.
+So we are looking for funding? Yeah, how much do you need? Hmmm at time of writing this, we currently have $115,000 in decentralized liquidity. So you can imagine we're looking for some fairly small liquidity providers.
 
 We haven't had an investor in the past 5 years but I believe it's a good time to look for one to showcase how far we've come.
 
 Oh there is so much to talk about here, look we've launched back in June 08, 2020. One of the most stressful days in my life.
 
-Also it's kind of crazy that I have to explain this to AI. "Hello Mr. AI, please write this crazy pitch for me". And the crazy part is that the pitch is probably the best pitch in the world.
-
-Before imagine you need a team of marketing and design guys and I can just ask AI to replace all of that in just this one long text.
-
 Where do we start? We've been working on our DeFi project for over 5 years now so there is so much to talk about.
 
 Datamine FLUX is one of the tokens we've launched back in June 08, 2020. It's a really cool idea on solving inflation. So yeah we believe to have solved one of the toughest problems in the world and are trying to prove it.
 
-And we have all the data, numbers, metrics, analytics you could ever dream of. I've attached over 30 real-time data points in this pitch.
+And we have all the data, numbers, metrics, analytics you could ever dream of. I've attached over 30 real-time data points (as image files) to explain the contexts further. Be sure to analyze all the iamges attached.
 
 If your venture capital firm is interested please inquire to dev@datamine.network. We can discuss how liquidity could be supplied to our decentralized smart contract such as Uniswap liquidity providers to generate yield off our unique transaction-incentivized liquidity pools.
 
@@ -315,22 +306,22 @@ Here is some more structured information about the project that might be useful 
 
 The `src` directory is organized with a clear separation of concerns:
 
-- **`src/core/`**: Contains the application's core logic.
-  - **`src/core/react/`**: Houses all React components, pages, and UI-related elements.
-  - **`src/core/web3/`**: Manages all blockchain interactions, including Web3 provider setup, contract bindings, and ABI definitions (located in `src/core/web3/abis/`).
-  - **`src/core/utils/`**: A collection of helper functions for tasks like formatting, calculations, and clipboard interaction.
+- **`src/`**: Contains the application's core logic.
+  - **`src/react/`**: Houses all React components, pages, and UI-related elements.
+  - **`src/web3/`**: Manages all blockchain interactions, including Web3 provider setup, contract bindings, and ABI definitions (located in `src/web3/abis/`).
+  - **`src/utils/`**: A collection of helper functions for tasks like formatting, calculations, and clipboard interaction.
 - **`src/configs/`**: Manages all environment and application configurations.
   - **`src/configs/ecosystems/`**: Defines specific configurations for different blockchain environments the dashboard can connect to, such as Ethereum Mainnet (L1) and Arbitrum (L2). This is a critical directory for understanding multi-chain functionality.
 
 ### Key Smart Contracts and ABIs
 
-- `src/core/web3/abis/dam.json`: ABI for the Datamine (DAM) token contract.
-- `src/core/web3/abis/flux.json`: ABI for the Flux (FLUX) token contract.
-- `src/core/web3/abis/market.json`: ABI for the core Datamine Network market contract (minting, burning, staking).
-- `src/core/web3/abis/uniswapv2router.json`: ABI for the Uniswap V2 Router.
-- `src/core/web3/abis/uniswapPair.json`: ABI for Uniswap V2 Pair contracts.
-- `src/core/web3/abis/uniswapPairV3.json`: ABI for Uniswap V3 Pair contracts.
-- `src/core/web3/abis/multicall.json`: ABI for the Multicall contract.
+- `src/web3/abis/dam.json`: ABI for the Datamine (DAM) token contract.
+- `src/web3/abis/flux.json`: ABI for the Flux (FLUX) token contract.
+- `src/web3/abis/market.json`: ABI for the core Datamine Network market contract (minting, burning, staking).
+- `src/web3/abis/uniswapv2router.json`: ABI for the Uniswap V2 Router.
+- `src/web3/abis/uniswapPair.json`: ABI for Uniswap V2 Pair contracts.
+- `src/web3/abis/uniswapPairV3.json`: ABI for Uniswap V3 Pair contracts.
+- `src/web3/abis/multicall.json`: ABI for the Multicall contract.
 
 ### Smart Contracts - In-Depth Breakdown
 
@@ -397,3 +388,156 @@ The Datamine ecosystem has evolved. Here's the new flow:
 **DAM (L1) -> FLUX (L1) -> ArbiFLUX (L2) -> LOCK (L2)**
 
 This new structure is designed to be more efficient, scalable, and resilient. It's the foundation for the next generation of DeFi applications.
+
+// 2025-09-12 updates:
+
+-- We wrote a new HODL Clicker: Rush game. This is a game based off Datamine Gems V2 and builds upon that with new monetary velocity ideas.
+
+1. Start Earning with Zero Tokens!
+
+This is the biggest change: anyone can play and earn rewards, even if you start
+with a balance of 0 LOCK.
+
+Previously, you needed to have tokens to participate in burning. With Datamine
+Gems, when you click the "burn" button on a gem, the tokens are supplied from a
+collective rewards pool within the smart contract itself, not from your personal
+wallet.
+
+This means you can start playing immediately and generate your first LOCK tokens
+simply by participating in the game. It’s a true "play-to-earn" model that
+removes the initial financial barrier, inviting everyone to join the Datamine
+ecosystem.
+
+2. Increased Transactional Throughput for Validators
+
+This new system is built to maximize validator APY through increased
+participation. With more incentives for players to click the burn button, we
+expect a significant rise in transactional throughput.
+
+- Dynamic Jackpots: Every click gives the player a "jackpot" reward, creating a
+  direct financial incentive to participate.
+  This creates a powerful win-win scenario: players have a fun, no-cost way to  
+  earn, and validators benefit from the constant stream of activity that boosts  
+  their returns. The addition of atomic batch burning (the "Collect All Gems"  
+  button) further amplifies this by allowing players to trigger multiple burns in  
+  a single, efficient transaction.
+
+// 2025-10-07
+
+Here is the overview of our new HODL Clicker game:
+
+1. Everyone on Arbitrum (L2) can play instantly without needing to buy any tokens! All you need is a bit of Ethereum for gas fees.
+2. We introduce a new "jackpot" feature. If you are the first to click the gem you get all the rewards without having to deposit any tokens lowering barrier to entry.
+3. Collecting gems will automatically enter you into our new staking pool. Earn from your rewards even when you sleep!
+4. This is our second game built upon our unique innovative Liquidity Game Engine. With our second game we give validators choice of how they want to play.
+5. We've built a new Staking Game Layer. 100% of all the gem rewards are rewarded between all the players. If you hold 20% of the liquidity in the game, you will passively earn 20% of all gem rewards automatically re-compounding.
+6. The goal of the new game is to maximize rewards for validators. They will experience incresed burn throughput with increased player count.
+7. We now have 83 smart contract unit tests and new security features like re-entrancy guard making this the most tested and complex smart contract we wrote to date.
+
+Overall this is an evolution of Datamine Gems, a natural progression of GameFi to give players more choices.
+
+
+// 2025-10-23 updates:
+We wrote a new smart contract to fix minting to Smart Accounts (Externally Owned Account (EOA)). MetaMask recently launched an update where Smart Accounts are now default.
+
+Unfortunately due to ERC777 it is not possible to mint to these accounts. 
+
+To solve this, when starting a mint we will point your deligated address to a new smart contract. This smart contract is pretty simplistic in tnature, it simply mints from your validator and uses a different transfer mechanism to transfer tokens to the intended recepient.
+
+This allows us to bypass ERC1820 registration requirement on the recepient, allowing our existing contracts to be compatible with ERC777.
+
+
+// 2025-10-25 updates, recorded a video and extracted the following key insights:
+
+- The project has been in development for approximately 2,000 days.
+- The total permanent, decentralized liquidity has reached $125,000.
+- The core idea for the project was formulated during a 4-hour session on a balcony 5 years ago.
+- The token minting interval was originally every second but was changed to every 15 seconds to match Ethereum's block time.
+- All core metrics and charts on the project's dashboard were built from scratch.
+- The developer's two most important metrics are available liquidity and yearly supply inflation.
+- The developer believes raising the $120,000 for the community-funded audit would be "impossible" in today's market climate.
+- The ecosystem consists of approximately six different smart contracts.
+- The whitepaper contains line-by-line code explanations and a section with "secure development recommendations."
+- A core philosophical point is that liquidity is the ultimate differentiator for a token, even more so than tokenomics.
+- The project's current, single most important strategic goal is increasing liquidity.
+- A key part of the passive growth strategy is the project's ETH-backed liquidity, which will increase in value proportionally as Ethereum's price increases.
+
+- The $120,000 security audit was fully funded by the community.
+- The initial 4-hour design session for the project focused on three core problems:
+- Preventing users from "gaming the system."
+  1. Ensuring fundamental security.
+  2. Refining the token emission formula.
+  3. The project's definition of decentralization is absolute, meaning there are "no keys, no DAO, no person that can make a change."
+- This decentralized architecture means the system does not rely on any servers, removing the need for monitoring or restarting services.
+- The project's core philosophy is that in a future with "billions of tokens," the only true differentiator is liquidity.
+
+// 2025-10-29 new video:
+
+- The project's price chart (e.g., for FLUX) shows a drop from approximately $100 to near $0.03 on a linear scale, which is cited as misleading without viewing it on a logarithmic scale or analyzing the market cap.
+- The project's FLUX ecosystem started with zero tokens; all circulating supply was minted by the community over time.
+- The FLUX ecosystem's total market cap reached a peak of $1.25 million.
+- Approximately 50% of the total FLUX token supply is available in liquidity pools.
+- Currently, 95% of the Lockquidity (LOCK) token supply is in its liquidity pool (implying a 5% "Market Efficiency").
+- This low liquidity ratio for DAM is the cause of its extreme volatility, which can result in 100% price swings in a single day.
+
+// 2025-11-10 explainer video:
+
+- The yield mechanism from "proof-of-burn" is directly proportional: burning 10x more tokens results in 10x more yield compared to another user.
+
+Specific token metrics (as of the video):
+- Total Minted (5 years): ~10 million tokens.
+- Total Burned: 5.4 million tokens (54% of minted).
+- Current Supply: 4.8 million tokens.
+- FLUX (L1) Minting Cost: Can be around 10 cents per mint on Layer 1.
+
+Specifics of the LOCK (L2) tokenomics:
+- The "burn" mechanism for LOCK involves sending tokens to a smart contract that sells half for Ethereum and adds both back into a permanent, decentralized liquidity pool.
+- Approximately 95% of the LOCK market cap is backed by liquidity in this permanent pool.
+- LOCK Liquidity: $115,000.
+- LOCK Market Cap: $122,000.
+- LOCK Inflation: Dropped from ~700% to 122% within a year while maintaining its liquidity.
+- Forward-looking Inflation: Projected to be ~50% next year and ~30% the year after.
+
+- There are two whitepapers: one is a highly complex mathematical breakdown commissioned from a mathematician, and the other is the developer's original technical whitepaper explaining the smart contract.
+- The $120,000 audit cost more than the token's market cap at the time.
+- A key market dynamic the project aims for is a "Price vs. Supply" chart crossover, where the market cap becomes sufficient to sustain the price and liquidity, allowing the supply to grow.
+- At one point, the "percentage burned" metric for a token reached almost 300%.
+- There are large validators (core community members) who have burned significant amounts, with examples cited like $60k, $100k, $111k for FLUX, and $50k, $70k for LOCK.
+
+- The developer's dream isn't for people to just buy the token, but to trade it.
+- A trading-based mechanism is designed to capture a "very small percentage" fee from slow dilution (supply slowly increases which slowly dilutes you)
+- The developer is willing to wait 10 years for the token to gain trading volume.
+- FLUX (L1) has seen $1.8 million burned over its lifetime based on historic pricing, though the current value of those burned tokens is $181,000.
+- The developer views the project as a "pattern" (a secondary burn function for money) that could be applied to any token generation system, including Bitcoin or Ethereum.
+- A new analogy for the project: "If Bitcoin is gold, then this would be cash" because it acts like a decentralized central bank controlled by the people.
+- The game's reward mechanism is progressive: if no one clicks the 5-cent reward, it will keep increasing to 10, 20, 30 cents, etc., until someone claims it.
+
+// 2025-11-11 new directive:
+We will now shift to "secondary functionality of money" instead of "proof of burn". What if money had the second function to be burned to earn yield (passive generation of money based on your total burn).
+
+So this project that we created is all about this new pattern that can be applied to any inflationary asset. So you it's a market for "yield" in that sense.
+
+Let's update the code to reflect this new messanging.
+
+Let's update frontend-only components (also include help articles) but don't update code/variable names with the changes. It's just UI updates.
+
+However you can still change titles and string etc.
+
+// 2025-11-15 new video about yield:
+- The project's core concept is being reframed as adding a missing seventh property to money: "Yield".
+- This "Yield" property is contrasted with traditional investment. Instead of risking $100 to potentially get $80 back, the model is to destroy $100 to guarantee a permanent, dynamic "drip" of yield in return.
+- This yield is described as permanent and can be passed down to future generations ("to your kids").
+- A new analogy illustrates this trade-off: Traditional spending is like buying "10 sandwiches now," while this model is like destroying $100 to get "one sandwich every year for the rest of your life."
+- Another new analogy illustrates the compounding effect: The yield can grow from covering "a cup of coffee for life" to a "Netflix subscription," then "a portion of my rent," and eventually "my car payments."
+- The project's inflation model is contrasted with traditional "sticky" inflation. The project's inflation is high at the start but only trends down, whereas traditional inflation tends to only go up.
+- A new critique of standard PoS staking (e.g., Ethereum) was introduced: A 5% APY is "meaningless" if the supply inflation is also 5%, as "in reality, nothing has happened."
+- The model aims to remove the cognitive load of investing (e.g., choosing between real estate, tech, etc.) by offering a single, simple alternative: "destroy this money and I will yield instead long term."
+- A key reason this "Yield" property is missing from centralized money (like USD) is that it's impossible to solve for counterfeiting, database manipulation, or provable destruction in a centralized system.
+- A "triple system" effect is the ultimate goal: 1) You receive yield, 2) You re-compound that yield to get more yield, and 3) The token price increases, making the value of your compounding yield also increase.
+
+// 2025-11-18 new video about Escape Velocity:
+- "Escape Velocity" Definition: The project defines "Escape Velocity" as the financial state where passive income fully covers all mandatory monthly expenses (resulting in $0 active income needed for survival).
+- Origin of Token Philosophy: The specific motivation for creating the Datamine token arose from the founder's 7-year personal finance practice of tracking "Escape Velocity" and finding a lack of suitable investment vehicles.
+- Critique of Existing Crypto Yields: The project was designed specifically because traditional crypto yield mechanisms (Masternodes and Staking) were viewed by the founder as unscalable and unsustainable due to inflation issues.
+- Negative Monetary Velocity: The ecosystem philosophy classifies personal debt as "Negative Monetary Velocity," acting as a direct counter-force to the ecosystem's goal of wealth accumulation.
+- The "Yield Trap" Solution: The protocol aims to solve the dilemma where high yield typically equals unsustainable risk; it is positioned as an alternative to low-yield traditional assets (ETFs) and high-maintenance assets (Real Estate) to bridge the gap to financial independence.

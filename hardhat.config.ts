@@ -1,31 +1,51 @@
-import { HardhatUserConfig } from 'hardhat/config';
-import '@nomicfoundation/hardhat-toolbox';
-import './test/helpers/erc1820-plugin';
+import hardhatEthers from '@nomicfoundation/hardhat-ethers';
+import hardhatMocha from '@nomicfoundation/hardhat-mocha';
+import hardhatIgnitionEthers from '@nomicfoundation/hardhat-ignition-ethers';
+import hardhatNetworkHelpers from '@nomicfoundation/hardhat-network-helpers';
+import hardhatChaiMatchers from '@nomicfoundation/hardhat-ethers-chai-matchers';
 
-const config: HardhatUserConfig = {
-  solidity: {
-    compilers: [
-      {
-        version: '0.6.6',
-      },
-      {
-        version: '0.6.9',
-      },
-      {
-        version: '0.8.30',
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 200,
-          },
-          viaIR: true,
-        },
-      },
-    ],
-    settings: {
-      remappings: ['@openzeppelin/=node_modules/@openzeppelin/'],
-    },
-  },
-};
+import { configVariable, defineConfig } from 'hardhat/config';
+import { erc1820Plugin } from './test/helpers/plugins/erc1820/erc1820-plugin.js';
 
-export default config;
+export default defineConfig({
+	plugins: [
+		erc1820Plugin,
+		hardhatEthers,
+		hardhatMocha,
+		hardhatIgnitionEthers,
+		hardhatNetworkHelpers,
+		hardhatChaiMatchers,
+	],
+	solidity: {
+		compilers: [
+			{
+				version: '0.6.6',
+				settings: {
+					optimizer: {
+						enabled: true,
+						runs: 200,
+					},
+				},
+			},
+			{
+				version: '0.6.9',
+				settings: {
+					optimizer: {
+						enabled: true,
+						runs: 200,
+					},
+				},
+			},
+			{
+				version: '0.8.30',
+				settings: {
+					optimizer: {
+						enabled: true,
+						runs: 200,
+					},
+					viaIR: true,
+				},
+			},
+		],
+	},
+});

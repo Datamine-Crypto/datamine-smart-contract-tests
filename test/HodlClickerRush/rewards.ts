@@ -1,28 +1,14 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import {
-  setupHodlClickerRushTests,
-  depositFor,
-  setupDefaultScenario,
-} from '../helpers';
+import { hodlClickerRushFixture, setupDefaultScenario, depositFor, loadFixture } from '../helpers/index.js';
 
 describe('HodlClickerRush Rewards', () => {
-  let hodlClickerRush: any, fluxToken: any, damToken: any, owner: any, addr1: any, addr2: any;
-
-  beforeEach(async () => {
-    const setup = await setupHodlClickerRushTests();
-    hodlClickerRush = setup.hodlClickerRush;
-    fluxToken = setup.fluxToken;
-    damToken = setup.damToken;
-    owner = setup.owner;
-    addr1 = setup.addr1;
-    addr2 = setup.addr2;
-  });
-
   it('should give a jackpot and update rewards correctly', async () => {
+    const { hodlClickerRush, fluxToken, damToken, owner, addr1, addr2, ethers } = await loadFixture(
+      hodlClickerRushFixture,
+    );
     const damAmount = ethers.parseEther('1000000');
 
-    await setupDefaultScenario(hodlClickerRush, fluxToken, damToken, owner, addr1, damAmount);
+    await setupDefaultScenario(ethers, hodlClickerRush, fluxToken, damToken, owner, addr1, damAmount);
 
     const initialTotalLocked = await hodlClickerRush.totalContractLockedAmount();
     const initialTotalRewards = await hodlClickerRush.totalContractRewardsAmount();
@@ -49,8 +35,9 @@ describe('HodlClickerRush Rewards', () => {
    * and the amount to mint before burn.
    */
   it('should correctly calculate total tip and jackpot amount using getTipAndJackpotAmount function', async () => {
+    const { hodlClickerRush, fluxToken, damToken, owner, addr1, ethers } = await loadFixture(hodlClickerRushFixture);
     const damAmount = ethers.parseEther('1000000');
-    await depositFor(hodlClickerRush, fluxToken, damToken, owner, damAmount);
+    await depositFor(ethers, hodlClickerRush, fluxToken, damToken, owner, damAmount);
 
     // Set rewardsPercent for addr1
     await fluxToken.connect(addr1).authorizeOperator(hodlClickerRush.target);

@@ -45,7 +45,7 @@ This is required for us to use hooks (in unit tests and Lockquidity token)
 
 ---
 
-At time of writing these tests hardhat was updated from v2->v3. We should come back to this project and perform an upgrade to v3 in the future when it's a bit more mature.
+This project now uses Hardhat v3.
 
 Please note the specific usage of @openzeppelin/contracts as we're using these for ERC777 interfaces. ERC777 was removed from OpenZeppelin so we have to use this older package.
 

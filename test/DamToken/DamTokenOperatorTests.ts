@@ -1,6 +1,12 @@
-import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
-import { parseUnits, EventNames, RevertMessages, EMPTY_BYTES, deployDamTokenFixture } from '../helpers';
+import {
+  deployDamTokenFixture,
+  parseUnits,
+  loadFixture,
+  EventNames,
+  RevertMessages,
+  EMPTY_BYTES,
+} from '../helpers/index.js';
 
 describe('DamToken Operator Operations', function () {
   describe('authorizeOperator and revokeOperator tests', function () {

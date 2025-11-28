@@ -1,6 +1,5 @@
-import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
-import { mineBlocks, parseUnits, deployFluxTokenAttackFixture } from '../helpers';
+import { deployFluxTokenAttackFixture, loadFixture, parseUnits, mineBlocks } from '../helpers/index.js';
 
 /**
  * @dev Test suite specifically designed to verify the FluxToken contract's resilience against
@@ -15,8 +14,9 @@ describe('FluxToken - Attack Scenarios', function () {
       // ERC777 hooks, the FluxToken contract's internal mechanisms (e.g., mutexes, state checks) successfully
       // prevent double-burning or any unintended state manipulation, thereby safeguarding the token's supply
       // integrity and preventing economic exploits.
-      const { fluxToken, damToken, unlockAttacker, owner, attackerAccount } =
-        await loadFixture(deployFluxTokenAttackFixture);
+      const { fluxToken, damToken, unlockAttacker, owner, attackerAccount, ethers } = await loadFixture(
+        deployFluxTokenAttackFixture,
+      );
 
       const ownerLockAmount = parseUnits('100');
       const attackerLockAmount = parseUnits('100');
@@ -33,7 +33,7 @@ describe('FluxToken - Attack Scenarios', function () {
 
       // 3. Mine blocks and mint FLUX for the attacker. A large number of blocks are mined
       // to ensure the attacker has a sufficient amount of FLUX to perform the attack.
-      const mintBlock = await mineBlocks(1000000);
+      const mintBlock = await mineBlocks(ethers, 1000000);
       await fluxToken
         .connect(attackerAccount)
         .mintToAddress(attackerAccount.address, attackerAccount.address, mintBlock);

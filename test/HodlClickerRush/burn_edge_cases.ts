@@ -1,31 +1,21 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
 import {
-  setupHodlClickerRushTests,
-  setupBurnableAddress,
+  hodlClickerRushFixture,
   depositFor,
+  setupBurnableAddress,
   BurnResultCode,
-  mineBlocks,
-} from '../helpers';
+  loadFixture,
+} from '../helpers/index.js';
 
 describe('HodlClickerRush Burn Edge Cases', () => {
-  let hodlClickerRush: any, fluxToken: any, damToken: any, owner: any, addr1: any, addr2: any;
-
-  beforeEach(async () => {
-    const setup = await setupHodlClickerRushTests();
-    hodlClickerRush = setup.hodlClickerRush;
-    fluxToken = setup.fluxToken;
-    damToken = setup.damToken;
-    owner = setup.owner;
-    addr1 = setup.addr1;
-    addr2 = setup.addr2;
-  });
-
   /**
    * @dev Tests the scenario where no FLUX is available to mint for the target address.
    * Expects BurnResultCode.NothingToMint.
    */
   it('should return NothingToMint if no FLUX is available to mint', async () => {
+    const { hodlClickerRush, fluxToken, damToken, owner, addr1, addr2, ethers } = await loadFixture(
+      hodlClickerRushFixture,
+    );
     const damAmount = ethers.parseEther('1000000');
     // Setup addr1 as a burnable address, but don't let enough blocks pass for minting
     await damToken.connect(owner).transfer(addr1.address, damAmount);
@@ -42,9 +32,12 @@ describe('HodlClickerRush Burn Edge Cases', () => {
    * Expects BurnResultCode.ValidatorMinBlockNotMet.
    */
   it('should return ValidatorMinBlockNotMet if current block is less than minBlockNumber', async () => {
+    const { hodlClickerRush, fluxToken, damToken, owner, addr1, addr2, ethers } = await loadFixture(
+      hodlClickerRushFixture,
+    );
     const damAmount = ethers.parseEther('1000000');
-    await depositFor(hodlClickerRush, fluxToken, damToken, owner, damAmount);
-    await setupBurnableAddress(damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
+    await depositFor(ethers, hodlClickerRush, fluxToken, damToken, owner, damAmount);
+    await setupBurnableAddress(ethers, damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
 
     const currentBlock = await ethers.provider.getBlockNumber();
     const minBlockNumber = currentBlock + 100; // Set minBlockNumber in the future
@@ -61,9 +54,12 @@ describe('HodlClickerRush Burn Edge Cases', () => {
    * Expects BurnResultCode.ValidatorMinBurnAmountNotMet.
    */
   it('should return ValidatorMinBurnAmountNotMet if actual burn amount is less than minBurnAmount', async () => {
+    const { hodlClickerRush, fluxToken, damToken, owner, addr1, addr2, ethers } = await loadFixture(
+      hodlClickerRushFixture,
+    );
     const damAmount = ethers.parseEther('1000000');
-    await depositFor(hodlClickerRush, fluxToken, damToken, owner, damAmount);
-    await setupBurnableAddress(damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
+    await depositFor(ethers, hodlClickerRush, fluxToken, damToken, owner, damAmount);
+    await setupBurnableAddress(ethers, damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
 
     const minBurnAmount = ethers.parseEther('1000000'); // Set a very high minBurnAmount
 

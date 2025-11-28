@@ -1,15 +1,9 @@
 import { expect } from 'chai';
-import { setupHodlClickerRushTests } from '../helpers';
+import { hodlClickerRushFixture, loadFixture } from '../helpers/index.js';
 
 describe('HodlClickerRush Deployment', () => {
-  let hodlClickerRush: any;
-
-  beforeEach(async () => {
-    const setup = await setupHodlClickerRushTests();
-    hodlClickerRush = setup.hodlClickerRush;
-  });
-
   it('Should initialize with zero balances', async () => {
+    const { hodlClickerRush } = await loadFixture(hodlClickerRushFixture);
     expect(await hodlClickerRush.totalContractLockedAmount()).to.equal(0);
     expect(await hodlClickerRush.totalContractRewardsAmount()).to.equal(0);
   });

@@ -1,6 +1,6 @@
-import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import {
+  loadFixture,
   parseUnits,
   getERC1820Registry,
   EventNames,
@@ -8,13 +8,13 @@ import {
   TOKENS_RECIPIENT_INTERFACE_HASH,
   setupHolderForLocking,
   deployDamHolderFixture,
-} from '../helpers';
+} from '../helpers/index.js';
 
 describe('DamHolder Deployment', function () {
   describe('Deployment', function () {
     it('Should allow sending 100 DAM tokens to a DamHolder contract', async function () {
-      const { damToken, owner, damHolder } = await loadFixture(deployDamHolderFixture);
-      const amountToSend = parseUnits('100');
+      const { damToken, owner, damHolder, ethers } = await loadFixture(deployDamHolderFixture);
+      const amountToSend = ethers.parseUnits('100', 18);
 
       // This test verifies that DAM tokens can be successfully sent to the `DamHolder` contract. This is a foundational
       // step, as the `DamHolder` needs to receive tokens before it can perform any locking operations, confirming its
@@ -28,8 +28,8 @@ describe('DamHolder Deployment', function () {
     });
 
     it('Should allow DamHolder to lock DAM tokens after receiving from owner', async function () {
-      const { owner, damHolder, damToken, lockquidityToken } = await loadFixture(deployDamHolderFixture);
-      const lockAmount = parseUnits('100', 18);
+      const { owner, damHolder, damToken, lockquidityToken, ethers } = await loadFixture(deployDamHolderFixture);
+      const lockAmount = ethers.parseUnits('100', 18);
 
       // Setup holder with tokens and operator authorization
       await setupHolderForLocking(owner, damHolder, damToken, lockquidityToken, lockAmount);
@@ -47,10 +47,10 @@ describe('DamHolder Deployment', function () {
     });
 
     it('Should correctly register ERC1820 interfaces in constructor', async function () {
-      const { damHolder } = await loadFixture(deployDamHolderFixture);
+      const { damHolder, ethers } = await loadFixture(deployDamHolderFixture);
 
       // Get the ERC1820 registry instance using its fully qualified name
-      const erc1820Registry = await getERC1820Registry();
+      const erc1820Registry = await getERC1820Registry(ethers);
 
       // Verify that DamHolder is registered as implementer for both interfaces
       expect(await erc1820Registry.getInterfaceImplementer(damHolder.target, TOKENS_SENDER_INTERFACE_HASH)).to.equal(

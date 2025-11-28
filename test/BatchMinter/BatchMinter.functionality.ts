@@ -1,27 +1,20 @@
-import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import {
-  deployBatchMinterFixture,
-  lockTokens,
-  mineBlocks,
-  parseUnits,
-} from '../helpers';
+import hre from 'hardhat';
+
+import { deployBatchMinterFixture, lockTokens, mineBlocks, parseUnits, loadFixture } from '../helpers/index.js';
 
 describe('BatchMinter Functionality', function () {
   it('should allow a user to batch burn when no delegated minter is set', async function () {
-    const { damToken, fluxToken, batchMinter, owner, user1 } = await loadFixture(
-      deployBatchMinterFixture
-    );
+    const { damToken, fluxToken, batchMinter, owner, user1, ethers } = await loadFixture(deployBatchMinterFixture);
 
     // 1. Setup user1 with locked DAM
     const lockAmount = parseUnits('100');
     await damToken.connect(owner).transfer(user1.address, lockAmount);
-    const lockBlock = await lockTokens(fluxToken, damToken, user1, lockAmount, batchMinter.target);
+    const lockBlock = await lockTokens(ethers, fluxToken, damToken, user1, lockAmount, batchMinter.target);
 
     // 2. Mine blocks to accrue mintable FLUX
     const blocksToMine = 10;
-    await mineBlocks(blocksToMine);
+    await mineBlocks(ethers, blocksToMine);
     const endBlock = await ethers.provider.getBlockNumber();
 
     // 3. Prepare block numbers for batchBurn
@@ -46,14 +39,14 @@ describe('BatchMinter Functionality', function () {
   });
 
   it('should allow a delegated minter to batch burn', async function () {
-    const { damToken, fluxToken, batchMinter, owner, user1, user2 } = await loadFixture(
-      deployBatchMinterFixture
+    const { damToken, fluxToken, batchMinter, owner, user1, user2, ethers } = await loadFixture(
+      deployBatchMinterFixture,
     );
 
     // 1. Setup user1 with locked DAM and set BatchMinter as the FluxToken minter
     const lockAmount = parseUnits('100');
     await damToken.connect(owner).transfer(user1.address, lockAmount);
-    const lockBlock = await lockTokens(fluxToken, damToken, user1, lockAmount, batchMinter.target);
+    const lockBlock = await lockTokens(ethers, fluxToken, damToken, user1, lockAmount, batchMinter.target);
 
     // 2. user1 sets user2 as the delegated minter in BatchMinter
     await batchMinter.connect(user1).setDelegatedMinter(user2.address);
@@ -62,7 +55,7 @@ describe('BatchMinter Functionality', function () {
 
     // 3. Mine blocks to accrue mintable FLUX
     const blocksToMine = 10;
-    await mineBlocks(blocksToMine);
+    await mineBlocks(ethers, blocksToMine);
     const endBlock = await ethers.provider.getBlockNumber();
 
     // 4. Prepare block numbers for batchBurn
@@ -87,18 +80,18 @@ describe('BatchMinter Functionality', function () {
   });
 
   it('should send tokens to targetAddress with normalMintTo', async function () {
-    const { damToken, fluxToken, batchMinter, owner, user1, user2 } = await loadFixture(
-      deployBatchMinterFixture
+    const { damToken, fluxToken, batchMinter, owner, user1, user2, ethers } = await loadFixture(
+      deployBatchMinterFixture,
     );
 
     // 1. Setup user1 with locked DAM and set BatchMinter as the FluxToken minter
     const lockAmount = parseUnits('100');
     await damToken.connect(owner).transfer(user1.address, lockAmount);
-    await lockTokens(fluxToken, damToken, user1, lockAmount, batchMinter.target);
+    await lockTokens(ethers, fluxToken, damToken, user1, lockAmount, batchMinter.target);
 
     // 2. Mine blocks
     const blocksToMine = 10;
-    await mineBlocks(blocksToMine);
+    await mineBlocks(ethers, blocksToMine);
     const endBlock = await ethers.provider.getBlockNumber();
 
     // 3. Get initial balance of target address (user2)

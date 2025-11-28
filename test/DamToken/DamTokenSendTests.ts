@@ -1,6 +1,13 @@
-import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
-import { parseUnits, ZERO_ADDRESS, EventNames, RevertMessages, EMPTY_BYTES, deployDamTokenFixture } from '../helpers';
+import {
+  deployDamTokenFixture,
+  parseUnits,
+  loadFixture,
+  ZERO_ADDRESS,
+  EventNames,
+  RevertMessages,
+  EMPTY_BYTES,
+} from '../helpers/index.js';
 
 describe('DamToken Send Operations', function () {
   describe('send function tests', function () {

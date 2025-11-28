@@ -1,45 +1,28 @@
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
-import {
-  setupHodlClickerRushTests,
-  setupBurnableAddress,
-  depositFor,
-  BurnResultCode,
-  setupPlayerForHodlClicker,
-} from '../helpers';
+import { hodlClickerRushFixture, depositFor, setupBurnableAddress, loadFixture } from '../helpers/index.js';
 
 describe('HodlClickerRush Scenarios', () => {
-  let hodlClickerRush: any, fluxToken: any, damToken: any, owner: any, addr1: any, addr2: any, addr3: any;
-
-  beforeEach(async () => {
-    const setup = await setupHodlClickerRushTests();
-    hodlClickerRush = setup.hodlClickerRush;
-    fluxToken = setup.fluxToken;
-    damToken = setup.damToken;
-    owner = setup.owner;
-    addr1 = setup.addr1;
-    addr2 = setup.addr2;
-    addr3 = setup.addr3;
-  });
-
   it('should correctly handle the user-specified reward scenario', async () => {
+    const { hodlClickerRush, fluxToken, damToken, owner, addr1, addr2, addr3, ethers } = await loadFixture(
+      hodlClickerRushFixture,
+    );
     const depositAmountA = ethers.parseEther('100');
     const depositAmountB = ethers.parseEther('200');
     const burnAmount = ethers.parseEther('10'); // A small amount to generate a small reward
 
     // 1. UserA deposits 100 tokens
-    await depositFor(hodlClickerRush, fluxToken, damToken, addr1, depositAmountA);
+    await depositFor(ethers, hodlClickerRush, fluxToken, damToken, addr1, depositAmountA);
     const userA_rewards_after_deposit = (await hodlClickerRush.addressLocks(addr1.address)).rewardsAmount;
 
     // 2. UserB deposits 200 tokens
-    await depositFor(hodlClickerRush, fluxToken, damToken, addr2, depositAmountB);
+    await depositFor(ethers, hodlClickerRush, fluxToken, damToken, addr2, depositAmountB);
     const userB_rewards_after_deposit = (await hodlClickerRush.addressLocks(addr2.address)).rewardsAmount;
 
     const totalLocked_before_burn = await hodlClickerRush.totalContractLockedAmount();
     const totalRewards_before_burn = await hodlClickerRush.totalContractRewardsAmount();
 
     // 3. UserC collects a gem
-    await setupBurnableAddress(damToken, fluxToken, owner, addr3, burnAmount, hodlClickerRush);
+    await setupBurnableAddress(ethers, damToken, fluxToken, owner, addr3, burnAmount, hodlClickerRush);
     const burnTx = await hodlClickerRush.connect(addr3).burnTokens(0, addr3.address);
     const receipt = await burnTx.wait();
     const event = receipt.logs.find((log: any) => log.fragment && log.fragment.name === 'TokensBurned');
@@ -82,16 +65,19 @@ describe('HodlClickerRush Scenarios', () => {
   });
 
   it('should correctly handle batch burning via burnTokensFromAddresses', async () => {
+    const { hodlClickerRush, fluxToken, damToken, owner, addr1, addr2, addr3, ethers } = await loadFixture(
+      hodlClickerRushFixture,
+    );
     const damAmount = ethers.parseEther('1000000');
     const depositAmount = ethers.parseEther('10000000'); // Increased deposit amount
 
     // 1. Deposit funds into the contract to have rewards to distribute
-    await depositFor(hodlClickerRush, fluxToken, damToken, owner, depositAmount);
+    await depositFor(ethers, hodlClickerRush, fluxToken, damToken, owner, depositAmount);
 
     // 2. Setup multiple burnable addresses
-    await setupBurnableAddress(damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
-    await setupBurnableAddress(damToken, fluxToken, owner, addr2, damAmount, hodlClickerRush);
-    await setupBurnableAddress(damToken, fluxToken, owner, addr3, damAmount, hodlClickerRush);
+    await setupBurnableAddress(ethers, damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
+    await setupBurnableAddress(ethers, damToken, fluxToken, owner, addr2, damAmount, hodlClickerRush);
+    await setupBurnableAddress(ethers, damToken, fluxToken, owner, addr3, damAmount, hodlClickerRush);
 
     // 3. Pause one of the addresses to test failure case handling
     await hodlClickerRush.connect(addr3).setPaused(true);

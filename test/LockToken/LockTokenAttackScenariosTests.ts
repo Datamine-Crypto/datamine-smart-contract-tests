@@ -1,6 +1,12 @@
-import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
-import { parseUnits, RevertMessages, lockTokens, mineBlocks, mintLockTokens, deployLockTokenFixture } from '../helpers';
+import {
+  RevertMessages,
+  lockTokens,
+  mineBlocks,
+  mintLockTokens,
+  deployLockTokenFixture,
+  loadFixture,
+} from '../helpers/index.js';
 
 describe('LockToken Attack Scenarios', function () {
   describe('Attack Scenarios', function () {
@@ -9,21 +15,21 @@ describe('LockToken Attack Scenarios', function () {
       // and then trying to mint for a past block number from a previous lock period. This is crucial to prevent
       // double-dipping on rewards or manipulating the token supply by re-using historical lock data, thereby ensuring
       // the integrity and fairness of the minting process.
-      const { lockquidityToken, damToken, owner } = await loadFixture(deployLockTokenFixture);
-      const lockAmount = parseUnits('100');
+      const { lockquidityToken, damToken, owner, ethers } = await loadFixture(deployLockTokenFixture);
+      const lockAmount = ethers.parseUnits('100', 18);
 
       // First lock
-      await lockTokens(lockquidityToken, damToken, owner, lockAmount);
+      await lockTokens(ethers, lockquidityToken, damToken, owner, lockAmount);
 
       // Mint after 10 blocks
-      const mintBlock1 = await mintLockTokens(lockquidityToken, owner, owner.address, 10);
+      const mintBlock1 = await mintLockTokens(ethers, lockquidityToken, owner, owner.address, 10);
 
       // Unlock
       await lockquidityToken.connect(owner).unlock();
-      await mineBlocks(10);
+      await mineBlocks(ethers, 10);
 
       // Re-lock
-      await lockTokens(lockquidityToken, damToken, owner, lockAmount);
+      await lockTokens(ethers, lockquidityToken, damToken, owner, lockAmount);
 
       // Try to mint again with the old mint block.
       // This should fail because the last mint block is now the re-lock block.

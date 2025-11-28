@@ -1,4 +1,3 @@
-import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import {
   parseUnits,
@@ -7,7 +6,8 @@ import {
   UnitTestCases,
   setupDamBlockingHolderTest,
   deployReentrancyTestFixture,
-} from '../helpers';
+  loadFixture,
+} from '../helpers/index.js';
 
 /**
  * @dev This test suite focuses on re-entrancy attack vectors using ERC777 hooks within the DamBlockingHolder contract.

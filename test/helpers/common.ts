@@ -1,4 +1,5 @@
-import { ethers } from 'hardhat';
+import hre from 'hardhat';
+import { ethers as ethersLib } from 'ethers';
 
 /**
  * @dev This file centralizes common utility functions, constants, and enumerations
@@ -11,6 +12,7 @@ import { ethers } from 'hardhat';
  * A generic helper to authorize and lock tokens in one step.
  * This simplifies test scenarios where a user needs to lock tokens,
  * ensuring the necessary authorization is handled automatically.
+ * @param ethers The Hardhat ethers plugin instance.
  * @param token The token contract to lock into (e.g., FluxToken, LockquidityToken).
  * @param damToken The DAM token contract instance.
  * @param user The user/signer account performing the lock.
@@ -18,7 +20,7 @@ import { ethers } from 'hardhat';
  * @param minterAddress Optional address to be designated as the minter. Defaults to the user's address.
  * @returns The block number after the lock transaction.
  */
-export async function lockTokens(token: any, damToken: any, user: any, amount: any, minterAddress?: any) {
+export async function lockTokens(ethers: any, token: any, damToken: any, user: any, amount: any, minterAddress?: any) {
   const minter = minterAddress || user.address;
   // Authorize the target token contract to spend DAM tokens on behalf of the user.
   // This is required for the `lock` function to pull DAM tokens from the user.
@@ -33,10 +35,11 @@ export async function lockTokens(token: any, damToken: any, user: any, amount: a
  * Advances the blockchain by a specified number of blocks and returns the new block number.
  * This is crucial for testing time-dependent logic in smart contracts, such as
  * block-based rewards, failsafe periods, or time-locked functionalities.
+ * @param ethers The Hardhat ethers plugin instance.
  * @param blockCount The number of blocks to mine.
  * @returns The block number after mining.
  */
-export async function mineBlocks(blockCount: number): Promise<number> {
+export async function mineBlocks(ethers: any, blockCount: number): Promise<number> {
   if (blockCount === 1) {
     await ethers.provider.send('evm_mine', []);
   } else {
@@ -54,20 +57,22 @@ export async function mineBlocks(blockCount: number): Promise<number> {
  * @returns The parsed amount as a BigInt.
  */
 export function parseUnits(amount: string, decimals: number = 18) {
-  return ethers.parseUnits(amount, decimals);
+  return ethersLib.parseUnits(amount, decimals);
 }
 
 /**
  * Gets an instance of the ERC1820 registry contract.
  * This is necessary for interacting with ERC777 tokens, as the ERC1820 registry
  * is used to discover and register interfaces for ERC777 hooks (e.g., `tokensToSend`, `tokensReceived`).
+ * @param ethers The Hardhat ethers plugin instance.
  * @returns A contract instance attached to the ERC1820 registry address.
  */
-export async function getERC1820Registry() {
-  return await ethers.getContractAt(
-    '@openzeppelin/contracts/introspection/IERC1820Registry.sol:IERC1820Registry',
-    '0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24',
-  );
+export async function getERC1820Registry(ethers: any) {
+  const abi = [
+    'function getInterfaceImplementer(address account, bytes32 _interfaceHash) external view returns (address)',
+    'function setInterfaceImplementer(address account, bytes32 _interfaceHash, address implementer) external',
+  ];
+  return await ethers.getContractAt(abi, '0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24');
 }
 
 // --- Constants ---
@@ -89,14 +94,14 @@ export const EMPTY_BYTES = '0x';
  * This hash is used to identify the `ERC777TokensSender` interface in the ERC1820 registry,
  * allowing contracts to declare their ability to send ERC777 tokens and trigger `tokensToSend` hooks.
  */
-export const TOKENS_SENDER_INTERFACE_HASH = ethers.keccak256(ethers.toUtf8Bytes('ERC777TokensSender'));
+export const TOKENS_SENDER_INTERFACE_HASH = ethersLib.keccak256(ethersLib.toUtf8Bytes('ERC777TokensSender'));
 
 /**
  * The keccak256 hash of the string 'ERC777TokensRecipient'.
  * This hash is used to identify the `ERC777TokensRecipient` interface in the ERC1820 registry,
  * allowing contracts to declare their ability to receive ERC777 tokens and trigger `tokensReceived` hooks.
  */
-export const TOKENS_RECIPIENT_INTERFACE_HASH = ethers.keccak256(ethers.toUtf8Bytes('ERC777TokensRecipient'));
+export const TOKENS_RECIPIENT_INTERFACE_HASH = ethersLib.keccak256(ethersLib.toUtf8Bytes('ERC777TokensRecipient'));
 
 // --- Enums ---
 

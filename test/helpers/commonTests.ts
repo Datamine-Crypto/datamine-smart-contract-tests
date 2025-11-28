@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { EMPTY_BYTES, EventNames, ZERO_ADDRESS } from './common';
+import { EMPTY_BYTES, EventNames, ZERO_ADDRESS } from './common.js';
 
 /**
  * @dev This file contains reusable test logic for common contract functionalities.
