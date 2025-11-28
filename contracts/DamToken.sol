@@ -1,6 +1,6 @@
 pragma solidity ^0.6.0;
 
-import "@openzeppelin/contracts/token/ERC777/ERC777.sol";
+import "./OpenZeppelin/ERC777.sol";
 
 contract DamToken is ERC777 {
     constructor () public ERC777("Datamine", "DAM", new address[](0)) {

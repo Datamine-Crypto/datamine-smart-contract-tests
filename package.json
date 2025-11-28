@@ -2,10 +2,7 @@
   "name": "datamine-smart-contract-tests",
   "version": "1.0.0",
   "type": "module",
-  "dependencies": {
-    "@openzeppelin/contracts": "3.4.2",
-    "@openzeppelin/test-helpers": "^0.5.16"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@nomicfoundation/hardhat-ethers": "^4.0.0",
     "@nomicfoundation/hardhat-ethers-chai-matchers": "^3.0.2",
@@ -17,16 +14,16 @@
     "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.1",
     "@nomicfoundation/hardhat-typechain": "^3.0.1",
     "@nomicfoundation/hardhat-verify": "^3.0.7",
-    "@types/chai": "^4.3.20",
+    "@types/chai": "^5.2.3",
     "@types/chai-as-promised": "^8.0.2",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^22.19.1",
-    "chai": "^5.3.3",
+    "@types/node": "^24.10.1",
+    "chai": "^6.2.1",
     "ethers": "^6.15.0",
     "forge-std": "github:foundry-rs/forge-std#v1.9.4",
     "hardhat": "^3.0.16",
     "mocha": "^11.7.5",
-    "typescript": "~5.8.0"
+    "typescript": "~5.9.3"
   },
   "scripts": {
     "lint": "eslint . --ext .ts",

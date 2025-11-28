@@ -3,10 +3,10 @@ pragma solidity ^0.6.0;
 
 import "hardhat/console.sol";
 
-import "@openzeppelin/contracts/introspection/IERC1820Registry.sol";
-import "@openzeppelin/contracts/token/ERC777/IERC777Sender.sol";
-import "@openzeppelin/contracts/token/ERC777/IERC777Recipient.sol";
-import "@openzeppelin/contracts/token/ERC777/IERC777.sol";
+import "./OpenZeppelin/IERC1820Registry.sol";
+import "./OpenZeppelin/IERC777Sender.sol";
+import "./OpenZeppelin/IERC777Recipient.sol";
+import "./OpenZeppelin/IERC777.sol";
 
 interface IFluxToken {
     function burnToAddress(address targetAddress, uint256 amount) external;
