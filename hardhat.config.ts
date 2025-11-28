@@ -1,6 +1,6 @@
 import { HardhatUserConfig } from 'hardhat/config';
 import '@nomicfoundation/hardhat-toolbox';
-import 'hardhat-erc1820';
+import './test/helpers/erc1820-plugin';
 
 const config: HardhatUserConfig = {
   solidity: {

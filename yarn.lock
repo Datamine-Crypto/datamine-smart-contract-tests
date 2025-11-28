@@ -3325,7 +3325,6 @@ __metadata:
     ethers: "npm:^6.15.0"
     globals: "npm:^16.3.0"
     hardhat: "npm:^2.26.2"
-    hardhat-erc1820: "npm:^0.1.0"
     hardhat-gas-reporter: "npm:^2.3.0"
     prettier: "npm:^3.6.2"
     solidity-coverage: "npm:^0.8.16"
@@ -5072,15 +5071,6 @@ __metadata:
     ajv: "npm:^6.12.3"
     har-schema: "npm:^2.0.0"
   checksum: 10c0/f1d606eb1021839e3a905be5ef7cca81c2256a6be0748efb8fefc14312214f9e6c15d7f2eaf37514104071207d84f627b68bb9f6178703da4e06fbd1a0649a5e
-  languageName: node
-  linkType: hard
-
-"hardhat-erc1820@npm:^0.1.0":
-  version: 0.1.0
-  resolution: "hardhat-erc1820@npm:0.1.0"
-  peerDependencies:
-    hardhat: ^2.0.0
-  checksum: 10c0/ef8ee87ee35aa29aec1ad4d32a2e1b736bf41fa45f4fed4c9e825c390b37179ef31ac69e596867ae409ca9a3effc0f0d92d3c2ac28cd576fdff98e1ec17662d2
   languageName: node
   linkType: hard
 

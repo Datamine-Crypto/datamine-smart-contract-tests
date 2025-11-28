@@ -37,7 +37,6 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "3.4.2",
-    "@openzeppelin/test-helpers": "^0.5.16",
-    "hardhat-erc1820": "^0.1.0"
+    "@openzeppelin/test-helpers": "^0.5.16"
   }
 }
