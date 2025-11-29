@@ -1,4 +1,5 @@
 import { ethers as ethersLib } from 'ethers';
+import { getEthers } from './getEthers';
 
 /**
  * @dev This file centralizes common utility functions, constants, and enumerations
@@ -11,7 +12,6 @@ import { ethers as ethersLib } from 'ethers';
  * A generic helper to authorize and lock tokens in one step.
  * This simplifies test scenarios where a user needs to lock tokens,
  * ensuring the necessary authorization is handled automatically.
- * @param ethers The Hardhat ethers plugin instance.
  * @param token The token contract to lock into (e.g., FluxToken, LockquidityToken).
  * @param damToken The DAM token contract instance.
  * @param user The user/signer account performing the lock.
@@ -19,7 +19,9 @@ import { ethers as ethersLib } from 'ethers';
  * @param minterAddress Optional address to be designated as the minter. Defaults to the user's address.
  * @returns The block number after the lock transaction.
  */
-export async function lockTokens(ethers: any, token: any, damToken: any, user: any, amount: any, minterAddress?: any) {
+export async function lockTokens(token: any, damToken: any, user: any, amount: any, minterAddress?: any) {
+	const ethers = await getEthers();
+
 	const minter = minterAddress || user.address;
 	// Authorize the target token contract to spend DAM tokens on behalf of the user.
 	// This is required for the `lock` function to pull DAM tokens from the user.
@@ -34,11 +36,12 @@ export async function lockTokens(ethers: any, token: any, damToken: any, user: a
  * Advances the blockchain by a specified number of blocks and returns the new block number.
  * This is crucial for testing time-dependent logic in smart contracts, such as
  * block-based rewards, failsafe periods, or time-locked functionalities.
- * @param ethers The Hardhat ethers plugin instance.
  * @param blockCount The number of blocks to mine.
  * @returns The block number after mining.
  */
-export async function mineBlocks(ethers: any, blockCount: number): Promise<number> {
+export async function mineBlocks(blockCount: number): Promise<number> {
+	const ethers = await getEthers();
+
 	if (blockCount === 1) {
 		await ethers.provider.send('evm_mine', []);
 	} else {
@@ -63,10 +66,10 @@ export function parseUnits(amount: string, decimals: number = 18) {
  * Gets an instance of the ERC1820 registry contract.
  * This is necessary for interacting with ERC777 tokens, as the ERC1820 registry
  * is used to discover and register interfaces for ERC777 hooks (e.g., `tokensToSend`, `tokensReceived`).
- * @param ethers The Hardhat ethers plugin instance.
  * @returns A contract instance attached to the ERC1820 registry address.
  */
-export async function getERC1820Registry(ethers: any) {
+export async function getERC1820Registry() {
+	const ethers = await getEthers();
 	const abi = [
 		'function getInterfaceImplementer(address account, bytes32 _interfaceHash) external view returns (address)',
 		'function setInterfaceImplementer(address account, bytes32 _interfaceHash, address implementer) external',

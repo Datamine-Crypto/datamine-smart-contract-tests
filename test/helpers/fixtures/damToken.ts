@@ -1,27 +1,26 @@
 import { deployDamToken } from '../deployHelpers';
+import { getEthers } from '../getEthers';
 import { deployBaseFixture } from './base';
 
-export async function deployDamTokenFixture(connection: any) {
-	const { damToken, owner, addr1, addr2, ethers } = await deployBaseFixture(connection);
+export async function deployDamTokenFixture() {
+	const { damToken, owner, addr1, addr2 } = await deployBaseFixture();
 	return {
 		damToken,
 		owner,
 		operatorAddress: addr1,
 		otherAccount: addr2,
-		ethers,
 	};
 }
 
-export async function deployDamTokenMigrationFixture(connection: any) {
-	const { ethers } = connection;
+export async function deployDamTokenMigrationFixture() {
+	const ethers = await getEthers();
 	const [registryFunderAddress, creatorAddress, operatorAddress, otherAccount] = await ethers.getSigners();
-	const damToken = await deployDamToken(ethers, creatorAddress);
+	const damToken = await deployDamToken(creatorAddress);
 	return {
 		damToken,
 		registryFunderAddress,
 		creatorAddress,
 		operatorAddress,
 		otherAccount,
-		ethers,
 	};
 }

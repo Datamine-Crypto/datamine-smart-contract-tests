@@ -8,11 +8,11 @@ describe('HodlClickerRush Withdraw', () => {
 		const damAmount = ethers.parseEther('1000000');
 
 		// 1. addr2 deposits
-		await depositFor(ethers, hodlClickerRush, fluxToken, damToken, addr2, damAmount);
+		await depositFor(hodlClickerRush, fluxToken, damToken, addr2, damAmount);
 
 		// 2. owner generates some rewards, making totalContractRewardsAmount > totalContractLockedAmount
-		await depositFor(ethers, hodlClickerRush, fluxToken, damToken, owner, damAmount);
-		await setupBurnableAddress(ethers, damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
+		await depositFor(hodlClickerRush, fluxToken, damToken, owner, damAmount);
+		await setupBurnableAddress(damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
 		await hodlClickerRush.connect(owner).burnTokens(0, addr1.address);
 
 		// 3. Get state before withdrawal
@@ -48,10 +48,10 @@ describe('HodlClickerRush Withdraw', () => {
 			await loadFixture(hodlClickerRushFixture);
 		const damAmount = ethers.parseEther('1000000');
 
-		await depositFor(ethers, hodlClickerRush, fluxToken, damToken, owner, damAmount);
-		await setupBurnableAddress(ethers, damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
+		await depositFor(hodlClickerRush, fluxToken, damToken, owner, damAmount);
+		await setupBurnableAddress(damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
 		await hodlClickerRush.connect(owner).burnTokens(0, addr1.address);
-		await depositFor(ethers, hodlClickerRush, fluxToken, damToken, addr2, damAmount);
+		await depositFor(hodlClickerRush, fluxToken, damToken, addr2, damAmount);
 
 		await hodlClickerRush.connect(addr2).withdrawAll();
 		const addr2RewardsAfter = (await hodlClickerRush.addressLocks(addr2.address)).rewardsAmount;

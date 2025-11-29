@@ -9,11 +9,11 @@ describe('BatchMinter Functionality', function () {
 		// 1. Setup user1 with locked DAM
 		const lockAmount = parseUnits('100');
 		await damToken.connect(owner).transfer(user1.address, lockAmount);
-		const lockBlock = await lockTokens(ethers, fluxToken, damToken, user1, lockAmount, batchMinter.target);
+		const lockBlock = await lockTokens(fluxToken, damToken, user1, lockAmount, batchMinter.target);
 
 		// 2. Mine blocks to accrue mintable FLUX
 		const blocksToMine = 10;
-		await mineBlocks(ethers, blocksToMine);
+		await mineBlocks(blocksToMine);
 		const endBlock = await ethers.provider.getBlockNumber();
 
 		// 3. Prepare block numbers for batchBurn
@@ -44,7 +44,7 @@ describe('BatchMinter Functionality', function () {
 		// 1. Setup user1 with locked DAM and set BatchMinter as the FluxToken minter
 		const lockAmount = parseUnits('100');
 		await damToken.connect(owner).transfer(user1.address, lockAmount);
-		const lockBlock = await lockTokens(ethers, fluxToken, damToken, user1, lockAmount, batchMinter.target);
+		const lockBlock = await lockTokens(fluxToken, damToken, user1, lockAmount, batchMinter.target);
 
 		// 2. user1 sets user2 as the delegated minter in BatchMinter
 		await batchMinter.connect(user1).setDelegatedMinter(user2.address);
@@ -53,7 +53,7 @@ describe('BatchMinter Functionality', function () {
 
 		// 3. Mine blocks to accrue mintable FLUX
 		const blocksToMine = 10;
-		await mineBlocks(ethers, blocksToMine);
+		await mineBlocks(blocksToMine);
 		const endBlock = await ethers.provider.getBlockNumber();
 
 		// 4. Prepare block numbers for batchBurn
@@ -84,11 +84,11 @@ describe('BatchMinter Functionality', function () {
 		// 1. Setup user1 with locked DAM and set BatchMinter as the FluxToken minter
 		const lockAmount = parseUnits('100');
 		await damToken.connect(owner).transfer(user1.address, lockAmount);
-		await lockTokens(ethers, fluxToken, damToken, user1, lockAmount, batchMinter.target);
+		await lockTokens(fluxToken, damToken, user1, lockAmount, batchMinter.target);
 
 		// 2. Mine blocks
 		const blocksToMine = 10;
-		await mineBlocks(ethers, blocksToMine);
+		await mineBlocks(blocksToMine);
 		const endBlock = await ethers.provider.getBlockNumber();
 
 		// 3. Get initial balance of target address (user2)

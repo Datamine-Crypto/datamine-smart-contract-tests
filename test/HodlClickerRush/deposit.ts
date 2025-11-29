@@ -12,7 +12,6 @@ describe('HodlClickerRush Deposit', () => {
 		const { hodlClickerRush, fluxToken, damToken, addr1, ethers } = await loadFixture(hodlClickerRushFixture);
 		const damAmount = ethers.parseEther('1000000');
 		const addr1FluxBalance = await setupPlayerForHodlClickerRush(
-			ethers,
 			hodlClickerRush,
 			fluxToken,
 			damToken,
@@ -35,10 +34,10 @@ describe('HodlClickerRush Deposit', () => {
 		const damAmount = ethers.parseEther('1000000');
 
 		// First, owner deposits to add to the locked and rewards amount
-		await depositFor(ethers, hodlClickerRush, fluxToken, damToken, owner, damAmount);
+		await depositFor(hodlClickerRush, fluxToken, damToken, owner, damAmount);
 
 		// Then, a burn happens which adds to the rewards pool, making rewards > locked
-		await setupBurnableAddress(ethers, damToken, fluxToken, owner, addr2, damAmount, hodlClickerRush);
+		await setupBurnableAddress(damToken, fluxToken, owner, addr2, damAmount, hodlClickerRush);
 		await hodlClickerRush.connect(owner).burnTokens(0, addr2.address);
 
 		const totalContractLockedAmount = await hodlClickerRush.totalContractLockedAmount();
@@ -47,7 +46,6 @@ describe('HodlClickerRush Deposit', () => {
 
 		// Now, addr1 deposits
 		const addr1FluxBalance = await setupPlayerForHodlClickerRush(
-			ethers,
 			hodlClickerRush,
 			fluxToken,
 			damToken,
@@ -70,7 +68,6 @@ describe('HodlClickerRush Deposit', () => {
 		const { hodlClickerRush, fluxToken, damToken, addr1, ethers } = await loadFixture(hodlClickerRushFixture);
 		const damAmount = ethers.parseEther('1000000');
 		const addr1FluxBalance = await setupPlayerForHodlClickerRush(
-			ethers,
 			hodlClickerRush,
 			fluxToken,
 			damToken,
@@ -88,7 +85,6 @@ describe('HodlClickerRush Deposit', () => {
 		const { hodlClickerRush, fluxToken, damToken, addr1, ethers } = await loadFixture(hodlClickerRushFixture);
 		const damAmount = ethers.parseEther('1000000');
 		const addr1FluxBalance = await setupPlayerForHodlClickerRush(
-			ethers,
 			hodlClickerRush,
 			fluxToken,
 			damToken,

@@ -12,7 +12,7 @@ describe('HodlClickerRush Simple Burn', () => {
 		const { hodlClickerRush, fluxToken, damToken, owner, addr1, addr2, ethers } =
 			await loadFixture(hodlClickerRushFixture);
 		const damAmount = ethers.parseEther('1000000');
-		await setupBurnableAddress(ethers, damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
+		await setupBurnableAddress(damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
 
 		const burnOperationResult = await hodlClickerRush.connect(addr2).burnTokens.staticCall(0, addr1.address);
 
@@ -24,8 +24,8 @@ describe('HodlClickerRush Simple Burn', () => {
 			await loadFixture(hodlClickerRushFixture);
 		const damAmount = ethers.parseEther('1000000');
 
-		await depositFor(ethers, hodlClickerRush, fluxToken, damToken, addr1, damAmount);
-		await setupBurnableAddress(ethers, damToken, fluxToken, owner, addr2, damAmount, hodlClickerRush);
+		await depositFor(hodlClickerRush, fluxToken, damToken, addr1, damAmount);
+		await setupBurnableAddress(damToken, fluxToken, owner, addr2, damAmount, hodlClickerRush);
 
 		const burnOperationResult = await hodlClickerRush.connect(owner).burnTokens.staticCall(0, addr2.address);
 

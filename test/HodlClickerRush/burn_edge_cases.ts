@@ -34,8 +34,8 @@ describe('HodlClickerRush Burn Edge Cases', () => {
 		const { hodlClickerRush, fluxToken, damToken, owner, addr1, addr2, ethers } =
 			await loadFixture(hodlClickerRushFixture);
 		const damAmount = ethers.parseEther('1000000');
-		await depositFor(ethers, hodlClickerRush, fluxToken, damToken, owner, damAmount);
-		await setupBurnableAddress(ethers, damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
+		await depositFor(hodlClickerRush, fluxToken, damToken, owner, damAmount);
+		await setupBurnableAddress(damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
 
 		const currentBlock = await ethers.provider.getBlockNumber();
 		const minBlockNumber = currentBlock + 100; // Set minBlockNumber in the future
@@ -55,8 +55,8 @@ describe('HodlClickerRush Burn Edge Cases', () => {
 		const { hodlClickerRush, fluxToken, damToken, owner, addr1, addr2, ethers } =
 			await loadFixture(hodlClickerRushFixture);
 		const damAmount = ethers.parseEther('1000000');
-		await depositFor(ethers, hodlClickerRush, fluxToken, damToken, owner, damAmount);
-		await setupBurnableAddress(ethers, damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
+		await depositFor(hodlClickerRush, fluxToken, damToken, owner, damAmount);
+		await setupBurnableAddress(damToken, fluxToken, owner, addr1, damAmount, hodlClickerRush);
 
 		const minBurnAmount = ethers.parseEther('1000000'); // Set a very high minBurnAmount
 

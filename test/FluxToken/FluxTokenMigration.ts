@@ -28,12 +28,12 @@ describe('FLUX Token Migration Tests', function () {
 	});
 
 	it('ensure DAM holder can lock DAM in FLUX smart contract', async () => {
-		const { damToken, fluxToken, damHolder, ethers } = await loadFixture(deployFluxTokenMigrationFixture);
+		const { damToken, fluxToken, damHolder } = await loadFixture(deployFluxTokenMigrationFixture);
 		const lockInAmount = parseUnits('10');
 
 		// Test the fundamental ability of a DAM holder to lock their DAM tokens within the FluxToken contract.
 		// This is the prerequisite for minting FLUX.
-		const blockAfterLock = await lockTokens(ethers, fluxToken, damToken, damHolder, lockInAmount);
+		const blockAfterLock = await lockTokens(fluxToken, damToken, damHolder, lockInAmount);
 
 		const lockInAmountForAddress = await fluxToken.addressLocks(damHolder.address);
 		// Verify that the correct amount of DAM is recorded as locked for the address, and at the correct block number.
@@ -42,11 +42,11 @@ describe('FLUX Token Migration Tests', function () {
 	});
 
 	it('ensure after locking-in DAM into FLUX you can unlock 100% of DAM back', async () => {
-		const { damToken, fluxToken, damHolder, ethers } = await loadFixture(deployFluxTokenMigrationFixture);
+		const { damToken, fluxToken, damHolder } = await loadFixture(deployFluxTokenMigrationFixture);
 		const initialBalance = await damToken.balanceOf(damHolder.address);
 		const lockInAmount = parseUnits('10');
 
-		await lockTokens(ethers, fluxToken, damToken, damHolder, lockInAmount);
+		await lockTokens(fluxToken, damToken, damHolder, lockInAmount);
 
 		// Verify that DAM tokens are correctly transferred to FluxToken upon locking.
 		expect(await damToken.balanceOf(damHolder.address)).to.equal(initialBalance - lockInAmount);
@@ -79,18 +79,18 @@ describe('FLUX Token Migration Tests', function () {
 		// It ensures that the contract correctly limits the amount of DAM that can be locked during a specified period,
 		// preventing large, sudden inflows that could destabilize the system or be part of an exploit. It also confirms
 		// that the failsafe is temporary and lifts after its duration, balancing security with usability.
-		await expect(lockTokens(ethers, fluxTokenWithFailsafe, damToken, damHolder, lockInAmount)).to.be.revertedWith(
+		await expect(lockTokens(fluxTokenWithFailsafe, damToken, damHolder, lockInAmount)).to.be.revertedWith(
 			RevertMessages.YOU_CAN_ONLY_LOCK_IN_UP_TO_100_DAM_DURING_FAILSAFE
 		);
 
 		// Locking an amount within the failsafe limit should succeed, confirming the failsafe's boundary.
-		await lockTokens(ethers, fluxTokenWithFailsafe, damToken, damHolder, lockInAmountSafe);
+		await lockTokens(fluxTokenWithFailsafe, damToken, damHolder, lockInAmountSafe);
 		await fluxTokenWithFailsafe.connect(damHolder).unlock();
 
 		// After the failsafe period has passed, locking the full amount should succeed.
 		// This confirms that the failsafe is time-bound and does not permanently restrict locking.
-		await mineBlocks(ethers, 30);
-		await lockTokens(ethers, fluxTokenWithFailsafe, damToken, damHolder, lockInAmount);
+		await mineBlocks(30);
+		await lockTokens(fluxTokenWithFailsafe, damToken, damHolder, lockInAmount);
 	});
 
 	it('ensure FLUX can be minted after DAM lock-in to another address', async () => {
@@ -102,7 +102,7 @@ describe('FLUX Token Migration Tests', function () {
 		// Lock DAM tokens, but specify a different address (fluxMintReceiver) as the minter.
 		// This tests the delegated minting functionality, allowing FLUX to be minted to an address
 		// other than the one that locked the DAM, supporting flexible ecosystem participation.
-		await lockTokens(ethers, fluxToken, damToken, damHolder, lockInAmount, fluxMintReceiver.address);
+		await lockTokens(fluxToken, damToken, damHolder, lockInAmount, fluxMintReceiver.address);
 
 		const currentBlock = await ethers.provider.getBlockNumber();
 
@@ -113,7 +113,7 @@ describe('FLUX Token Migration Tests', function () {
 		).to.be.revertedWith(RevertMessages.YOU_CAN_ONLY_MINT_AHEAD_OF_LAST_MINT_BLOCK);
 
 		// Calculate expected amount for the next block.
-		const nextBlock = await mineBlocks(ethers, 1);
+		const nextBlock = await mineBlocks(1);
 		const expectedMintAmount = await fluxToken.getMintAmount(damHolder.address, nextBlock);
 
 		// Mint on that block and verify the receiver's balance.
@@ -124,13 +124,11 @@ describe('FLUX Token Migration Tests', function () {
 	});
 
 	it('ensure FLUX can be target-burned', async () => {
-		const { damToken, fluxToken, damHolder, fluxMintReceiver, ethers } = await loadFixture(
-			deployFluxTokenMigrationFixture
-		);
+		const { damToken, fluxToken, damHolder, fluxMintReceiver } = await loadFixture(deployFluxTokenMigrationFixture);
 		const lockInAmount = parseUnits('10');
 
-		await lockTokens(ethers, fluxToken, damToken, damHolder, lockInAmount);
-		await mintFluxTokens(ethers, fluxToken, damHolder, damHolder.address, 1);
+		await lockTokens(fluxToken, damToken, damHolder, lockInAmount);
+		await mintFluxTokens(fluxToken, damHolder, damHolder.address, 1);
 
 		// Transfer minted flux to the burner (fluxMintReceiver) to simulate a scenario where
 		// a different address performs the target burn.

@@ -46,10 +46,10 @@ describe('DamHolder Deployment', function () {
 		});
 
 		it('Should correctly register ERC1820 interfaces in constructor', async function () {
-			const { damHolder, ethers } = await loadFixture(deployDamHolderFixture);
+			const { damHolder } = await loadFixture(deployDamHolderFixture);
 
 			// Get the ERC1820 registry instance using its fully qualified name
-			const erc1820Registry = await getERC1820Registry(ethers);
+			const erc1820Registry = await getERC1820Registry();
 
 			// Verify that DamHolder is registered as implementer for both interfaces
 			expect(await erc1820Registry.getInterfaceImplementer(damHolder.target, TOKENS_SENDER_INTERFACE_HASH)).to.equal(

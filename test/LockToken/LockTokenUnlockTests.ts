@@ -7,7 +7,7 @@ describe('LockToken Unlock', function () {
 			const { ethers, lockquidityToken, damToken, owner } = await loadFixture(deployLockTokenFixture);
 			const lockAmount = ethers.parseUnits('100', 18);
 
-			await lockTokens(ethers, lockquidityToken, damToken, owner, lockAmount);
+			await lockTokens(lockquidityToken, damToken, owner, lockAmount);
 
 			// Unlock tokens
 			await lockquidityToken.connect(owner).unlock();

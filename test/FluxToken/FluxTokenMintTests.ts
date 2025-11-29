@@ -12,8 +12,8 @@ describe('FluxToken Mint', function () {
 	describe('mintToAddress', function () {
 		describe('With locked tokens', function () {
 			it('Should mint tokens to the target address', async function () {
-				const { fluxToken, owner, ethers } = await loadFixture(deployFluxTokenAndLockFixture);
-				const mintBlock = await mineBlocks(ethers, 1);
+				const { fluxToken, owner } = await loadFixture(deployFluxTokenAndLockFixture);
+				const mintBlock = await mineBlocks(1);
 
 				const expectedMintAmount = await fluxToken.getMintAmount(owner.address, mintBlock);
 				// Verify that Flux tokens are correctly minted to the specified target address
@@ -38,8 +38,8 @@ describe('FluxToken Mint', function () {
 			});
 
 			it('Should revert if targetBlock is before lastMintBlockNumber', async function () {
-				const { fluxToken, owner, ethers } = await loadFixture(deployFluxTokenAndLockFixture);
-				await mintFluxTokens(ethers, fluxToken, owner, owner.address, 1);
+				const { fluxToken, owner } = await loadFixture(deployFluxTokenAndLockFixture);
+				await mintFluxTokens(fluxToken, owner, owner.address, 1);
 
 				const lastMintBlock = await (await fluxToken.addressLocks(owner.address)).lastMintBlockNumber;
 
@@ -51,8 +51,8 @@ describe('FluxToken Mint', function () {
 			});
 
 			it('Should revert if caller is not the minterAddress', async function () {
-				const { fluxToken, owner, otherAccount, ethers } = await loadFixture(deployFluxTokenAndLockFixture);
-				const block = await mineBlocks(ethers, 1);
+				const { fluxToken, owner, otherAccount } = await loadFixture(deployFluxTokenAndLockFixture);
+				const block = await mineBlocks(1);
 
 				// Enforce access control: ensure that only the delegated minter can initiate minting for a source address.
 				// This protects against unauthorized minting.

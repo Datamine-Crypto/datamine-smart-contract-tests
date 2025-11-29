@@ -22,7 +22,7 @@ describe('LockToken Deployment', function () {
 
 			const lockAmount = ethers.parseUnits('100', 18);
 
-			await lockTokens(ethers, lockquidityToken, damToken, owner, lockAmount);
+			await lockTokens(lockquidityToken, damToken, owner, lockAmount);
 
 			// Verify that the LockquidityToken contract holds the locked DAM tokens
 			expect(await damToken.balanceOf(lockquidityToken.target)).to.equal(lockAmount);
@@ -33,10 +33,10 @@ describe('LockToken Deployment', function () {
 
 			const lockAmount = ethers.parseUnits('100', 18);
 
-			await lockTokens(ethers, lockquidityToken, damToken, owner, lockAmount);
+			await lockTokens(lockquidityToken, damToken, owner, lockAmount);
 
 			// Mint LOCK after 1 block
-			const blockAfterLock = await mineBlocks(ethers, 1);
+			const blockAfterLock = await mineBlocks(1);
 			const expectedMintAmount = await lockquidityToken.getMintAmount(owner.address, blockAfterLock);
 			await lockquidityToken.connect(owner).mintToAddress(owner.address, owner.address, blockAfterLock);
 

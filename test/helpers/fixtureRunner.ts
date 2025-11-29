@@ -1,23 +1,14 @@
-import hre from 'hardhat';
 import fs from 'fs';
+import { getHreConnection } from './getHreConnection';
+import { getEthers } from './getEthers';
 
 // Map to store wrapped fixtures to preserve identity for loadFixture caching
 const wrappedFixtures = new Map<any, () => Promise<any>>();
 
-// Store a single connection to the network to avoid creating multiple connections (otherwise IERC1820 hook fires multiple times)
-let hreConnection: any = null;
-const getConnection = async () => {
-	if (hreConnection) {
-		return hreConnection;
-	}
-
-	hreConnection = await hre.network.connect();
-	return hreConnection;
-};
-
 export const loadFixture = async (fixture: (connection: any) => Promise<any>) => {
 	try {
-		const connection = await getConnection();
+		const connection = await getHreConnection();
+		const ethers = await getEthers();
 		const hardhatLoadFixture = (connection as any).networkHelpers?.loadFixture;
 
 		if (!hardhatLoadFixture) {
@@ -35,7 +26,12 @@ export const loadFixture = async (fixture: (connection: any) => Promise<any>) =>
 			});
 			wrappedFixtures.set(fixture, wrapper);
 		}
-		return hardhatLoadFixture(wrappedFixtures.get(fixture)!);
+
+		const matchingFixture = await hardhatLoadFixture(wrappedFixtures.get(fixture)!);
+		return {
+			...matchingFixture,
+			ethers,
+		};
 	} catch (e) {
 		console.error('Error in fixtureRunner:', e);
 		fs.writeFileSync('fixture_error.txt', String(e));

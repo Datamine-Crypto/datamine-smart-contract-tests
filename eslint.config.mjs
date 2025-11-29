@@ -9,10 +9,10 @@ export default tseslint.config(
 	// Global ignores
 	{
 		ignores: [
-			'**/build/', 
-			'.yarn/', 
-			'.pnp.loader.mjs', 
-			'.pnp.cjs', 
+			'**/build/',
+			'.yarn/',
+			'.pnp.loader.mjs',
+			'.pnp.cjs',
 			'**/artifacts/',
 			'node_modules/',
 			'coverage/',

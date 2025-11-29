@@ -19,17 +19,17 @@ describe('LockToken Attack Scenarios', function () {
 			const lockAmount = ethers.parseUnits('100', 18);
 
 			// First lock
-			await lockTokens(ethers, lockquidityToken, damToken, owner, lockAmount);
+			await lockTokens(lockquidityToken, damToken, owner, lockAmount);
 
 			// Mint after 10 blocks
-			const mintBlock1 = await mintLockTokens(ethers, lockquidityToken, owner, owner.address, 10);
+			const mintBlock1 = await mintLockTokens(lockquidityToken, owner, owner.address, 10);
 
 			// Unlock
 			await lockquidityToken.connect(owner).unlock();
-			await mineBlocks(ethers, 10);
+			await mineBlocks(10);
 
 			// Re-lock
-			await lockTokens(ethers, lockquidityToken, damToken, owner, lockAmount);
+			await lockTokens(lockquidityToken, damToken, owner, lockAmount);
 
 			// Try to mint again with the old mint block.
 			// This should fail because the last mint block is now the re-lock block.

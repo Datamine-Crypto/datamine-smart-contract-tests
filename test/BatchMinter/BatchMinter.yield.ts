@@ -10,8 +10,8 @@ describe('BatchMinter Yield Comparison', function () {
 
 		// Setup user3 to create a global burn history
 		await damToken.connect(owner).transfer(user3.address, lockAmount);
-		const lockBlock3 = await lockTokens(ethers, fluxToken, damToken, user3, lockAmount, user3.address);
-		await mineBlocks(ethers, initialBurnBlocks);
+		const lockBlock3 = await lockTokens(fluxToken, damToken, user3, lockAmount, user3.address);
+		await mineBlocks(initialBurnBlocks);
 		const endBlock3 = lockBlock3 + initialBurnBlocks;
 		await fluxToken.connect(user3).mintToAddress(user3.address, user3.address, endBlock3);
 		const user3FluxBalance = await fluxToken.balanceOf(user3.address);
@@ -20,10 +20,10 @@ describe('BatchMinter Yield Comparison', function () {
 		// Now, user1's scenario
 		await damToken.connect(owner).transfer(user1.address, lockAmount);
 		const initialBurnedAmount = (await fluxToken.addressLocks(user1.address)).burnedAmount;
-		const lockBlock1 = await lockTokens(ethers, fluxToken, damToken, user1, lockAmount, user1.address);
+		const lockBlock1 = await lockTokens(fluxToken, damToken, user1, lockAmount, user1.address);
 
 		const mintingPeriod = 300;
-		await mineBlocks(ethers, mintingPeriod);
+		await mineBlocks(mintingPeriod);
 		const endBlock1 = lockBlock1 + mintingPeriod;
 
 		await fluxToken.connect(user1).mintToAddress(user1.address, user1.address, endBlock1);
@@ -45,8 +45,8 @@ describe('BatchMinter Yield Comparison', function () {
 
 		// Setup user3 to create a global burn history
 		await damToken.connect(owner).transfer(user3.address, lockAmount);
-		const lockBlock3 = await lockTokens(ethers, fluxToken, damToken, user3, lockAmount, user3.address);
-		await mineBlocks(ethers, initialBurnBlocks);
+		const lockBlock3 = await lockTokens(fluxToken, damToken, user3, lockAmount, user3.address);
+		await mineBlocks(initialBurnBlocks);
 		const endBlock3 = lockBlock3 + initialBurnBlocks;
 		await fluxToken.connect(user3).mintToAddress(user3.address, user3.address, endBlock3);
 		const user3FluxBalance = await fluxToken.balanceOf(user3.address);
@@ -55,10 +55,10 @@ describe('BatchMinter Yield Comparison', function () {
 		// Now, user2's scenario
 		await damToken.connect(owner).transfer(user2.address, lockAmount);
 		const initialBurnedAmount = (await fluxToken.addressLocks(user2.address)).burnedAmount;
-		const lockBlock2 = await lockTokens(ethers, fluxToken, damToken, user2, lockAmount, batchMinter.target);
+		const lockBlock2 = await lockTokens(fluxToken, damToken, user2, lockAmount, batchMinter.target);
 
 		const mintingPeriod = 300;
-		await mineBlocks(ethers, mintingPeriod);
+		await mineBlocks(mintingPeriod);
 
 		const blockNumbers = [];
 		for (let i = 1; i <= 10; i++) {

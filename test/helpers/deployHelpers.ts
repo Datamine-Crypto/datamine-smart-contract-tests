@@ -1,4 +1,5 @@
 import { ContractNames } from './common';
+import { getEthers } from './getEthers';
 
 /**
  * @dev This file centralizes helper functions for deploying various smart contracts
@@ -11,11 +12,11 @@ import { ContractNames } from './common';
  * Deploys the DamToken contract.
  * This is the foundational token of the Datamine Network, and its deployment
  * is a prerequisite for testing any contract that interacts with DAM.
- * @param ethers The Hardhat ethers plugin instance.
  * @param signer Optional signer to use for deployment. If not provided, the default signer is used.
  * @returns The deployed DamToken contract instance.
  */
-export async function deployDamToken(ethers: any, signer?: any) {
+export async function deployDamToken(signer?: any) {
+	const ethers = await getEthers();
 	const DamToken = await ethers.getContractFactory(ContractNames.DamToken);
 	const damToken = signer ? await DamToken.connect(signer).deploy() : await DamToken.deploy();
 	return damToken;
@@ -25,11 +26,11 @@ export async function deployDamToken(ethers: any, signer?: any) {
  * Deploys the LockquidityFactory and its associated contracts (LockquidityToken, LockquidityVault).
  * These contracts are essential for the Lockquidity ecosystem, managing the locking of DAM
  * and the minting/burning of LOCK tokens. Deploying them together ensures a complete setup.
- * @param ethers The Hardhat ethers plugin instance.
  * @param damTokenAddress The address of the DAM token contract.
  * @returns An object containing the deployed factory, token, and vault instances.
  */
-export async function deployLockquidityContracts(ethers: any, damTokenAddress: string) {
+export async function deployLockquidityContracts(damTokenAddress: string) {
+	const ethers = await getEthers();
 	const LockquidityFactory = await ethers.getContractFactory(ContractNames.LockquidityFactory);
 	const lockquidityFactory = await LockquidityFactory.deploy(damTokenAddress);
 	const lockquidityToken = await ethers.getContractAt(ContractNames.LockquidityToken, await lockquidityFactory.token());
@@ -42,7 +43,6 @@ export async function deployLockquidityContracts(ethers: any, damTokenAddress: s
  * FluxToken is a key component for managing token supply and incentivizing participation
  * through its unique minting and burning mechanics. Its deployment is necessary for
  * testing its core functionalities and interactions with DAM.
- * @param ethers The Hardhat ethers plugin instance.
  * @param damTokenAddress The address of the DAM token contract.
  * @param timeBonusStartBlock The block number when the time bonus starts.
  * @param timeBonusEndBlock The block number when the time bonus reaches its maximum.
@@ -50,12 +50,12 @@ export async function deployLockquidityContracts(ethers: any, damTokenAddress: s
  * @returns The deployed FluxToken contract instance.
  */
 export async function deployFluxToken(
-	ethers: any,
 	damTokenAddress: string,
 	timeBonusStartBlock: number,
 	timeBonusEndBlock: number,
 	failsafeBlock: number
 ) {
+	const ethers = await getEthers();
 	const FluxToken = await ethers.getContractFactory(ContractNames.FluxToken);
 	const fluxToken = await FluxToken.deploy(damTokenAddress, timeBonusStartBlock, timeBonusEndBlock, failsafeBlock);
 	return fluxToken;
@@ -65,11 +65,11 @@ export async function deployFluxToken(
  * Deploys the DamBlockingHolder contract.
  * This contract is specifically designed to test re-entrancy scenarios and ERC777 hook
  * interactions in a controlled environment, making its deployment crucial for security tests.
- * @param ethers The Hardhat ethers plugin instance.
  * @param lockquidityTokenAddress The address of the lockable token contract (e.g., LockquidityToken).
  * @returns The deployed DamBlockingHolder contract instance.
  */
-export async function deployDamBlockingHolder(ethers: any, lockquidityTokenAddress: string) {
+export async function deployDamBlockingHolder(lockquidityTokenAddress: string) {
+	const ethers = await getEthers();
 	const DamBlockingHolder = await ethers.getContractFactory(ContractNames.DamBlockingHolder);
 	const damBlockingHolder = await DamBlockingHolder.deploy(lockquidityTokenAddress);
 	return damBlockingHolder;
@@ -79,10 +79,10 @@ export async function deployDamBlockingHolder(ethers: any, lockquidityTokenAddre
  * Deploys the DamHolder contract.
  * This contract acts as a general holder for DAM tokens and is used to test
  * various token management functionalities, including ERC777 hooks and operator patterns.
- * @param ethers The Hardhat ethers plugin instance.
  * @returns The deployed DamHolder contract instance.
  */
-export async function deployDamHolder(ethers: any) {
+export async function deployDamHolder() {
+	const ethers = await getEthers();
 	const DamHolder = await ethers.getContractFactory(ContractNames.DamHolder);
 	const damHolder = await DamHolder.deploy();
 	return damHolder;
@@ -93,7 +93,6 @@ export async function deployDamHolder(ethers: any) {
  * This direct deployment is used in specific test scenarios where fine-grained control
  * over the LockquidityToken's constructor parameters (e.g., failsafe settings) is required,
  * bypassing the factory's default deployment logic.
- * @param ethers The Hardhat ethers plugin instance.
  * @param damTokenAddress The address of the DAM token contract.
  * @param timeBonusStartBlock The block number when the time bonus starts.
  * @param timeBonusEndBlock The block number when the time bonus reaches its maximum.
@@ -102,13 +101,13 @@ export async function deployDamHolder(ethers: any) {
  * @returns The deployed LockquidityToken contract instance.
  */
 export async function deployLockquidityToken(
-	ethers: any,
 	damTokenAddress: string,
 	timeBonusStartBlock: number,
 	timeBonusEndBlock: number,
 	failsafeBlock: number,
 	ownerAddress: string
 ) {
+	const ethers = await getEthers();
 	const LockquidityToken = await ethers.getContractFactory(ContractNames.LockquidityToken);
 	const lockquidityToken = await LockquidityToken.deploy(
 		damTokenAddress,

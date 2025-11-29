@@ -7,7 +7,7 @@ describe('HodlClickerRush Rewards', () => {
 			await loadFixture(hodlClickerRushFixture);
 		const damAmount = ethers.parseEther('1000000');
 
-		await setupDefaultScenario(ethers, hodlClickerRush, fluxToken, damToken, owner, addr1, damAmount);
+		await setupDefaultScenario(hodlClickerRush, fluxToken, damToken, owner, addr1, damAmount);
 
 		const initialTotalLocked = await hodlClickerRush.totalContractLockedAmount();
 		const initialTotalRewards = await hodlClickerRush.totalContractRewardsAmount();
@@ -36,7 +36,7 @@ describe('HodlClickerRush Rewards', () => {
 	it('should correctly calculate total tip and jackpot amount using getTipAndJackpotAmount function', async () => {
 		const { hodlClickerRush, fluxToken, damToken, owner, addr1, ethers } = await loadFixture(hodlClickerRushFixture);
 		const damAmount = ethers.parseEther('1000000');
-		await depositFor(ethers, hodlClickerRush, fluxToken, damToken, owner, damAmount);
+		await depositFor(hodlClickerRush, fluxToken, damToken, owner, damAmount);
 
 		// Set rewardsPercent for addr1
 		await fluxToken.connect(addr1).authorizeOperator(hodlClickerRush.target);
