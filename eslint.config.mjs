@@ -20,6 +20,7 @@ export default tseslint.config(
 			'artifacts/',
 			'cache/',
 			'typechain-types/',
+			'types/'
 		],
 	},
 
