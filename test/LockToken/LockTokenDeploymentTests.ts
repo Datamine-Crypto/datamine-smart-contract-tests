@@ -1,5 +1,7 @@
 import { expect } from 'chai';
-import { deployLockTokenFixture, loadFixture, ZERO_ADDRESS, lockTokens, mineBlocks } from '../helpers/index';
+import { ZERO_ADDRESS, lockTokens, mineBlocks } from '../helpers/common';
+import { deployLockTokenFixture } from '../helpers/fixtures/lockToken';
+import { loadFixture } from '../helpers/fixtureRunner';
 
 describe('LockToken Deployment', function () {
 	describe('Deployment', function () {

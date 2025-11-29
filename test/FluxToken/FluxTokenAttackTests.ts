@@ -1,5 +1,7 @@
 import { expect } from 'chai';
-import { deployFluxTokenAttackFixture, loadFixture, parseUnits, mineBlocks } from '../helpers/index';
+import { deployFluxTokenAttackFixture } from '../helpers/fixtures/fluxToken';
+import { parseUnits, mineBlocks } from '../helpers/common';
+import { loadFixture } from '../helpers/fixtureRunner';
 
 /**
  * @dev Test suite specifically designed to verify the FluxToken contract's resilience against

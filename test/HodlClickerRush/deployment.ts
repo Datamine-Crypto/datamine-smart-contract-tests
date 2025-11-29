@@ -1,5 +1,6 @@
 import { expect } from 'chai';
-import { hodlClickerRushFixture, loadFixture } from '../helpers/index';
+import { hodlClickerRushFixture } from '../helpers/fixtures/hodlClickerRush';
+import { loadFixture } from '../helpers/fixtureRunner';
 
 describe('HodlClickerRush Deployment', () => {
 	it('Should initialize with zero balances', async () => {

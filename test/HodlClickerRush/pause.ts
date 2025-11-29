@@ -1,5 +1,8 @@
 import { expect } from 'chai';
-import { hodlClickerRushFixture, setupDefaultScenario, BurnResultCode, loadFixture } from '../helpers/index';
+import { hodlClickerRushFixture } from '../helpers/fixtures/hodlClickerRush';
+import { setupDefaultScenario } from '../helpers/hodlClickerRush';
+import { BurnResultCode } from '../helpers/common';
+import { loadFixture } from '../helpers/fixtureRunner';
 
 describe('HodlClickerRush Pause', () => {
 	it('should allow an address to pause itself', async () => {

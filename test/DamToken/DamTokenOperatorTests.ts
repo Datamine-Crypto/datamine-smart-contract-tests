@@ -1,12 +1,7 @@
 import { expect } from 'chai';
-import {
-	deployDamTokenFixture,
-	parseUnits,
-	loadFixture,
-	EventNames,
-	RevertMessages,
-	EMPTY_BYTES,
-} from '../helpers/index';
+import { deployDamTokenFixture } from '../helpers/fixtures/damToken';
+import { parseUnits, EventNames, RevertMessages, EMPTY_BYTES } from '../helpers/common';
+import { loadFixture } from '../helpers/fixtureRunner';
 
 describe('DamToken Operator Operations', function () {
 	describe('authorizeOperator and revokeOperator tests', function () {

@@ -1,12 +1,8 @@
 import { expect } from 'chai';
-import {
-	RevertMessages,
-	lockTokens,
-	mineBlocks,
-	mintLockTokens,
-	deployLockTokenFixture,
-	loadFixture,
-} from '../helpers/index';
+import { RevertMessages, lockTokens, mineBlocks } from '../helpers/common';
+import { mintLockTokens } from '../helpers/setupHelpers';
+import { deployLockTokenFixture } from '../helpers/fixtures/lockToken';
+import { loadFixture } from '../helpers/fixtureRunner';
 
 describe('LockToken Attack Scenarios', function () {
 	describe('Attack Scenarios', function () {

@@ -1,13 +1,8 @@
 import { expect } from 'chai';
-import {
-	parseUnits,
-	ZERO_ADDRESS,
-	EventNames,
-	EMPTY_BYTES,
-	testTokenBurn,
-	deployDamTokenMigrationFixture,
-	loadFixture,
-} from '../helpers/index';
+import { parseUnits, ZERO_ADDRESS, EventNames, EMPTY_BYTES } from '../helpers/common';
+import { testTokenBurn } from '../helpers/commonTests';
+import { deployDamTokenMigrationFixture } from '../helpers/fixtures/damToken';
+import { loadFixture } from '../helpers/fixtureRunner';
 
 /**
  * @dev Test suite for verifying the correct deployment and initial state of the DamToken contract,

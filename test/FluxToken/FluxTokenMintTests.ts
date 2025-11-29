@@ -1,12 +1,8 @@
 import { expect } from 'chai';
-import {
-	RevertMessages,
-	mineBlocks,
-	mintFluxTokens,
-	deployFluxTokenFixture,
-	deployFluxTokenAndLockFixture,
-	loadFixture,
-} from '../helpers/index';
+import { RevertMessages, mineBlocks } from '../helpers/common';
+import { mintFluxTokens } from '../helpers/setupHelpers';
+import { deployFluxTokenFixture, deployFluxTokenAndLockFixture } from '../helpers/fixtures/fluxToken';
+import { loadFixture } from '../helpers/fixtureRunner';
 
 describe('FluxToken Mint', function () {
 	describe('mintToAddress', function () {

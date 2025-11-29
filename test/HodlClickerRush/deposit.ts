@@ -1,11 +1,7 @@
 import { expect } from 'chai';
-import {
-	hodlClickerRushFixture,
-	setupPlayerForHodlClickerRush,
-	depositFor,
-	setupBurnableAddress,
-	loadFixture,
-} from '../helpers/index';
+import { hodlClickerRushFixture } from '../helpers/fixtures/hodlClickerRush';
+import { setupPlayerForHodlClickerRush, depositFor, setupBurnableAddress } from '../helpers/hodlClickerRush';
+import { loadFixture } from '../helpers/fixtureRunner';
 
 describe('HodlClickerRush Deposit', () => {
 	it('should allow depositing and calculate actualAmountToDeposit correctly when contract is empty', async () => {

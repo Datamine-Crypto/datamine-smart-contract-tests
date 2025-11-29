@@ -1,15 +1,8 @@
 import { expect } from 'chai';
-import {
-	mineBlocks,
-	parseUnits,
-	ContractNames,
-	EventNames,
-	RevertMessages,
-	deployFluxTokenMigrationFixture,
-	lockTokens,
-	mintFluxTokens,
-	loadFixture,
-} from '../helpers/index';
+import { mineBlocks, parseUnits, ContractNames, EventNames, RevertMessages, lockTokens } from '../helpers/common';
+import { deployFluxTokenMigrationFixture } from '../helpers/fixtures/fluxToken';
+import { mintFluxTokens } from '../helpers/setupHelpers';
+import { loadFixture } from '../helpers/fixtureRunner';
 
 /**
  * @dev Test suite for the FLUX Token migration and core functionalities.

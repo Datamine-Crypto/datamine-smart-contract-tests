@@ -1,12 +1,8 @@
 import { expect } from 'chai';
-import {
-	deployLockTokenAndLockFixture,
-	deployLockTokenFixture,
-	mineBlocks,
-	mintLockTokens,
-	RevertMessages,
-	loadFixture,
-} from '../helpers/index';
+import { mineBlocks, RevertMessages } from '../helpers/common';
+import { mintLockTokens } from '../helpers/setupHelpers';
+import { deployLockTokenAndLockFixture, deployLockTokenFixture } from '../helpers/fixtures/lockToken';
+import { loadFixture } from '../helpers/fixtureRunner';
 
 describe('LockToken Mint', function () {
 	describe('mintToAddress', function () {

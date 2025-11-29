@@ -1,5 +1,7 @@
 import { expect } from 'chai';
-import { hodlClickerRushFixture, setupDefaultScenario, depositFor, loadFixture } from '../helpers/index';
+import { hodlClickerRushFixture } from '../helpers/fixtures/hodlClickerRush';
+import { setupDefaultScenario, depositFor } from '../helpers/hodlClickerRush';
+import { loadFixture } from '../helpers/fixtureRunner';
 
 describe('HodlClickerRush Rewards', () => {
 	it('should give a jackpot and update rewards correctly', async () => {

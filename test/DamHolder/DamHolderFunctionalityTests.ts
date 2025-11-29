@@ -1,12 +1,8 @@
 import { expect } from 'chai';
-import {
-	deployDamHolderFixture,
-	parseUnits,
-	loadFixture,
-	mineBlocks,
-	RevertMessages,
-	setupHolderForLocking,
-} from '../helpers/index';
+import { parseUnits, mineBlocks, RevertMessages } from '../helpers/common';
+import { setupHolderForLocking } from '../helpers/setupHelpers';
+import { deployDamHolderFixture } from '../helpers/fixtures/damHolder';
+import { loadFixture } from '../helpers/fixtureRunner';
 
 describe('DamHolder Functionality', function () {
 	describe('Functionality', function () {

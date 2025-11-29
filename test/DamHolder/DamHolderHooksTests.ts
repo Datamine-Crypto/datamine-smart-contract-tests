@@ -1,5 +1,8 @@
 import { expect } from 'chai';
-import { deployDamHolderFixture, loadFixture, EventNames, setupHolderForLocking } from '../helpers/index';
+import { EventNames } from '../helpers/common';
+import { setupHolderForLocking } from '../helpers/setupHelpers';
+import { deployDamHolderFixture } from '../helpers/fixtures/damHolder';
+import { loadFixture } from '../helpers/fixtureRunner';
 
 describe('DamHolder Hooks', function () {
 	describe('Hooks', function () {

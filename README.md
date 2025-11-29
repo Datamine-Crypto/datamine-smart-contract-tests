@@ -2,6 +2,7 @@
 
 [![CI Status](https://github.com/Datamine-Crypto/datamine-smart-contract-tests/actions/workflows/ci.yml/badge.svg)](https://github.com/Datamine-Crypto/datamine-smart-contract-tests/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Hardhat v3](https://img.shields.io/badge/Hardhat-v3-blue.svg)](https://hardhat.org/)
 
 To run tests, use the command: `yarn hardhat test` or `yarn test`
 

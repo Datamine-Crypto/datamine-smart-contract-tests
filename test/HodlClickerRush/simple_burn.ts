@@ -1,11 +1,8 @@
 import { expect } from 'chai';
-import {
-	hodlClickerRushFixture,
-	setupBurnableAddress,
-	depositFor,
-	BurnResultCode,
-	loadFixture,
-} from '../helpers/index';
+import { hodlClickerRushFixture } from '../helpers/fixtures/hodlClickerRush';
+import { setupBurnableAddress, depositFor } from '../helpers/hodlClickerRush';
+import { BurnResultCode } from '../helpers/common';
+import { loadFixture } from '../helpers/fixtureRunner';
 
 describe('HodlClickerRush Simple Burn', () => {
 	it('should return InsufficientContractBalance if not enough FLUX is deposited', async () => {

@@ -1,11 +1,8 @@
 import { expect } from 'chai';
-import {
-	hodlClickerRushFixture,
-	depositFor,
-	setupBurnableAddress,
-	BurnResultCode,
-	loadFixture,
-} from '../helpers/index';
+import { hodlClickerRushFixture } from '../helpers/fixtures/hodlClickerRush';
+import { depositFor, setupBurnableAddress } from '../helpers/hodlClickerRush';
+import { BurnResultCode } from '../helpers/common';
+import { loadFixture } from '../helpers/fixtureRunner';
 
 describe('HodlClickerRush Burn Edge Cases', () => {
 	/**

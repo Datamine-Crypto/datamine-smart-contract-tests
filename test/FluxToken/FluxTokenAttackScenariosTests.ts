@@ -1,13 +1,8 @@
 import { expect } from 'chai';
-import {
-	parseUnits,
-	RevertMessages,
-	lockTokens,
-	mineBlocks,
-	mintFluxTokens,
-	deployFluxTokenFixture,
-	loadFixture,
-} from '../helpers/index';
+import { parseUnits, RevertMessages, lockTokens, mineBlocks } from '../helpers/common';
+import { mintFluxTokens } from '../helpers/setupHelpers';
+import { deployFluxTokenFixture } from '../helpers/fixtures/fluxToken';
+import { loadFixture } from '../helpers/fixtureRunner';
 
 describe('FluxToken Attack Scenarios', function () {
 	describe('Attack Scenarios', function () {

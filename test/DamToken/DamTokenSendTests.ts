@@ -1,13 +1,7 @@
 import { expect } from 'chai';
-import {
-	deployDamTokenFixture,
-	parseUnits,
-	loadFixture,
-	ZERO_ADDRESS,
-	EventNames,
-	RevertMessages,
-	EMPTY_BYTES,
-} from '../helpers/index';
+import { deployDamTokenFixture } from '../helpers/fixtures/damToken';
+import { parseUnits, ZERO_ADDRESS, EventNames, RevertMessages, EMPTY_BYTES } from '../helpers/common';
+import { loadFixture } from '../helpers/fixtureRunner';
 
 describe('DamToken Send Operations', function () {
 	describe('send function tests', function () {
