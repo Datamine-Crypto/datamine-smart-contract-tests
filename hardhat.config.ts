@@ -3,6 +3,9 @@ import hardhatMocha from '@nomicfoundation/hardhat-mocha';
 import hardhatIgnitionEthers from '@nomicfoundation/hardhat-ignition-ethers';
 import hardhatNetworkHelpers from '@nomicfoundation/hardhat-network-helpers';
 import hardhatChaiMatchers from '@nomicfoundation/hardhat-ethers-chai-matchers';
+import hardhatTypechain from '@nomicfoundation/hardhat-typechain';
+import hardhatVerify from '@nomicfoundation/hardhat-verify';
+import hardhatKeystore from '@nomicfoundation/hardhat-keystore';
 
 import { defineConfig } from 'hardhat/config';
 import { erc1820Plugin } from './test/helpers/plugins/erc1820/erc1820-plugin';
@@ -15,6 +18,9 @@ export default defineConfig({
 		hardhatIgnitionEthers,
 		hardhatNetworkHelpers,
 		hardhatChaiMatchers,
+		hardhatTypechain,
+		hardhatVerify,
+		hardhatKeystore,
 	],
 	solidity: {
 		compilers: [

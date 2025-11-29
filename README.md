@@ -31,6 +31,14 @@ npm install --global yarn
    yarn install
    ```
 
+### Compiling Contracts
+
+To compile the smart contracts and generate TypeChain types:
+
+```bash
+yarn hardhat compile
+```
+
 ### Running Tests
 
 To execute all unit tests:
@@ -69,6 +77,7 @@ yarn format
 
 This project leverages the following key technologies and frameworks:
 
+
 - **Hardhat**: An Ethereum development environment for compiling, deploying, testing, and debugging your smart contracts.
 - **Ethers.js**: A complete and compact library for interacting with the Ethereum Blockchain and its ecosystem.
 - **Chai**: A BDD / TDD assertion library for Node.js and the browser, used for writing robust tests.
@@ -77,6 +86,9 @@ This project leverages the following key technologies and frameworks:
 - **Prettier**: An opinionated code formatter.
 - **OpenZeppelin Contracts**: A library for secure smart contract development (used for ERC777 interfaces, as noted in `GEMINI.md`).
 - **hardhat-erc1820**: A Hardhat plugin for working with the ERC1820 registry, essential for ERC777 hooks.
+- **hardhat-typechain**: Generates TypeScript bindings for smart contracts.
+- **hardhat-verify**: Verifies contracts on Etherscan and other explorers.
+- **hardhat-keystore**: Manages account keystores.
 
 ## 🧪 Test Coverage and Philosophy
 

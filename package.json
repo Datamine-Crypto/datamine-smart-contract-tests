@@ -36,6 +36,7 @@
 	"scripts": {
 		"lint": "eslint .",
 		"format": "prettier --write .",
-		"test": "npx hardhat test --show-stack-traces"
+		"test": "npx hardhat test --show-stack-traces",
+		"compile": "npx hardhat compile"
 	}
 }

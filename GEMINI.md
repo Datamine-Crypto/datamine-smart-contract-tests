@@ -47,6 +47,11 @@ This is required for us to use hooks (in unit tests and Lockquidity token)
 
 This project now uses Hardhat v3.
 
+We have also added the following plugins:
+- `hardhat-typechain`: Generates TypeScript types for contracts in `types/`.
+- `hardhat-verify`: For contract verification.
+- `hardhat-keystore`: For keystore management.
+
 Please note the specific usage of @openzeppelin/contracts as we're using these for ERC777 interfaces. ERC777 was removed from OpenZeppelin so we have to use this older package.
 
 ---
