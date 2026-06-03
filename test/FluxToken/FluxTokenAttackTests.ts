@@ -156,5 +156,49 @@ describe('FluxToken - Attack Scenarios', function () {
 				await ethers.provider.send('evm_setAutomine', [true]);
 			}
 		});
+
+		it('Should dilute other validators multipliers if an attacker locks 1 wei and burns a massive amount', async function () {
+			const { fluxToken, damToken, owner, attackerAccount } = await loadFixture(deployFluxTokenAttackFixture);
+
+			// 1. Owner (Honest Validator) locks 10 DAM
+			await damToken.connect(owner).authorizeOperator(fluxToken.target);
+			await fluxToken.connect(owner).lock(owner.address, parseUnits('10'));
+
+			// 2. Mine blocks and let Owner burn their accrued FLUX to get a 2x multiplier
+			let currentBlock = await mineBlocks(10000);
+			await fluxToken.connect(owner).mintToAddress(owner.address, owner.address, currentBlock);
+			const ownerFluxBalance = await fluxToken.balanceOf(owner.address);
+			expect(ownerFluxBalance).to.be.gt(0);
+
+			// Burn all of Owner's FLUX
+			await fluxToken.connect(owner).burnToAddress(owner.address, ownerFluxBalance);
+
+			// Verify Owner has a high multiplier (should be 2x / 20000)
+			const multiplierBefore = await fluxToken.getAddressBurnMultiplier(owner.address);
+			expect(multiplierBefore).to.equal(20000n);
+
+			// 3. Owner unlocks and locks 1000 DAM to generate massive FLUX for the attacker
+			await fluxToken.connect(owner).unlock();
+			await fluxToken.connect(owner).lock(owner.address, parseUnits('1000'));
+
+			currentBlock = await mineBlocks(10000);
+			// Mint 0.1 FLUX directly to the attacker
+			await fluxToken.connect(owner).mintToAddress(owner.address, attackerAccount.address, currentBlock);
+			const attackerFluxBalance = await fluxToken.balanceOf(attackerAccount.address);
+			expect(attackerFluxBalance).to.be.gt(0);
+
+			// 4. Attacker locks 1 wei of DAM
+			await damToken.connect(owner).transfer(attackerAccount.address, 1n);
+			await damToken.connect(attackerAccount).authorizeOperator(fluxToken.target);
+			await fluxToken.connect(attackerAccount).lock(attackerAccount.address, 1n);
+
+			// Attacker burns their FLUX to dilute the global ratio
+			await fluxToken.connect(attackerAccount).burnToAddress(attackerAccount.address, attackerFluxBalance);
+
+			// 5. Verify Owner's multiplier has been suppressed back to near 1x (10099)
+			const multiplierAfter = await fluxToken.getAddressBurnMultiplier(owner.address);
+			expect(multiplierAfter).to.be.lt(10500n); // Has been significantly diluted from 2x (20000)
+			expect(multiplierAfter).to.be.gt(10000n); // Still above base 1x
+		});
 	});
 });
