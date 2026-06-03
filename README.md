@@ -78,7 +78,6 @@ yarn format
 
 This project leverages the following key technologies and frameworks:
 
-
 - **Hardhat**: An Ethereum development environment for compiling, deploying, testing, and debugging your smart contracts.
 - **Ethers.js**: A complete and compact library for interacting with the Ethereum Blockchain and its ecosystem.
 - **Chai**: A BDD / TDD assertion library for Node.js and the browser, used for writing robust tests.

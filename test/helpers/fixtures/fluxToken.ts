@@ -17,7 +17,6 @@ export async function deployFluxTokenAndLockFixture() {
 }
 
 export async function deployFluxTokenAttackFixture() {
-
 	const { damToken, owner, addr1, addr2 } = await deployBaseFixture();
 
 	// Deploy FluxToken with failsafe disabled (0) to simplify attack scenario setup.

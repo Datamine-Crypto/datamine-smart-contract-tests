@@ -30,5 +30,18 @@ describe('LockToken Unlock', function () {
 				RevertMessages.YOU_MUST_HAVE_LOCKED_IN_YOUR_ARBI_FLUX_TOKENS
 			);
 		});
+
+		it('Should revert when attempting to lock tokens when already locked', async function () {
+			const { ethers, lockquidityToken, damToken, owner } = await loadFixture(deployLockTokenFixture);
+			const lockAmount = ethers.parseUnits('100', 18);
+
+			// First lock should succeed
+			await lockTokens(lockquidityToken, damToken, owner, lockAmount);
+
+			// Second lock attempt on same address without unlocking first should revert
+			await expect(lockquidityToken.connect(owner).lock(owner.address, lockAmount)).to.be.revertedWith(
+				RevertMessages.YOU_MUST_HAVE_UNLOCKED_YOUR_ARBI_FLUX_TOKENS
+			);
+		});
 	});
 });

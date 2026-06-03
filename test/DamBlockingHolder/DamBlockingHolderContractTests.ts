@@ -117,5 +117,49 @@ describe('DamBlockingHolder Contract Test', function () {
 		it('Re-Entry Test: Should revert if hook send amount is greater than balance after lock', async function () {
 			await testRevert(parseUnits('100'), parseUnits('101'));
 		});
+
+		/**
+		 * @dev This test verifies that calling unlock() re-entrantly from the tokensReceived hook
+		 * during an unlock() call is successfully prevented by the recursion mutex, leaving the contract
+		 * state correct and preventing double-unlocking.
+		 */
+		it('Re-Entry Test: DamBlockingHolder should prevent unlock() inside unlock() via tokensReceived hook', async function () {
+			const { owner, damBlockingHolder, lockquidityToken, damToken } = await loadFixture(deployReentrancyTestFixture);
+
+			const initialAmount = parseUnits('200');
+			const lockAmount = parseUnits('100');
+			const hookSendAmount = 0; // Not used for this case
+
+			// Setup the DamBlockingHolder to trigger the tokensReceived re-entrancy case
+			await setupDamBlockingHolderTest(
+				damBlockingHolder,
+				owner,
+				damToken,
+				lockquidityToken,
+				initialAmount,
+				lockAmount,
+				hookSendAmount,
+				UnitTestCases.CallUnlockTokensReceivedHook
+			);
+
+			// Perform initial lock
+			await damBlockingHolder.connect(owner).lock(lockquidityToken.target, damBlockingHolder.target, lockAmount);
+
+			// Call unlock, which will trigger the unlock function, transfer the DAM tokens, and trigger the hook.
+			// The hook will attempt to call unlock() again, which should be bypassed by the preventRecursion modifier.
+			const unlockTx = await damBlockingHolder.connect(owner).unlock();
+
+			// Expect the TokensReceivedHookExecuted event to confirm the hook was triggered.
+			await expect(unlockTx).to.emit(damBlockingHolder, EventNames.TokensReceivedHookExecuted);
+
+			// Expect the Unlocked event from LockquidityToken to confirm that the primary unlock completed.
+			await expect(unlockTx).to.emit(lockquidityToken, EventNames.Unlocked);
+
+			// Verify that the DAM tokens are back under the DamBlockingHolder contract.
+			expect(await damToken.balanceOf(damBlockingHolder.target)).to.equal(initialAmount);
+
+			// Verify that the LockquidityToken contract has 0 DAM balance left.
+			expect(await damToken.balanceOf(lockquidityToken.target)).to.equal(0);
+		});
 	});
 });

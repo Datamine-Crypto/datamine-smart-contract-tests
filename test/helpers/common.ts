@@ -131,6 +131,7 @@ export enum EventNames {
 	Locked = 'Locked',
 	Unlocked = 'Unlocked',
 	TokensToSendHookExecuted = 'TokensToSendHookExecuted',
+	TokensReceivedHookExecuted = 'TokensReceivedHookExecuted',
 	Transfer = 'Transfer',
 	Minted = 'Minted',
 	Burned = 'Burned',
@@ -164,6 +165,8 @@ export enum RevertMessages {
 	YOU_MUST_HAVE_LOCKED_IN_YOUR_DAM_TOKENS = 'You must have locked-in your DAM tokens',
 	YOU_CAN_ONLY_LOCK_IN_DAM_TOKENS = 'You can only lock-in DAM tokens',
 	ONLY_FLUX_CONTRACT_CAN_SEND_ITSELF_DAM_TOKENS = 'Only FLUX contract can send itself DAM tokens',
+	YOU_MUST_HAVE_UNLOCKED_YOUR_ARBI_FLUX_TOKENS = 'You must have unlocked your ArbiFLUX tokens',
+	YOU_CAN_NOT_LOCK_UNLOCK_MINT_IN_THE_SAME_BLOCK = 'You can not lock/unlock/mint in the same block',
 }
 
 /**
@@ -174,6 +177,7 @@ export enum RevertMessages {
 export enum UnitTestCases {
 	CallUnlockTokensToSendHook = 0,
 	CallSendTokensToSendHook = 1,
+	CallUnlockTokensReceivedHook = 2,
 }
 
 export enum BurnResultCode {

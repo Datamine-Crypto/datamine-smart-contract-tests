@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { RevertMessages, mineBlocks } from '../helpers/common';
+import { RevertMessages, mineBlocks, lockTokens } from '../helpers/common';
 import { mintFluxTokens } from '../helpers/setupHelpers';
 import { deployFluxTokenFixture, deployFluxTokenAndLockFixture } from '../helpers/fixtures/fluxToken';
 import { loadFixture } from '../helpers/fixtureRunner';
@@ -55,6 +55,27 @@ describe('FluxToken Mint', function () {
 				await expect(
 					fluxToken.connect(otherAccount).mintToAddress(owner.address, otherAccount.address, block)
 				).to.be.revertedWith(RevertMessages.YOU_MUST_BE_THE_DELEGATED_MINTER_OF_THE_SOURCE_ADDRESS);
+			});
+
+			it('Should revert if owner tries to mint after delegating minter to another address', async function () {
+				const { fluxToken, damToken, owner, otherAccount, lockAmount } =
+					await loadFixture(deployFluxTokenAndLockFixture);
+
+				// Owner currently has locks with minterAddress = owner.address.
+				// Unlock first to allow setting a new minterAddress on next lock.
+				await fluxToken.connect(owner).unlock();
+
+				// Lock again, specifying otherAccount as the delegated minterAddress.
+				await lockTokens(fluxToken, damToken, owner, lockAmount, otherAccount.address);
+
+				// Advance 1 block to accrue some mintable tokens.
+				const block = await mineBlocks(1);
+
+				// The owner (owner.address) attempts to mint. This must revert because
+				// they delegated the minter role to otherAccount.
+				await expect(fluxToken.connect(owner).mintToAddress(owner.address, owner.address, block)).to.be.revertedWith(
+					RevertMessages.YOU_MUST_BE_THE_DELEGATED_MINTER_OF_THE_SOURCE_ADDRESS
+				);
 			});
 		});
 

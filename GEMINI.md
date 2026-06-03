@@ -48,6 +48,7 @@ This is required for us to use hooks (in unit tests and Lockquidity token)
 This project now uses Hardhat v3.
 
 We have also added the following plugins:
+
 - `hardhat-typechain`: Generates TypeScript types for contracts in `types/`.
 - `hardhat-verify`: For contract verification.
 - `hardhat-keystore`: For keystore management.
@@ -61,7 +62,10 @@ Good Gemini prompts to run:
 ```
 Can you add some "attack" tests to show that the contract is behaving as expected. Specfically I want you to add tests that are not covered around the core Locking/burning/minting logic. For example a test that tries to cheat the system somehow to get an unfair advantage by gaming the system. Expect a revert as you should not be able to get an unfair advantage.
 
+Also double check to make sure there are no overlaps in current tests
+
 Before you start changing code let me know what you found and we can discuss further.
+
 ```
 
 ```

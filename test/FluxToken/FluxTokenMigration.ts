@@ -147,4 +147,50 @@ describe('FLUX Token Migration Tests', function () {
 		// Verify that the burned amount is correctly accumulated.
 		expect(lockDataAfterSecondBurn.burnedAmount).to.equal(burnAmount * 2n);
 	});
+
+	it('should not be possible to lock and unlock/lock in the same block', async () => {
+		const { fluxToken, damToken, damHolder, ethers } = await loadFixture(deployFluxTokenMigrationFixture);
+		const lockInAmount = parseUnits('10');
+
+		await damToken.connect(damHolder).authorizeOperator(fluxToken.target);
+
+		// Disable automine to package transactions into the same block
+		await ethers.provider.send('evm_setAutomine', [false]);
+
+		try {
+			// Send lock transaction
+			const tx1 = await fluxToken.connect(damHolder).lock(damHolder.address, lockInAmount);
+
+			// Attempt to send unlock transaction in the same block
+			// Specifying gasLimit prevents Hardhat from simulating/estimating gas on broadcast which would throw immediately
+			const tx2 = await fluxToken.connect(damHolder).unlock({ gasLimit: 300000 });
+
+			// Mine the block containing these transactions
+			await ethers.provider.send('evm_mine', []);
+
+			// Expect the second transaction (unlock) to revert because it was executed in the same block
+			try {
+				await tx2.wait();
+				expect.fail('Transaction should have reverted');
+			} catch (error: any) {
+				expect(error.message).to.include('transaction execution reverted');
+			}
+		} finally {
+			// Re-enable automine
+			await ethers.provider.send('evm_setAutomine', [true]);
+		}
+	});
+
+	it('should revert when attempting to lock tokens when already locked', async () => {
+		const { fluxToken, damToken, damHolder } = await loadFixture(deployFluxTokenMigrationFixture);
+		const lockInAmount = parseUnits('10');
+
+		// First lock should succeed
+		await lockTokens(fluxToken, damToken, damHolder, lockInAmount);
+
+		// Second lock attempt on same address without unlocking first should revert
+		await expect(fluxToken.connect(damHolder).lock(damHolder.address, lockInAmount)).to.be.revertedWith(
+			RevertMessages.YOU_MUST_HAVE_UNLOCKED_YOUR_DAM_TOKENS
+		);
+	});
 });

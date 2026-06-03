@@ -27,7 +27,7 @@ contract DamBlockingHolder is IERC777Sender, IERC777Recipient {
     event TokensToSendHookExecuted(string message, address caller);
     event TokensReceivedHookExecuted(string message, address caller);
 
-    enum UnitTestCase { CallUnlockTokensToSendHook, CallSendTokensToSendHook }
+    enum UnitTestCase { CallUnlockTokensToSendHook, CallSendTokensToSendHook, CallUnlockTokensReceivedHook }
     UnitTestCase public unitTestCase;
     uint256 public hookSendAmount;
 
@@ -137,8 +137,17 @@ contract DamBlockingHolder is IERC777Sender, IERC777Recipient {
         bytes calldata,
         bytes calldata
     ) external override {
-
-        emit TokensReceivedHookExecuted("DamBlockingHolder tokensToSend hook executed", msg.sender);
+        if (unitTestCase == UnitTestCase.CallUnlockTokensReceivedHook) {
+            if (from == address(_lockableContractAddress)) {
+                if (unitTestHookState == UnitTestHookState.CallUnhooked)
+                {
+                    unitTestHookState = UnitTestHookState.CallHooked;
+                    ILockToken lockableContract = ILockToken(_lockableContractAddress);
+                    lockableContract.unlock();
+                }
+            }
+        }
+        emit TokensReceivedHookExecuted("DamBlockingHolder tokensReceived hook executed", msg.sender);
     }
 
     function authorizeOperator(address ercTokenAddress, address operatorAddress) public

@@ -103,4 +103,63 @@ describe('BatchMinter Functionality', function () {
 		const finalTargetBalance = await fluxToken.balanceOf(user2.address);
 		expect(finalTargetBalance).to.be.gt(initialTargetBalance);
 	});
+
+	it('should revert if an unauthorized caller attempts to batchBurn', async function () {
+		const { damToken, fluxToken, batchMinter, owner, user1, user2, ethers } =
+			await loadFixture(deployBatchMinterFixture);
+
+		const lockAmount = parseUnits('100');
+		await damToken.connect(owner).transfer(user1.address, lockAmount);
+		const lockBlock = await lockTokens(fluxToken, damToken, user1, lockAmount, batchMinter.target);
+
+		await mineBlocks(10);
+		const endBlock = await ethers.provider.getBlockNumber();
+
+		const blockNumbers = [endBlock];
+
+		// Attempting to batchBurn as user2 (who is not the delegated minter and not user1) should revert
+		await expect(batchMinter.connect(user2).batchBurn(user1.address, blockNumbers)).to.be.revertedWith(
+			'Caller is not the delegated minter'
+		);
+	});
+
+	it('should revert if the lock owner attempts to batchBurn after delegating the minter', async function () {
+		const { damToken, fluxToken, batchMinter, owner, user1, user2, ethers } =
+			await loadFixture(deployBatchMinterFixture);
+
+		const lockAmount = parseUnits('100');
+		await damToken.connect(owner).transfer(user1.address, lockAmount);
+		const lockBlock = await lockTokens(fluxToken, damToken, user1, lockAmount, batchMinter.target);
+
+		// user1 delegates minter to user2
+		await batchMinter.connect(user1).setDelegatedMinter(user2.address);
+
+		await mineBlocks(10);
+		const endBlock = await ethers.provider.getBlockNumber();
+
+		const blockNumbers = [endBlock];
+
+		// Even though user1 is the owner of the locked tokens, calling batchBurn from user1's address
+		// should revert because user2 is now the effective delegated minter.
+		await expect(batchMinter.connect(user1).batchBurn(user1.address, blockNumbers)).to.be.revertedWith(
+			'Caller is not the delegated minter'
+		);
+	});
+
+	it('should revert if an unauthorized caller attempts to normalMintTo', async function () {
+		const { damToken, fluxToken, batchMinter, owner, user1, user2, ethers } =
+			await loadFixture(deployBatchMinterFixture);
+
+		const lockAmount = parseUnits('100');
+		await damToken.connect(owner).transfer(user1.address, lockAmount);
+		await lockTokens(fluxToken, damToken, user1, lockAmount, batchMinter.target);
+
+		await mineBlocks(10);
+		const endBlock = await ethers.provider.getBlockNumber();
+
+		// Attempting to normalMintTo as user2 should revert
+		await expect(batchMinter.connect(user2).normalMintTo(user1.address, endBlock, user2.address)).to.be.revertedWith(
+			'Caller is not the delegated minter'
+		);
+	});
 });
