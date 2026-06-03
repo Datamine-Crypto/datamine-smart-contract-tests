@@ -1,7 +1,8 @@
 import { expect } from 'chai';
 import { deployFluxTokenAttackFixture } from '../helpers/fixtures/fluxToken';
-import { parseUnits, mineBlocks } from '../helpers/common';
+import { parseUnits, mineBlocks, RevertMessages, lockTokens } from '../helpers/common';
 import { loadFixture } from '../helpers/fixtureRunner';
+import { getEthers } from '../helpers/getEthers';
 
 /**
  * @dev Test suite specifically designed to verify the FluxToken contract's resilience against
@@ -73,6 +74,87 @@ describe('FluxToken - Attack Scenarios', function () {
 			// or manipulating the state in an unintended way.
 			expect(finalOwnerLock.burnedAmount).to.equal(initialOwnerLock.burnedAmount + burnAmount);
 			expect(finalGlobalBurnedAmount).to.equal(initialGlobalBurnedAmount + burnAmount);
+		});
+	});
+
+	describe('Direct validation and edge case checks', function () {
+		it('Should revert if lock amount is 0', async function () {
+			const { fluxToken, owner } = await loadFixture(deployFluxTokenAttackFixture);
+			await expect(
+				fluxToken.connect(owner).lock(owner.address, 0)
+			).to.be.revertedWith(RevertMessages.YOU_MUST_PROVIDE_A_POSITIVE_AMOUNT_TO_LOCK_IN);
+		});
+
+		it('Should revert if burn amount is 0', async function () {
+			const { fluxToken, damToken, owner } = await loadFixture(deployFluxTokenAttackFixture);
+			await damToken.connect(owner).authorizeOperator(fluxToken.target);
+			await fluxToken.connect(owner).lock(owner.address, parseUnits('100'));
+			await expect(
+				fluxToken.connect(owner).burnToAddress(owner.address, 0)
+			).to.be.revertedWith('You must burn > 0 FLUX');
+		});
+
+		it('Should revert if trying to unlock without locked tokens', async function () {
+			const { fluxToken, owner } = await loadFixture(deployFluxTokenAttackFixture);
+			await expect(
+				fluxToken.connect(owner).unlock()
+			).to.be.revertedWith(RevertMessages.YOU_MUST_HAVE_LOCKED_IN_YOUR_DAM_TOKENS);
+		});
+
+		it('Should revert if burning to an unlocked address', async function () {
+			const { fluxToken, damToken, owner, attackerAccount } = await loadFixture(deployFluxTokenAttackFixture);
+			await damToken.connect(owner).authorizeOperator(fluxToken.target);
+			await fluxToken.connect(owner).lock(owner.address, parseUnits('100'));
+
+			const mintBlock = await mineBlocks(100);
+			await fluxToken.connect(owner).mintToAddress(owner.address, owner.address, mintBlock);
+			const ownerFluxBalance = await fluxToken.balanceOf(owner.address);
+			expect(ownerFluxBalance).to.be.gt(0);
+
+			await expect(
+				fluxToken.connect(owner).burnToAddress(attackerAccount.address, parseUnits('1'))
+			).to.be.revertedWith(RevertMessages.YOU_MUST_HAVE_LOCKED_IN_YOUR_DAM_TOKENS);
+		});
+
+		it('Should not allow double-minting in the same block by stepping block target', async function () {
+			const { fluxToken, damToken, owner } = await loadFixture(deployFluxTokenAttackFixture);
+			await damToken.connect(owner).authorizeOperator(fluxToken.target);
+			await fluxToken.connect(owner).lock(owner.address, parseUnits('100'));
+
+			// Advance blocks to accrue some mintable tokens.
+			await mineBlocks(10);
+			const currentBlock = await mineBlocks(0);
+
+			const mintAmountUpToMinusOne = await fluxToken.getMintAmount(owner.address, currentBlock - 1);
+			const mintAmountUpToCurrent = await fluxToken.getMintAmount(owner.address, currentBlock);
+
+			const ethers = await getEthers();
+			// Disable automine to execute transactions in the same block.
+			await ethers.provider.send('evm_setAutomine', [false]);
+
+			try {
+				// Send first mint transaction up to currentBlock - 1
+				const tx1 = await fluxToken.connect(owner).mintToAddress(owner.address, owner.address, currentBlock - 1);
+
+				// Send second mint transaction up to currentBlock in the same block
+				const tx2 = await fluxToken.connect(owner).mintToAddress(owner.address, owner.address, currentBlock, { gasLimit: 300000 });
+
+				// Mine the block containing both transactions
+				await ethers.provider.send('evm_mine', []);
+
+				// Wait for both to complete
+				await tx1.wait();
+				await tx2.wait();
+
+				// Verify total minted amount is exactly equal to the mintAmountUpToCurrent.
+				// This confirms no double-minting occurred (i.e. we didn't get mintAmountUpToMinusOne + mintAmountUpToCurrent).
+				const finalBalance = await fluxToken.balanceOf(owner.address);
+				expect(finalBalance).to.equal(mintAmountUpToCurrent);
+
+			} finally {
+				// Re-enable automine
+				await ethers.provider.send('evm_setAutomine', [true]);
+			}
 		});
 	});
 });

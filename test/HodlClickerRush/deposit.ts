@@ -98,4 +98,48 @@ describe('HodlClickerRush Deposit', () => {
 		expect(addr1Lock.minBlockNumber).to.equal(testMinBlockNumber);
 		expect(addr1Lock.minBurnAmount).to.equal(testMinBurnAmount);
 	});
+
+	it('should result in 0 actualAmountToDeposit when depositing a very small amount (dust) under high rewards-to-locked ratio', async () => {
+		const { hodlClickerRush, fluxToken, damToken, owner, addr1, addr2, ethers } =
+			await loadFixture(hodlClickerRushFixture);
+		const damAmount = ethers.parseEther('1000000');
+
+		// 1. Owner deposits a decent amount
+		await depositFor(hodlClickerRush, fluxToken, damToken, owner, ethers.parseEther('100'));
+
+		// 2. Perform a burn to generate rewards and create a reward-to-locked ratio > 1
+		await setupBurnableAddress(damToken, fluxToken, owner, addr2, ethers.parseEther('10'), hodlClickerRush);
+		const burnTx = await hodlClickerRush.connect(owner).burnTokens(0, addr2.address);
+		await expect(burnTx).to.emit(hodlClickerRush, 'TokensBurned');
+
+		// Verify rewards are greater than locked
+		const totalContractLockedAmount = await hodlClickerRush.totalContractLockedAmount();
+		const totalContractRewardsAmount = await hodlClickerRush.totalContractRewardsAmount();
+		expect(totalContractRewardsAmount).to.be.gt(totalContractLockedAmount);
+
+		// 3. Addr1 tries to deposit 1 wei of FLUX
+		await setupPlayerForHodlClickerRush(
+			hodlClickerRush,
+			fluxToken,
+			damToken,
+			addr1,
+			damAmount,
+			addr1.address
+		);
+		const depositAmount = 1n; // 1 wei
+
+		// actualAmountToDeposit = (depositAmount * totalContractLockedAmount) / totalContractRewardsAmount
+		// Since depositAmount = 1 and locked < rewards, actualAmountToDeposit will round to 0.
+		const expectedActualAmount = (depositAmount * totalContractLockedAmount) / totalContractRewardsAmount;
+		expect(expectedActualAmount).to.equal(0);
+
+		// Deposit 1 wei
+		await expect(hodlClickerRush.connect(addr1).deposit(depositAmount, 500, 0, 0))
+			.to.emit(hodlClickerRush, 'Deposited')
+			.withArgs(addr1.address, depositAmount, 500, 0, 0, 0, 0);
+
+		// AddressLock.rewardsAmount should be 0 because actualAmountToDeposit was 0.
+		const addr1Lock = await hodlClickerRush.addressLocks(addr1.address);
+		expect(addr1Lock.rewardsAmount).to.equal(0);
+	});
 });
