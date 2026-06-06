@@ -181,5 +181,74 @@ describe('FluxToken - Attack Scenarios', function () {
 				expect(finalBalance).to.be.gt(expectedAmountBase);
 			});
 		});
+
+		it('Should revert if a locked attacker tries to mint from another users locked tokens (minter delegation theft)', async function () {
+			const { fluxToken, damToken, owner, attackerAccount } = await loadFixture(deployFluxTokenAttackFixture);
+
+			// 1. Owner (victim) locks 100 DAM with self as minter
+			await lockTokens(fluxToken, damToken, owner, parseUnits('100'));
+
+			// 2. Transfer DAM to attacker and have them lock too (attacker is also a validator)
+			await damToken.connect(owner).transfer(attackerAccount.address, parseUnits('10'));
+			await lockTokens(fluxToken, damToken, attackerAccount, parseUnits('10'));
+
+			// 3. Mine blocks so both have accrued rewards
+			const currentBlock = await mineBlocks(100);
+
+			// 4. Attacker tries to mint from owner's (victim's) locked tokens to attacker's address.
+			//    This should fail because the attacker is NOT the delegated minter for the owner's lock.
+			await expect(
+				fluxToken.connect(attackerAccount).mintToAddress(owner.address, attackerAccount.address, currentBlock)
+			).to.be.revertedWith(RevertMessages.YOU_MUST_BE_THE_DELEGATED_MINTER_OF_THE_SOURCE_ADDRESS);
+		});
+
+		it('Should revert if someone tries to send DAM directly to the FluxToken contract (bypassing lock)', async function () {
+			const { fluxToken, damToken, owner } = await loadFixture(deployFluxTokenAttackFixture);
+
+			// An attacker tries to send DAM tokens directly to the FluxToken contract using ERC777 `send()`,
+			// bypassing the `lock()` function. This could potentially disrupt the contract's internal
+			// accounting if not properly guarded. The `tokensReceived` hook enforces that only the
+			// FluxToken contract itself (as operator during lock) can receive DAM.
+			const amountToSend = parseUnits('100');
+			await expect(damToken.connect(owner).send(fluxToken.target, amountToSend, '0x')).to.be.revertedWith(
+				RevertMessages.ONLY_FLUX_CONTRACT_CAN_SEND_ITSELF_DAM_TOKENS
+			);
+		});
+
+		it('Should preserve burned amount across unlock/re-lock cycles (no free multiplier reset)', async function () {
+			const { fluxToken, damToken, owner } = await loadFixture(deployFluxTokenAttackFixture);
+
+			// 1. Owner locks 100 DAM
+			await lockTokens(fluxToken, damToken, owner, parseUnits('100'));
+
+			// 2. Mine blocks and mint FLUX to burn
+			const currentBlock = await mineBlocks(1000);
+			await fluxToken.connect(owner).mintToAddress(owner.address, owner.address, currentBlock);
+			const fluxBalance = await fluxToken.balanceOf(owner.address);
+			expect(fluxBalance).to.be.gt(0);
+
+			// 3. Burn FLUX to build up burnedAmount and increase multiplier
+			await fluxToken.connect(owner).burnToAddress(owner.address, fluxBalance);
+
+			// 4. Record the burned amount and multiplier
+			const burnedAmountBeforeUnlock = (await fluxToken.addressLocks(owner.address)).burnedAmount;
+			expect(burnedAmountBeforeUnlock).to.be.gt(0);
+			const multiplierBeforeUnlock = await fluxToken.getAddressBurnMultiplier(owner.address);
+			expect(multiplierBeforeUnlock).to.be.gt(10000n); // Above base 1x
+
+			// 5. Unlock and re-lock (attacker hopes burnedAmount resets to 0 for a "fresh start")
+			await fluxToken.connect(owner).unlock();
+			await lockTokens(fluxToken, damToken, owner, parseUnits('100'));
+
+			// 6. Verify burnedAmount persisted across the unlock/re-lock cycle.
+			//    This is by design — the ecosystem rewards long-term participation.
+			const burnedAmountAfterReLock = (await fluxToken.addressLocks(owner.address)).burnedAmount;
+			expect(burnedAmountAfterReLock).to.equal(burnedAmountBeforeUnlock);
+
+			// 7. Verify multiplier is preserved (will be the same since the same burned amount
+			//    was re-added to globalBurnedAmount during lock())
+			const multiplierAfterReLock = await fluxToken.getAddressBurnMultiplier(owner.address);
+			expect(multiplierAfterReLock).to.equal(multiplierBeforeUnlock);
+		});
 	});
 });

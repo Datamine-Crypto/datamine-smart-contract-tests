@@ -161,7 +161,7 @@ Here is an example of a prompt that was used to generate a new "attack" test for
 
 Gemini will then analyze the existing codebase, propose a plan, and, upon your approval, generate and add the new test files to the `test/` directory.
 
-## 📋 Master List of all 112 Unit Tests
+## 📋 Master List of all 119 Unit Tests
 
 The test suite is organized into logical components, verifying core features, migration parameters, re-entrancy prevention, and game-theory attack scenarios:
 
@@ -235,6 +235,10 @@ Tests covering the Lockquidity factory, vault, and ERC20/ERC777 token (`Lockquid
   - `Should revert if lock amount is 0`: Lock amount must be > 0.
   - `Should revert if burn amount is 0`: Burn amount must be > 0.
   - `Should revert if burning to an unlocked address`: Target of `burnToAddress` must have active lock.
+  - `Should revert if a locked attacker tries to mint from another users locked tokens (minter delegation theft)`: A locked attacker (validator) attempts to call `mintToAddress` using the victim's address as `sourceAddress` to steal their accrued rewards. Reverts because the attacker is not the delegated minter for the victim's lock.
+  - `Should dilute other validators multipliers if an attacker locks 1 wei and burns a massive amount`: Multiplier Dilution Attack test for LockToken — mirrors the FluxToken test. Verifies that an attacker locking 1 wei and burning massive LOCK dilutes the honest validator's burn multiplier. LockToken uses `_percentBurnMultiplier=1` so the base multiplier is 10001 (vs FluxToken's 20000).
+  - `Should allow multiplier retroactivity / supercharging in the same block`: Verifies that burning LOCK and minting in the same block applies the boosted burn multiplier retrospectively to the entire accrual period on LockToken.
+  - `Should not allow double-minting in the same block by stepping block target`: Prevents calling `mintToAddress` twice in the same block on LockToken by shifting target blocks. Confirms `lastMintBlockNumber` state update prevents double-extraction.
 - **`LockToken Burn`**
   - `Should revert if a user tries to burn more tokens than they have`: Prevents burning more LOCK than the user possesses.
 - **`LockToken Deployment`**
@@ -272,6 +276,9 @@ Tests covering `FluxToken`, the primary utility token minted by locking DAM:
   - `Should not allow double-minting in the same block by stepping block target`: Prevents calling `mintToAddress` twice in the same block by shifting targets (via `evm_setAutomine(false)`).
   - `Should dilute other validators multipliers if an attacker locks 1 wei and burns a massive amount`: Multiplier Dilution Attack test verifies that an attacker locking 1 wei of DAM and burning a large quantity of FLUX dilutes everyone else's yield multipliers.
   - `Should allow multiplier retroactivity / supercharging in the same block`: Verifies that a user can wait many blocks to accrue rewards, burn FLUX to increase their multiplier, and retrospectively apply the boosted multiplier to the entire accrual period when minting in the same block.
+  - `Should revert if a locked attacker tries to mint from another users locked tokens (minter delegation theft)`: A locked attacker (validator) attempts `mintToAddress(victim, attacker, block)` to steal the victim's accrued FLUX rewards. Reverts because the attacker is not the victim's delegated minter.
+  - `Should revert if someone tries to send DAM directly to the FluxToken contract (bypassing lock)`: An attacker uses ERC777 `send()` to inject DAM directly into the FluxToken contract, bypassing `lock()`. The `tokensReceived` hook blocks this because only the FluxToken contract itself (as operator) can receive DAM.
+  - `Should preserve burned amount across unlock/re-lock cycles (no free multiplier reset)`: Verifies that `burnedAmount` persists across unlock/re-lock cycles, confirming this is by design — the ecosystem rewards long-term participation by preserving burn history and multiplier state.
 - **`FluxToken Deployment`**
   - `Should lock DAM tokens`: Verifies deploying/locking DAM works and moves tokens to FluxToken contract.
 - **`FLUX Token Migration Tests`**
