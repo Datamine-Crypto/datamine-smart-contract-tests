@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { EMPTY_BYTES, EventNames, ZERO_ADDRESS } from './common';
+import { EMPTY_BYTES, EventNames, ZERO_ADDRESS, mineBlocks, lockTokens, parseUnits } from './common';
 
 /**
  * @dev This file contains reusable test logic for common contract functionalities.
@@ -46,4 +46,56 @@ export async function testTokenBurn(damToken: any, owner: any, operator: any, bu
 	// Assert that the `Transfer` event is emitted from the owner to the zero address.
 	// This is the standard ERC20/ERC777 way to represent tokens being removed from circulation.
 	await expect(burnTx).to.emit(damToken, EventNames.Transfer).withArgs(owner.address, ZERO_ADDRESS, burnAmount);
+}
+
+/**
+ * A generic helper to test the re-entrancy resilience of the `burnToAddress` function.
+ * This helper encapsulates the full attack scenario setup, execution, and state assertions,
+ * ensuring consistency between FluxToken and LockquidityToken re-entrancy tests.
+ */
+export async function testReentrancyOnBurn(
+	token: any,
+	damToken: any,
+	unlockAttacker: any,
+	owner: any,
+	attackerAccount: any,
+	burnAmount: any
+) {
+	const ownerLockAmount = parseUnits('100');
+	const attackerLockAmount = parseUnits('100');
+
+	// 1. Owner locks DAM to be the target of the burn.
+	await lockTokens(token, damToken, owner, ownerLockAmount);
+
+	// 2. Attacker locks DAM to mint some tokens.
+	await lockTokens(token, damToken, attackerAccount, attackerLockAmount);
+
+	// 3. Mine blocks and mint tokens for the attacker.
+	const mintBlock = await mineBlocks(1000000);
+	await token.connect(attackerAccount).mintToAddress(attackerAccount.address, attackerAccount.address, mintBlock);
+	const attackerBalance = await token.balanceOf(attackerAccount.address);
+	expect(attackerBalance).to.be.gt(0);
+
+	// 4. Attacker transfers tokens to the attacker contract.
+	await token.connect(attackerAccount).transfer(unlockAttacker.target, burnAmount);
+	const attackerContractBalance = await token.balanceOf(unlockAttacker.target);
+	expect(attackerContractBalance).to.equal(burnAmount);
+
+	// 5. Set up the attack parameters within the `UnlockAttacker` contract.
+	await unlockAttacker.setAttackParameters(token.target, owner.address, burnAmount);
+
+	// 6. Get initial state of the owner's locked tokens and global burned amount.
+	const initialOwnerLock = await token.addressLocks(owner.address);
+	const initialGlobalBurnedAmount = await token.globalBurnedAmount();
+
+	// 7. Execute the attack.
+	await unlockAttacker.executeAttack();
+
+	// 8. Check final state.
+	const finalOwnerLock = await token.addressLocks(owner.address);
+	const finalGlobalBurnedAmount = await token.globalBurnedAmount();
+
+	// Verify that the re-entrancy protection successfully prevented double burning.
+	expect(finalOwnerLock.burnedAmount).to.equal(initialOwnerLock.burnedAmount + burnAmount);
+	expect(finalGlobalBurnedAmount).to.equal(initialGlobalBurnedAmount + burnAmount);
 }

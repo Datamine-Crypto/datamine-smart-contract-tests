@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { parseUnits, mineBlocks, RevertMessages, lockTokens } from '../helpers/common';
+import { testReentrancyOnBurn } from '../helpers/commonTests';
 import { loadFixture } from '../helpers/fixtureRunner';
 import { deployBaseFixture } from '../helpers/fixtures/base';
 import { deployLockquidityToken } from '../helpers/deployHelpers';
@@ -34,47 +35,9 @@ describe('LockToken - Attack Scenarios', function () {
 		it('Should prevent re-entrancy on burnToAddress and not burn twice', async function () {
 			const { lockquidityToken, damToken, unlockAttacker, owner, attackerAccount } =
 				await loadFixture(deployLockTokenAttackFixture);
-
-			const ownerLockAmount = parseUnits('100');
-			const attackerLockAmount = parseUnits('100');
 			const burnAmount = 100n;
 
-			// 1. Owner locks DAM to be the target of the burn.
-			await lockTokens(lockquidityToken, damToken, owner, ownerLockAmount);
-
-			// 2. Attacker locks DAM to mint some LOCK.
-			await lockTokens(lockquidityToken, damToken, attackerAccount, attackerLockAmount);
-
-			// 3. Mine blocks and mint LOCK for the attacker.
-			const mintBlock = await mineBlocks(1000000);
-			await lockquidityToken
-				.connect(attackerAccount)
-				.mintToAddress(attackerAccount.address, attackerAccount.address, mintBlock);
-			const attackerLockBalance = await lockquidityToken.balanceOf(attackerAccount.address);
-			expect(attackerLockBalance).to.be.gt(0);
-
-			// 4. Attacker transfers LOCK to the attacker contract.
-			await lockquidityToken.connect(attackerAccount).transfer(unlockAttacker.target, burnAmount);
-			const attackerContractLockBalance = await lockquidityToken.balanceOf(unlockAttacker.target);
-			expect(attackerContractLockBalance).to.equal(burnAmount);
-
-			// 5. Set up the attack parameters within the `UnlockAttacker` contract.
-			await unlockAttacker.setAttackParameters(lockquidityToken.target, owner.address, burnAmount);
-
-			// 6. Get initial state of the owner's locked tokens and global burned amount.
-			const initialOwnerLock = await lockquidityToken.addressLocks(owner.address);
-			const initialGlobalBurnedAmount = await lockquidityToken.globalBurnedAmount();
-
-			// 7. Execute the attack.
-			await unlockAttacker.executeAttack();
-
-			// 8. Check final state.
-			const finalOwnerLock = await lockquidityToken.addressLocks(owner.address);
-			const finalGlobalBurnedAmount = await lockquidityToken.globalBurnedAmount();
-
-			// Verify that the re-entrancy protection successfully prevented double burning.
-			expect(finalOwnerLock.burnedAmount).to.equal(initialOwnerLock.burnedAmount + burnAmount);
-			expect(finalGlobalBurnedAmount).to.equal(initialGlobalBurnedAmount + burnAmount);
+			await testReentrancyOnBurn(lockquidityToken, damToken, unlockAttacker, owner, attackerAccount, burnAmount);
 		});
 	});
 
