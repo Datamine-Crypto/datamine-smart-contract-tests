@@ -17,14 +17,14 @@ export async function deployLockTokenFixture() {
 }
 
 export async function deployLockTokenAndLockFixture() {
-	const { lockquidityToken, damToken, owner, addrB } = await deployLockTokenFixture();
+	const { lockquidityToken, lockquidityVault, damToken, owner, addrB } = await deployLockTokenFixture();
 	const lockAmount = parseUnits('100');
 	await lockTokens(lockquidityToken, damToken, owner, lockAmount);
-	return { lockquidityToken, damToken, owner, addrB, lockAmount };
+	return { lockquidityToken, lockquidityVault, damToken, owner, addrB, lockAmount };
 }
 
 export async function deployLockTokenAndMintFixture() {
-	const { lockquidityToken, damToken, owner, addrB } = await deployLockTokenAndLockFixture();
+	const { lockquidityToken, lockquidityVault, damToken, owner, addrB } = await deployLockTokenAndLockFixture();
 	await mintTokens(lockquidityToken, owner, owner.address, 1);
-	return { lockquidityToken, damToken, owner, addrB };
+	return { lockquidityToken, lockquidityVault, damToken, owner, addrB };
 }

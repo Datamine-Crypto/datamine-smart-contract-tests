@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { RevertMessages, EventNames } from '../core/constants';
 import { lockTokens, parseUnits } from '../core/tokens';
-import { mineBlocks } from '../core/blockchain';
+import { mineBlocks, runInSameBlock } from '../core/blockchain';
 
 /**
  * Common validation test: Should revert if lock amount is 0
@@ -99,4 +99,31 @@ export async function testFailsafeLifecycle(
 
 	// 4. Locking above failsafe limit should now succeed
 	await lockTokens(tokenWithFailsafe, damToken, user, lockInAmount);
+}
+
+/**
+ * Common validation test: Should revert when attempting to lock and unlock in the same block
+ */
+export async function testRevertLockAndUnlockSameBlock(token: any, damToken: any, user: any, lockAmount: bigint) {
+	await damToken.connect(user).authorizeOperator(token.target);
+
+	await runInSameBlock(async () => {
+		// Send lock transaction
+		await token.connect(user).lock(user.address, lockAmount);
+
+		// Attempt to send unlock transaction in the same block
+		// Specifying gasLimit prevents Hardhat from simulating/estimating gas on broadcast which would throw immediately
+		const tx2 = await token.connect(user).unlock({ gasLimit: 300000 });
+
+		// Mine the block containing these transactions
+		await mineBlocks(1);
+
+		// Expect the second transaction (unlock) to revert because it was executed in the same block
+		try {
+			await tx2.wait();
+			expect.fail('Transaction should have reverted');
+		} catch (error: any) {
+			expect(error.message).to.include('transaction execution reverted');
+		}
+	});
 }

@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { mineBlocks } from '../helpers/core/blockchain';
 import { lockTokens } from '../helpers/core/tokens';
 import { mintTokens } from '../helpers/setup/setupHelpers';
+import { testSuccessfulBurn } from '../helpers/commonTests/burnTests';
 import { deployLockTokenAndLockFixture } from '../helpers/fixtures/lockToken';
 import { loadFixture } from '../helpers/fixtures/fixtureRunner';
 
@@ -18,7 +19,8 @@ describe('LockToken Multipliers', function () {
 		});
 
 		it('Should calculate the burn multiplier correctly', async function () {
-			const { lockquidityToken, damToken, owner, addrB, lockAmount } = await loadFixture(deployLockTokenAndLockFixture);
+			const { lockquidityToken, lockquidityVault, damToken, owner, addrB, lockAmount } =
+				await loadFixture(deployLockTokenAndLockFixture);
 			// This test ensures the accurate calculation of the burn multiplier. This multiplier is designed to reward users
 			// who actively participate in the token ecosystem by burning tokens, thereby influencing their future rewards
 			// and contributing to the token's deflationary mechanics. Its correctness is essential for the intended economic incentives.
@@ -31,7 +33,7 @@ describe('LockToken Multipliers', function () {
 
 			// Burn some LOCK for owner
 			const burnAmount = await lockquidityToken.balanceOf(owner.address);
-			await lockquidityToken.connect(owner).burnToAddress(owner.address, burnAmount);
+			await testSuccessfulBurn(lockquidityToken, owner, owner.address, burnAmount, lockquidityVault.target);
 
 			const burnMultiplier = await lockquidityToken.getAddressBurnMultiplier(owner.address);
 			expect(burnMultiplier).to.be.gt(1); // Greater than 1x

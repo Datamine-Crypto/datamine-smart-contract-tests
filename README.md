@@ -161,7 +161,7 @@ Here is an example of a prompt that was used to generate a new "attack" test for
 
 Gemini will then analyze the existing codebase, propose a plan, and, upon your approval, generate and add the new test files to the `test/` directory.
 
-## 📋 Master List of all 111 Unit Tests
+## 📋 Master List of all 112 Unit Tests
 
 The test suite is organized into logical components, verifying core features, migration parameters, re-entrancy prevention, and game-theory attack scenarios:
 
@@ -255,6 +255,7 @@ Tests covering the Lockquidity factory, vault, and ERC20/ERC777 token (`Lockquid
   - `Should allow a user to unlock their tokens`: Verifies unlocking DAM restores user balance.
   - `Should revert if a user tries to unlock without having locked tokens`: Reverts if unlocking without an active lock.
   - `Should revert when attempting to lock tokens when already locked`: Reverts if locking again without unlocking first.
+  - `Should revert when attempting to lock and unlock/lock in the same block`: Reverts if attempting lock and unlock/lock operations in the same block.
 
 ### 5. FluxToken (`test/FluxToken`)
 

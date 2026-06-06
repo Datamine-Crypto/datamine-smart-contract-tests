@@ -3,6 +3,7 @@ import {
 	testRevertUnlockWithoutLockedTokens,
 	testRevertLockWhenAlreadyLocked,
 	testLockAndUnlock,
+	testRevertLockAndUnlockSameBlock,
 } from '../helpers/commonTests/lockTests';
 import { deployLockTokenFixture } from '../helpers/fixtures/lockToken';
 import { loadFixture } from '../helpers/fixtures/fixtureRunner';
@@ -42,6 +43,13 @@ describe('LockToken Unlock', function () {
 				lockAmount,
 				RevertMessages.YOU_MUST_HAVE_UNLOCKED_YOUR_ARBI_FLUX_TOKENS
 			);
+		});
+
+		it('Should revert when attempting to lock and unlock/lock in the same block', async function () {
+			const { ethers, lockquidityToken, damToken, owner } = await loadFixture(deployLockTokenFixture);
+			const lockAmount = ethers.parseUnits('100', 18);
+
+			await testRevertLockAndUnlockSameBlock(lockquidityToken, damToken, owner, lockAmount);
 		});
 	});
 });

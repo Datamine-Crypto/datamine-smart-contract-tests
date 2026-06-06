@@ -3,6 +3,7 @@ import { ZERO_ADDRESS } from '../helpers/core/constants';
 import { lockTokens } from '../helpers/core/tokens';
 import { mineBlocks } from '../helpers/core/blockchain';
 import { testLockTokens } from '../helpers/commonTests/lockTests';
+import { testSuccessfulBurn } from '../helpers/commonTests/burnTests';
 import { deployLockTokenFixture } from '../helpers/fixtures/lockToken';
 import { loadFixture } from '../helpers/fixtures/fixtureRunner';
 
@@ -47,18 +48,12 @@ describe('LockToken Deployment', function () {
 			expect(ownerLockBalanceAfterMint).to.equal(expectedMintAmount);
 
 			// Burn LOCK
-			const initialVaultLockBalance = await lockquidityToken.balanceOf(lockquidityVault.target);
 			const burnAmount = ethers.parseUnits('0.0000000001', 18);
 
 			// Ensure owner has enough tokens to burn
 			expect(ownerLockBalanceAfterMint).to.be.gte(burnAmount);
 
-			await lockquidityToken.connect(owner).burnToAddress(owner.address, burnAmount);
-
-			// Ensure the vault increased by burned
-			expect(await lockquidityToken.balanceOf(lockquidityVault.target)).to.equal(initialVaultLockBalance + burnAmount);
-			// Ensure the address that did the burn has the LOCK reduced correctly
-			expect(await lockquidityToken.balanceOf(owner.address)).to.equal(ownerLockBalanceAfterMint - burnAmount);
+			await testSuccessfulBurn(lockquidityToken, owner, owner.address, burnAmount, lockquidityVault.target);
 		});
 	});
 });

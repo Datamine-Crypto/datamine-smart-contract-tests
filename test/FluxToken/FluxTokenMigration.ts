@@ -1,12 +1,14 @@
 import { expect } from 'chai';
-import { mineBlocks, runInSameBlock } from '../helpers/core/blockchain';
+import { mineBlocks } from '../helpers/core/blockchain';
 import { parseUnits, lockTokens } from '../helpers/core/tokens';
 import { ContractNames, RevertMessages } from '../helpers/core/constants';
 import {
 	testRevertLockWhenAlreadyLocked,
 	testLockAndUnlock,
 	testFailsafeLifecycle,
+	testRevertLockAndUnlockSameBlock,
 } from '../helpers/commonTests/lockTests';
+import { testSuccessfulBurn } from '../helpers/commonTests/burnTests';
 import { deployFluxTokenMigrationFixture } from '../helpers/fixtures/fluxToken';
 import { mintTokens } from '../helpers/setup/setupHelpers';
 import { loadFixture } from '../helpers/fixtures/fixtureRunner';
@@ -106,49 +108,18 @@ describe('FLUX Token Migration Tests', function () {
 
 		const burnAmount = parseUnits('0.000000001');
 
-		const lockDataBefore = await fluxToken.addressLocks(damHolder.address);
-		expect(lockDataBefore.burnedAmount).to.equal(0);
-
 		// Perform the first target burn.
-		// This tests the ability to burn FLUX tokens against a specific locked address,
-		// which is part of the token's deflationary and reward-boosting mechanics.
-		await fluxToken.connect(fluxMintReceiver).burnToAddress(damHolder.address, burnAmount);
-		const lockDataAfterFirstBurn = await fluxToken.addressLocks(damHolder.address);
-		// Verify that the burned amount for the target address is correctly updated.
-		expect(lockDataAfterFirstBurn.burnedAmount).to.equal(burnAmount);
+		await testSuccessfulBurn(fluxToken, fluxMintReceiver, damHolder.address, burnAmount);
 
 		// Perform a second target burn to ensure cumulative burning works correctly.
-		await fluxToken.connect(fluxMintReceiver).burnToAddress(damHolder.address, burnAmount);
-		const lockDataAfterSecondBurn = await fluxToken.addressLocks(damHolder.address);
-		// Verify that the burned amount is correctly accumulated.
-		expect(lockDataAfterSecondBurn.burnedAmount).to.equal(burnAmount * 2n);
+		await testSuccessfulBurn(fluxToken, fluxMintReceiver, damHolder.address, burnAmount);
 	});
 
 	it('should not be possible to lock and unlock/lock in the same block', async () => {
 		const { fluxToken, damToken, damHolder } = await loadFixture(deployFluxTokenMigrationFixture);
 		const lockInAmount = parseUnits('10');
 
-		await damToken.connect(damHolder).authorizeOperator(fluxToken.target);
-
-		await runInSameBlock(async () => {
-			// Send lock transaction
-			const tx1 = await fluxToken.connect(damHolder).lock(damHolder.address, lockInAmount);
-
-			// Attempt to send unlock transaction in the same block
-			// Specifying gasLimit prevents Hardhat from simulating/estimating gas on broadcast which would throw immediately
-			const tx2 = await fluxToken.connect(damHolder).unlock({ gasLimit: 300000 });
-
-			// Mine the block containing these transactions
-			await mineBlocks(1);
-
-			// Expect the second transaction (unlock) to revert because it was executed in the same block
-			try {
-				await tx2.wait();
-				expect.fail('Transaction should have reverted');
-			} catch (error: any) {
-				expect(error.message).to.include('transaction execution reverted');
-			}
-		});
+		await testRevertLockAndUnlockSameBlock(fluxToken, damToken, damHolder, lockInAmount);
 	});
 
 	it('should revert when attempting to lock tokens when already locked', async () => {

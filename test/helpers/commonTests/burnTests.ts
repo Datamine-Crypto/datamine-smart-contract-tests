@@ -125,3 +125,37 @@ export async function testRevertBurnToUnlockedAddress(
 		expectedMessage
 	);
 }
+
+/**
+ * A generic helper to test a successful `burnToAddress` operation.
+ * It verifies that target address lock, global burned amount, caller balance,
+ * and vault balance (if vaultAddress is provided) are correctly updated.
+ */
+export async function testSuccessfulBurn(
+	token: any,
+	burner: any,
+	targetAddress: string,
+	burnAmount: bigint,
+	vaultAddress?: string
+) {
+	const initialBurnerBalance = await token.balanceOf(burner.address);
+	const initialLock = await token.addressLocks(targetAddress);
+	const initialGlobalBurnedAmount = await token.globalBurnedAmount();
+	const initialVaultBalance = vaultAddress ? await token.balanceOf(vaultAddress) : 0n;
+
+	const tx = await token.connect(burner).burnToAddress(targetAddress, burnAmount);
+
+	// Assertions
+	expect(await token.balanceOf(burner.address)).to.equal(initialBurnerBalance - burnAmount);
+
+	const finalLock = await token.addressLocks(targetAddress);
+	expect(finalLock.burnedAmount).to.equal(initialLock.burnedAmount + burnAmount);
+
+	expect(await token.globalBurnedAmount()).to.equal(initialGlobalBurnedAmount + burnAmount);
+
+	if (vaultAddress) {
+		expect(await token.balanceOf(vaultAddress)).to.equal(initialVaultBalance + burnAmount);
+	}
+
+	await expect(tx).to.emit(token, 'BurnedToAddress').withArgs(burner.address, targetAddress, burnAmount);
+}
