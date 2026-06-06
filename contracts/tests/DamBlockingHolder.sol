@@ -3,10 +3,10 @@ pragma solidity ^0.6.0;
 
 import "hardhat/console.sol";
 
-import "./OpenZeppelin/IERC1820Registry.sol";
-import "./OpenZeppelin/IERC777Sender.sol";
-import "./OpenZeppelin/IERC777Recipient.sol";
-import "./OpenZeppelin/IERC777.sol";
+import "../OpenZeppelin/IERC1820Registry.sol";
+import "../OpenZeppelin/IERC777Sender.sol";
+import "../OpenZeppelin/IERC777Recipient.sol";
+import "../OpenZeppelin/IERC777.sol";
  
 // Basic functions that exist in ERC777 tokens
 interface IERC777Token {
