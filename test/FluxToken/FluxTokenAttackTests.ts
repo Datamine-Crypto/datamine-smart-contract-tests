@@ -1,7 +1,13 @@
 import { expect } from 'chai';
 import { deployFluxTokenAttackFixture } from '../helpers/fixtures/fluxToken';
 import { parseUnits, mineBlocks, RevertMessages, lockTokens, runInSameBlock } from '../helpers/common';
-import { testReentrancyOnBurn } from '../helpers/commonTests';
+import {
+	testReentrancyOnBurn,
+	testRevertLockZeroAmount,
+	testRevertBurnZeroAmount,
+	testRevertUnlockWithoutLockedTokens,
+	testRevertBurnToUnlockedAddress,
+} from '../helpers/commonTests';
 import { loadFixture } from '../helpers/fixtureRunner';
 
 /**
@@ -28,36 +34,30 @@ describe('FluxToken - Attack Scenarios', function () {
 	describe('Direct validation and edge case checks', function () {
 		it('Should revert if lock amount is 0', async function () {
 			const { fluxToken, owner } = await loadFixture(deployFluxTokenAttackFixture);
-			await expect(fluxToken.connect(owner).lock(owner.address, 0)).to.be.revertedWith(
-				RevertMessages.YOU_MUST_PROVIDE_A_POSITIVE_AMOUNT_TO_LOCK_IN
-			);
+			await testRevertLockZeroAmount(fluxToken, owner);
 		});
 
 		it('Should revert if burn amount is 0', async function () {
 			const { fluxToken, damToken, owner } = await loadFixture(deployFluxTokenAttackFixture);
-			await lockTokens(fluxToken, damToken, owner, parseUnits('100'));
-			await expect(fluxToken.connect(owner).burnToAddress(owner.address, 0)).to.be.revertedWith(
-				'You must burn > 0 FLUX'
-			);
+			await testRevertBurnZeroAmount(fluxToken, damToken, owner, 'You must burn > 0 FLUX');
 		});
 
 		it('Should revert if trying to unlock without locked tokens', async function () {
 			const { fluxToken, owner } = await loadFixture(deployFluxTokenAttackFixture);
-			await expect(fluxToken.connect(owner).unlock()).to.be.revertedWith(
+			await testRevertUnlockWithoutLockedTokens(
+				fluxToken,
+				owner,
 				RevertMessages.YOU_MUST_HAVE_LOCKED_IN_YOUR_DAM_TOKENS
 			);
 		});
 
 		it('Should revert if burning to an unlocked address', async function () {
 			const { fluxToken, damToken, owner, attackerAccount } = await loadFixture(deployFluxTokenAttackFixture);
-			await lockTokens(fluxToken, damToken, owner, parseUnits('100'));
-
-			const mintBlock = await mineBlocks(100);
-			await fluxToken.connect(owner).mintToAddress(owner.address, owner.address, mintBlock);
-			const ownerFluxBalance = await fluxToken.balanceOf(owner.address);
-			expect(ownerFluxBalance).to.be.gt(0);
-
-			await expect(fluxToken.connect(owner).burnToAddress(attackerAccount.address, parseUnits('1'))).to.be.revertedWith(
+			await testRevertBurnToUnlockedAddress(
+				fluxToken,
+				damToken,
+				owner,
+				attackerAccount,
 				RevertMessages.YOU_MUST_HAVE_LOCKED_IN_YOUR_DAM_TOKENS
 			);
 		});

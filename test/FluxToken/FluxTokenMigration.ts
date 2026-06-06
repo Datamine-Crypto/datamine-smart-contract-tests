@@ -8,8 +8,9 @@ import {
 	lockTokens,
 	runInSameBlock,
 } from '../helpers/common';
+import { testRevertLockWhenAlreadyLocked } from '../helpers/commonTests';
 import { deployFluxTokenMigrationFixture } from '../helpers/fixtures/fluxToken';
-import { mintFluxTokens } from '../helpers/setupHelpers';
+import { mintTokens } from '../helpers/setupHelpers';
 import { loadFixture } from '../helpers/fixtureRunner';
 
 /**
@@ -129,7 +130,7 @@ describe('FLUX Token Migration Tests', function () {
 		const lockInAmount = parseUnits('10');
 
 		await lockTokens(fluxToken, damToken, damHolder, lockInAmount);
-		await mintFluxTokens(fluxToken, damHolder, damHolder.address, 1);
+		await mintTokens(fluxToken, damHolder, damHolder.address, 1);
 
 		// Transfer minted flux to the burner (fluxMintReceiver) to simulate a scenario where
 		// a different address performs the target burn.
@@ -187,11 +188,11 @@ describe('FLUX Token Migration Tests', function () {
 		const { fluxToken, damToken, damHolder } = await loadFixture(deployFluxTokenMigrationFixture);
 		const lockInAmount = parseUnits('10');
 
-		// First lock should succeed
-		await lockTokens(fluxToken, damToken, damHolder, lockInAmount);
-
-		// Second lock attempt on same address without unlocking first should revert
-		await expect(fluxToken.connect(damHolder).lock(damHolder.address, lockInAmount)).to.be.revertedWith(
+		await testRevertLockWhenAlreadyLocked(
+			fluxToken,
+			damToken,
+			damHolder,
+			lockInAmount,
 			RevertMessages.YOU_MUST_HAVE_UNLOCKED_YOUR_DAM_TOKENS
 		);
 	});

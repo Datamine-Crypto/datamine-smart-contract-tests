@@ -1,6 +1,10 @@
-import { expect } from 'chai';
-import { parseUnits, mineBlocks, RevertMessages, lockTokens } from '../helpers/common';
-import { testReentrancyOnBurn } from '../helpers/commonTests';
+import { parseUnits, RevertMessages } from '../helpers/common';
+import {
+	testReentrancyOnBurn,
+	testRevertLockZeroAmount,
+	testRevertBurnZeroAmount,
+	testRevertBurnToUnlockedAddress,
+} from '../helpers/commonTests';
 import { loadFixture } from '../helpers/fixtureRunner';
 import { deployBaseFixture } from '../helpers/fixtures/base';
 import { deployLockquidityToken } from '../helpers/deployHelpers';
@@ -44,31 +48,23 @@ describe('LockToken - Attack Scenarios', function () {
 	describe('Direct validation checks', function () {
 		it('Should revert if lock amount is 0', async function () {
 			const { lockquidityToken, owner } = await loadFixture(deployLockTokenAttackFixture);
-			await expect(lockquidityToken.connect(owner).lock(owner.address, 0)).to.be.revertedWith(
-				RevertMessages.YOU_MUST_PROVIDE_A_POSITIVE_AMOUNT_TO_LOCK_IN
-			);
+			await testRevertLockZeroAmount(lockquidityToken, owner);
 		});
 
 		it('Should revert if burn amount is 0', async function () {
 			const { lockquidityToken, damToken, owner } = await loadFixture(deployLockTokenAttackFixture);
-			await lockTokens(lockquidityToken, damToken, owner, parseUnits('100'));
-			await expect(lockquidityToken.connect(owner).burnToAddress(owner.address, 0)).to.be.revertedWith(
-				'You must burn > 0 LOCK'
-			);
+			await testRevertBurnZeroAmount(lockquidityToken, damToken, owner, 'You must burn > 0 LOCK');
 		});
 
 		it('Should revert if burning to an unlocked address', async function () {
 			const { lockquidityToken, damToken, owner, otherAccount } = await loadFixture(deployLockTokenAttackFixture);
-			await lockTokens(lockquidityToken, damToken, owner, parseUnits('100'));
-
-			const mintBlock = await mineBlocks(100);
-			await lockquidityToken.connect(owner).mintToAddress(owner.address, owner.address, mintBlock);
-			const ownerLockBalance = await lockquidityToken.balanceOf(owner.address);
-			expect(ownerLockBalance).to.be.gt(0);
-
-			await expect(
-				lockquidityToken.connect(owner).burnToAddress(otherAccount.address, parseUnits('1'))
-			).to.be.revertedWith(RevertMessages.YOU_MUST_HAVE_LOCKED_IN_YOUR_ARBI_FLUX_TOKENS);
+			await testRevertBurnToUnlockedAddress(
+				lockquidityToken,
+				damToken,
+				owner,
+				otherAccount,
+				RevertMessages.YOU_MUST_HAVE_LOCKED_IN_YOUR_ARBI_FLUX_TOKENS
+			);
 		});
 	});
 });

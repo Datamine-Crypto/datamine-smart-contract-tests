@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { RevertMessages, mineBlocks, lockTokens } from '../helpers/common';
-import { mintFluxTokens } from '../helpers/setupHelpers';
+import { mintTokens } from '../helpers/setupHelpers';
 import { deployFluxTokenFixture, deployFluxTokenAndLockFixture } from '../helpers/fixtures/fluxToken';
 import { loadFixture } from '../helpers/fixtureRunner';
 
@@ -35,7 +35,7 @@ describe('FluxToken Mint', function () {
 
 			it('Should revert if targetBlock is before lastMintBlockNumber', async function () {
 				const { fluxToken, owner } = await loadFixture(deployFluxTokenAndLockFixture);
-				await mintFluxTokens(fluxToken, owner, owner.address, 1);
+				await mintTokens(fluxToken, owner, owner.address, 1);
 
 				const lastMintBlock = await (await fluxToken.addressLocks(owner.address)).lastMintBlockNumber;
 

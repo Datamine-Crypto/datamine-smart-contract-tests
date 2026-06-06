@@ -1,6 +1,6 @@
 import { deployLockquidityContracts } from '../deployHelpers';
 import { lockTokens, parseUnits } from '../common';
-import { mintLockTokens } from '../setupHelpers';
+import { mintTokens } from '../setupHelpers';
 import { deployBaseFixture } from './base';
 
 export async function deployLockTokenFixture() {
@@ -25,6 +25,6 @@ export async function deployLockTokenAndLockFixture() {
 
 export async function deployLockTokenAndMintFixture() {
 	const { lockquidityToken, damToken, owner, addrB } = await deployLockTokenAndLockFixture();
-	await mintLockTokens(lockquidityToken, owner, owner.address, 1);
+	await mintTokens(lockquidityToken, owner, owner.address, 1);
 	return { lockquidityToken, damToken, owner, addrB };
 }

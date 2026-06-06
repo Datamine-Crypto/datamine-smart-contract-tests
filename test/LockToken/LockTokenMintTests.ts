@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { mineBlocks, RevertMessages } from '../helpers/common';
-import { mintLockTokens } from '../helpers/setupHelpers';
+import { mintTokens } from '../helpers/setupHelpers';
 import { deployLockTokenAndLockFixture, deployLockTokenFixture } from '../helpers/fixtures/lockToken';
 import { loadFixture } from '../helpers/fixtureRunner';
 
@@ -21,7 +21,7 @@ describe('LockToken Mint', function () {
 				// This test verifies that `mintToAddress` enforces a strictly increasing `targetBlock` number.
 				// This prevents users from re-minting for past blocks, which could lead to double-counting rewards
 				// or manipulating the minting history, thereby safeguarding the chronological integrity of token distribution.
-				const blockAfterLock = await mintLockTokens(lockquidityToken, owner, owner.address, 1);
+				const blockAfterLock = await mintTokens(lockquidityToken, owner, owner.address, 1);
 				const currentBlock = await mineBlocks(1);
 
 				await expect(

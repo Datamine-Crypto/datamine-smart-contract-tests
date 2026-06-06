@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { lockTokens, RevertMessages } from '../helpers/common';
+import { testRevertUnlockWithoutLockedTokens, testRevertLockWhenAlreadyLocked } from '../helpers/commonTests';
 import { deployLockTokenFixture } from '../helpers/fixtures/lockToken';
 import { loadFixture } from '../helpers/fixtureRunner';
 
@@ -26,7 +27,9 @@ describe('LockToken Unlock', function () {
 		it('Should revert if a user tries to unlock without having locked tokens', async function () {
 			const { lockquidityToken, owner } = await loadFixture(deployLockTokenFixture);
 
-			await expect(lockquidityToken.connect(owner).unlock()).to.be.revertedWith(
+			await testRevertUnlockWithoutLockedTokens(
+				lockquidityToken,
+				owner,
 				RevertMessages.YOU_MUST_HAVE_LOCKED_IN_YOUR_ARBI_FLUX_TOKENS
 			);
 		});
@@ -35,11 +38,11 @@ describe('LockToken Unlock', function () {
 			const { ethers, lockquidityToken, damToken, owner } = await loadFixture(deployLockTokenFixture);
 			const lockAmount = ethers.parseUnits('100', 18);
 
-			// First lock should succeed
-			await lockTokens(lockquidityToken, damToken, owner, lockAmount);
-
-			// Second lock attempt on same address without unlocking first should revert
-			await expect(lockquidityToken.connect(owner).lock(owner.address, lockAmount)).to.be.revertedWith(
+			await testRevertLockWhenAlreadyLocked(
+				lockquidityToken,
+				damToken,
+				owner,
+				lockAmount,
 				RevertMessages.YOU_MUST_HAVE_UNLOCKED_YOUR_ARBI_FLUX_TOKENS
 			);
 		});

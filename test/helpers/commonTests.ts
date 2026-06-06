@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { EMPTY_BYTES, EventNames, ZERO_ADDRESS, mineBlocks, lockTokens, parseUnits } from './common';
+import { EMPTY_BYTES, EventNames, ZERO_ADDRESS, mineBlocks, lockTokens, parseUnits, RevertMessages } from './common';
 
 /**
  * @dev This file contains reusable test logic for common contract functionalities.
@@ -98,4 +98,90 @@ export async function testReentrancyOnBurn(
 	// Verify that the re-entrancy protection successfully prevented double burning.
 	expect(finalOwnerLock.burnedAmount).to.equal(initialOwnerLock.burnedAmount + burnAmount);
 	expect(finalGlobalBurnedAmount).to.equal(initialGlobalBurnedAmount + burnAmount);
+}
+
+/**
+ * A generic helper to test that it is not possible to mint tokens for a past lock period after re-locking.
+ */
+export async function testMintPastLockPeriodAfterReLock(token: any, damToken: any, owner: any, lockAmount: bigint) {
+	const { mintTokens } = await import('./setupHelpers');
+
+	// First lock to establish an initial state.
+	await lockTokens(token, damToken, owner, lockAmount);
+
+	// Mint after 10 blocks to record a lastMintBlockNumber.
+	const mintBlock1 = await mintTokens(token, owner, owner.address, 10);
+
+	// Unlock and then re-lock to simulate a user re-engaging with the system.
+	await token.connect(owner).unlock();
+	await mineBlocks(10);
+	await lockTokens(token, damToken, owner, lockAmount);
+
+	// Attempt to mint again using the *old* mint block number (mintBlock1).
+	await expect(token.connect(owner).mintToAddress(owner.address, owner.address, mintBlock1)).to.be.revertedWith(
+		RevertMessages.YOU_CAN_ONLY_MINT_AHEAD_OF_LAST_MINT_BLOCK
+	);
+}
+
+/**
+ * Common validation test: Should revert if lock amount is 0
+ */
+export async function testRevertLockZeroAmount(token: any, owner: any) {
+	await expect(token.connect(owner).lock(owner.address, 0)).to.be.revertedWith(
+		RevertMessages.YOU_MUST_PROVIDE_A_POSITIVE_AMOUNT_TO_LOCK_IN
+	);
+}
+
+/**
+ * Common validation test: Should revert if burn amount is 0
+ */
+export async function testRevertBurnZeroAmount(token: any, damToken: any, owner: any, expectedMessage: string) {
+	await lockTokens(token, damToken, owner, parseUnits('100'));
+	await expect(token.connect(owner).burnToAddress(owner.address, 0)).to.be.revertedWith(expectedMessage);
+}
+
+/**
+ * Common validation test: Should revert if burning to an unlocked address
+ */
+export async function testRevertBurnToUnlockedAddress(
+	token: any,
+	damToken: any,
+	owner: any,
+	unlockedAccount: any,
+	expectedMessage: string
+) {
+	await lockTokens(token, damToken, owner, parseUnits('100'));
+
+	const mintBlock = await mineBlocks(100);
+	await token.connect(owner).mintToAddress(owner.address, owner.address, mintBlock);
+	const ownerBalance = await token.balanceOf(owner.address);
+	expect(ownerBalance).to.be.gt(0);
+
+	await expect(token.connect(owner).burnToAddress(unlockedAccount.address, parseUnits('1'))).to.be.revertedWith(
+		expectedMessage
+	);
+}
+
+/**
+ * Common validation test: Should revert if trying to unlock without locked tokens
+ */
+export async function testRevertUnlockWithoutLockedTokens(token: any, owner: any, expectedMessage: string) {
+	await expect(token.connect(owner).unlock()).to.be.revertedWith(expectedMessage);
+}
+
+/**
+ * Common validation test: Should revert when attempting to lock tokens when already locked
+ */
+export async function testRevertLockWhenAlreadyLocked(
+	token: any,
+	damToken: any,
+	owner: any,
+	lockAmount: bigint,
+	expectedMessage: string
+) {
+	// First lock should succeed
+	await lockTokens(token, damToken, owner, lockAmount);
+
+	// Second lock attempt on same address without unlocking first should revert
+	await expect(token.connect(owner).lock(owner.address, lockAmount)).to.be.revertedWith(expectedMessage);
 }

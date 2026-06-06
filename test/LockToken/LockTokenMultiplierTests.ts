@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { mineBlocks, lockTokens } from '../helpers/common';
-import { mintLockTokens } from '../helpers/setupHelpers';
+import { mintTokens } from '../helpers/setupHelpers';
 import { deployLockTokenAndLockFixture } from '../helpers/fixtures/lockToken';
 import { loadFixture } from '../helpers/fixtureRunner';
 
@@ -26,7 +26,7 @@ describe('LockToken Multipliers', function () {
 			await lockTokens(lockquidityToken, damToken, addrB, lockAmount);
 
 			const blocksToAdvance = 10000;
-			await mintLockTokens(lockquidityToken, owner, owner.address, blocksToAdvance);
+			await mintTokens(lockquidityToken, owner, owner.address, blocksToAdvance);
 
 			// Burn some LOCK for owner
 			const burnAmount = await lockquidityToken.balanceOf(owner.address);
