@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { parseUnits, mineBlocks, RevertMessages } from '../helpers/common';
+import { parseUnits, mineBlocks, RevertMessages, lockTokens } from '../helpers/common';
 import { loadFixture } from '../helpers/fixtureRunner';
 import { deployBaseFixture } from '../helpers/fixtures/base';
 import { deployLockquidityToken } from '../helpers/deployHelpers';
@@ -40,12 +40,10 @@ describe('LockToken - Attack Scenarios', function () {
 			const burnAmount = 100n;
 
 			// 1. Owner locks DAM to be the target of the burn.
-			await damToken.connect(owner).authorizeOperator(lockquidityToken.target);
-			await lockquidityToken.connect(owner).lock(owner.address, ownerLockAmount);
+			await lockTokens(lockquidityToken, damToken, owner, ownerLockAmount);
 
 			// 2. Attacker locks DAM to mint some LOCK.
-			await damToken.connect(attackerAccount).authorizeOperator(lockquidityToken.target);
-			await lockquidityToken.connect(attackerAccount).lock(attackerAccount.address, attackerLockAmount);
+			await lockTokens(lockquidityToken, damToken, attackerAccount, attackerLockAmount);
 
 			// 3. Mine blocks and mint LOCK for the attacker.
 			const mintBlock = await mineBlocks(1000000);
@@ -90,8 +88,7 @@ describe('LockToken - Attack Scenarios', function () {
 
 		it('Should revert if burn amount is 0', async function () {
 			const { lockquidityToken, damToken, owner } = await loadFixture(deployLockTokenAttackFixture);
-			await damToken.connect(owner).authorizeOperator(lockquidityToken.target);
-			await lockquidityToken.connect(owner).lock(owner.address, parseUnits('100'));
+			await lockTokens(lockquidityToken, damToken, owner, parseUnits('100'));
 			await expect(lockquidityToken.connect(owner).burnToAddress(owner.address, 0)).to.be.revertedWith(
 				'You must burn > 0 LOCK'
 			);
@@ -99,8 +96,7 @@ describe('LockToken - Attack Scenarios', function () {
 
 		it('Should revert if burning to an unlocked address', async function () {
 			const { lockquidityToken, damToken, owner, otherAccount } = await loadFixture(deployLockTokenAttackFixture);
-			await damToken.connect(owner).authorizeOperator(lockquidityToken.target);
-			await lockquidityToken.connect(owner).lock(owner.address, parseUnits('100'));
+			await lockTokens(lockquidityToken, damToken, owner, parseUnits('100'));
 
 			const mintBlock = await mineBlocks(100);
 			await lockquidityToken.connect(owner).mintToAddress(owner.address, owner.address, mintBlock);

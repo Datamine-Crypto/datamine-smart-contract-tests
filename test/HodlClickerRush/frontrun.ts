@@ -2,8 +2,7 @@ import { expect } from 'chai';
 import { hodlClickerRushFixture } from '../helpers/fixtures/hodlClickerRush';
 import { depositFor, setupBurnableAddress } from '../helpers/hodlClickerRush';
 import { loadFixture } from '../helpers/fixtureRunner';
-import { mineBlocks } from '../helpers/common';
-import { getEthers } from '../helpers/getEthers';
+import { mineBlocks, runInSameBlock } from '../helpers/common';
 
 describe('HodlClickerRush Front-running', () => {
 	it('should allow a player to front-run validator normalMintToAddress and claim the jackpot, causing validator to revert', async () => {
@@ -24,11 +23,7 @@ describe('HodlClickerRush Front-running', () => {
 		const initialPlayerRewards = (await hodlClickerRush.addressLocks(addr2.address)).rewardsAmount;
 		expect(initialPlayerRewards).to.equal(0);
 
-		// 4. Disable automining to simulate mempool transaction ordering in the same block
-		const provider = (await getEthers()).provider;
-		await provider.send('evm_setAutomine', [false]);
-
-		try {
+		await runInSameBlock(async () => {
 			// Player (addr2) front-runs by calling burnTokens with a higher gas price
 			const playerTx = await hodlClickerRush.connect(addr2).burnTokens(0, addr1.address, {
 				gasLimit: 500000,
@@ -62,17 +57,14 @@ describe('HodlClickerRush Front-running', () => {
 			expect(validatorReverted).to.equal(true);
 
 			// Verify the block transaction order (Player transaction index 0, Validator transaction index 1)
-			const block = await provider.getBlock(playerReceipt!.blockNumber);
+			const block = await ethers.provider.getBlock(playerReceipt!.blockNumber);
 			expect(block?.transactions[0]).to.equal(playerTx.hash);
 			expect(block?.transactions[1]).to.equal(validatorTx.hash);
 
 			// Verify that the player received the jackpot reward
 			const finalPlayerRewards = (await hodlClickerRush.addressLocks(addr2.address)).rewardsAmount;
 			expect(finalPlayerRewards).to.be.gt(0);
-		} finally {
-			// Re-enable automining
-			await provider.send('evm_setAutomine', [true]);
-		}
+		});
 	});
 
 	it('should handle multi-player jackpot gas war where only the highest gas price player succeeds and other players return NothingToMint silently', async () => {
@@ -95,11 +87,7 @@ describe('HodlClickerRush Front-running', () => {
 		expect(initialPlayerARewards).to.equal(0);
 		expect(initialPlayerBRewards).to.equal(0);
 
-		// 4. Disable automining to simulate mempool transaction ordering in the same block
-		const provider = (await getEthers()).provider;
-		await provider.send('evm_setAutomine', [false]);
-
-		try {
+		await runInSameBlock(async () => {
 			// Player A (addr2) submits a transaction with low gas price (10 Gwei)
 			const txPlayerA = await hodlClickerRush.connect(addr2).burnTokens(0, addr1.address, {
 				gasLimit: 500000,
@@ -129,7 +117,7 @@ describe('HodlClickerRush Front-running', () => {
 			expect(receiptPlayerA?.index).to.equal(1);
 
 			// Verify block ordering
-			const block = await provider.getBlock(receiptPlayerB!.blockNumber);
+			const block = await ethers.provider.getBlock(receiptPlayerB!.blockNumber);
 			expect(block?.transactions[0]).to.equal(txPlayerB.hash);
 			expect(block?.transactions[1]).to.equal(txPlayerA.hash);
 
@@ -152,9 +140,6 @@ describe('HodlClickerRush Front-running', () => {
 				(log: any) => log.fragment && log.fragment.name === 'TokensBurned'
 			);
 			expect(eventPlayerB).to.not.equal(undefined);
-		} finally {
-			// Re-enable automining
-			await provider.send('evm_setAutomine', [true]);
-		}
+		});
 	});
 });

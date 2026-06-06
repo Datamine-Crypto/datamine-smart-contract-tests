@@ -189,3 +189,20 @@ export enum BurnResultCode {
 	ValidatorMinBlockNotMet = 5,
 	ValidatorMinBurnAmountNotMet = 6,
 }
+
+/**
+ * Executes a callback with automine disabled, then re-enables it.
+ * This helper encapsulates the setup and teardown logic for executing
+ * same-block transactions, which is crucial for testing front-running,
+ * gas wars, and other same-block transaction ordering edge cases.
+ * @param action The asynchronous callback function to execute while automining is disabled.
+ */
+export async function runInSameBlock(action: () => Promise<void>): Promise<void> {
+	const ethers = await getEthers();
+	await ethers.provider.send('evm_setAutomine', [false]);
+	try {
+		await action();
+	} finally {
+		await ethers.provider.send('evm_setAutomine', [true]);
+	}
+}

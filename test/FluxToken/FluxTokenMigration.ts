@@ -1,5 +1,13 @@
 import { expect } from 'chai';
-import { mineBlocks, parseUnits, ContractNames, EventNames, RevertMessages, lockTokens } from '../helpers/common';
+import {
+	mineBlocks,
+	parseUnits,
+	ContractNames,
+	EventNames,
+	RevertMessages,
+	lockTokens,
+	runInSameBlock,
+} from '../helpers/common';
 import { deployFluxTokenMigrationFixture } from '../helpers/fixtures/fluxToken';
 import { mintFluxTokens } from '../helpers/setupHelpers';
 import { loadFixture } from '../helpers/fixtureRunner';
@@ -149,15 +157,12 @@ describe('FLUX Token Migration Tests', function () {
 	});
 
 	it('should not be possible to lock and unlock/lock in the same block', async () => {
-		const { fluxToken, damToken, damHolder, ethers } = await loadFixture(deployFluxTokenMigrationFixture);
+		const { fluxToken, damToken, damHolder } = await loadFixture(deployFluxTokenMigrationFixture);
 		const lockInAmount = parseUnits('10');
 
 		await damToken.connect(damHolder).authorizeOperator(fluxToken.target);
 
-		// Disable automine to package transactions into the same block
-		await ethers.provider.send('evm_setAutomine', [false]);
-
-		try {
+		await runInSameBlock(async () => {
 			// Send lock transaction
 			const tx1 = await fluxToken.connect(damHolder).lock(damHolder.address, lockInAmount);
 
@@ -166,7 +171,7 @@ describe('FLUX Token Migration Tests', function () {
 			const tx2 = await fluxToken.connect(damHolder).unlock({ gasLimit: 300000 });
 
 			// Mine the block containing these transactions
-			await ethers.provider.send('evm_mine', []);
+			await mineBlocks(1);
 
 			// Expect the second transaction (unlock) to revert because it was executed in the same block
 			try {
@@ -175,10 +180,7 @@ describe('FLUX Token Migration Tests', function () {
 			} catch (error: any) {
 				expect(error.message).to.include('transaction execution reverted');
 			}
-		} finally {
-			// Re-enable automine
-			await ethers.provider.send('evm_setAutomine', [true]);
-		}
+		});
 	});
 
 	it('should revert when attempting to lock tokens when already locked', async () => {

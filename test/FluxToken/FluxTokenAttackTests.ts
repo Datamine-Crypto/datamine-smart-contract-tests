@@ -1,8 +1,7 @@
 import { expect } from 'chai';
 import { deployFluxTokenAttackFixture } from '../helpers/fixtures/fluxToken';
-import { parseUnits, mineBlocks, RevertMessages } from '../helpers/common';
+import { parseUnits, mineBlocks, RevertMessages, lockTokens, runInSameBlock } from '../helpers/common';
 import { loadFixture } from '../helpers/fixtureRunner';
-import { getEthers } from '../helpers/getEthers';
 
 /**
  * @dev Test suite specifically designed to verify the FluxToken contract's resilience against
@@ -25,13 +24,11 @@ describe('FluxToken - Attack Scenarios', function () {
 			const burnAmount = parseUnits('0.1');
 
 			// 1. Owner locks DAM to be the target of the burn. This sets up the state that the attacker will try to manipulate.
-			await damToken.connect(owner).authorizeOperator(fluxToken.target);
-			await fluxToken.connect(owner).lock(owner.address, ownerLockAmount);
+			await lockTokens(fluxToken, damToken, owner, ownerLockAmount);
 
 			// 2. Attacker locks DAM to mint some FLUX. This is necessary for the attacker to acquire FLUX tokens,
 			// which they will later use to trigger the re-entrancy attempt via `burnToAddress`.
-			await damToken.connect(attackerAccount).authorizeOperator(fluxToken.target);
-			await fluxToken.connect(attackerAccount).lock(attackerAccount.address, attackerLockAmount);
+			await lockTokens(fluxToken, damToken, attackerAccount, attackerLockAmount);
 
 			// 3. Mine blocks and mint FLUX for the attacker. A large number of blocks are mined
 			// to ensure the attacker has a sufficient amount of FLUX to perform the attack.
@@ -87,8 +84,7 @@ describe('FluxToken - Attack Scenarios', function () {
 
 		it('Should revert if burn amount is 0', async function () {
 			const { fluxToken, damToken, owner } = await loadFixture(deployFluxTokenAttackFixture);
-			await damToken.connect(owner).authorizeOperator(fluxToken.target);
-			await fluxToken.connect(owner).lock(owner.address, parseUnits('100'));
+			await lockTokens(fluxToken, damToken, owner, parseUnits('100'));
 			await expect(fluxToken.connect(owner).burnToAddress(owner.address, 0)).to.be.revertedWith(
 				'You must burn > 0 FLUX'
 			);
@@ -103,8 +99,7 @@ describe('FluxToken - Attack Scenarios', function () {
 
 		it('Should revert if burning to an unlocked address', async function () {
 			const { fluxToken, damToken, owner, attackerAccount } = await loadFixture(deployFluxTokenAttackFixture);
-			await damToken.connect(owner).authorizeOperator(fluxToken.target);
-			await fluxToken.connect(owner).lock(owner.address, parseUnits('100'));
+			await lockTokens(fluxToken, damToken, owner, parseUnits('100'));
 
 			const mintBlock = await mineBlocks(100);
 			await fluxToken.connect(owner).mintToAddress(owner.address, owner.address, mintBlock);
@@ -118,8 +113,7 @@ describe('FluxToken - Attack Scenarios', function () {
 
 		it('Should not allow double-minting in the same block by stepping block target', async function () {
 			const { fluxToken, damToken, owner } = await loadFixture(deployFluxTokenAttackFixture);
-			await damToken.connect(owner).authorizeOperator(fluxToken.target);
-			await fluxToken.connect(owner).lock(owner.address, parseUnits('100'));
+			await lockTokens(fluxToken, damToken, owner, parseUnits('100'));
 
 			// Advance blocks to accrue some mintable tokens.
 			await mineBlocks(10);
@@ -128,11 +122,7 @@ describe('FluxToken - Attack Scenarios', function () {
 			const mintAmountUpToMinusOne = await fluxToken.getMintAmount(owner.address, currentBlock - 1);
 			const mintAmountUpToCurrent = await fluxToken.getMintAmount(owner.address, currentBlock);
 
-			const ethers = await getEthers();
-			// Disable automine to execute transactions in the same block.
-			await ethers.provider.send('evm_setAutomine', [false]);
-
-			try {
+			await runInSameBlock(async () => {
 				// Send first mint transaction up to currentBlock - 1
 				const tx1 = await fluxToken.connect(owner).mintToAddress(owner.address, owner.address, currentBlock - 1);
 
@@ -142,7 +132,7 @@ describe('FluxToken - Attack Scenarios', function () {
 					.mintToAddress(owner.address, owner.address, currentBlock, { gasLimit: 300000 });
 
 				// Mine the block containing both transactions
-				await ethers.provider.send('evm_mine', []);
+				await mineBlocks(1);
 
 				// Wait for both to complete
 				await tx1.wait();
@@ -152,18 +142,14 @@ describe('FluxToken - Attack Scenarios', function () {
 				// This confirms no double-minting occurred (i.e. we didn't get mintAmountUpToMinusOne + mintAmountUpToCurrent).
 				const finalBalance = await fluxToken.balanceOf(owner.address);
 				expect(finalBalance).to.equal(mintAmountUpToCurrent);
-			} finally {
-				// Re-enable automine
-				await ethers.provider.send('evm_setAutomine', [true]);
-			}
+			});
 		});
 
 		it('Should dilute other validators multipliers if an attacker locks 1 wei and burns a massive amount', async function () {
 			const { fluxToken, damToken, owner, attackerAccount } = await loadFixture(deployFluxTokenAttackFixture);
 
 			// 1. Owner (Honest Validator) locks 10 DAM
-			await damToken.connect(owner).authorizeOperator(fluxToken.target);
-			await fluxToken.connect(owner).lock(owner.address, parseUnits('10'));
+			await lockTokens(fluxToken, damToken, owner, parseUnits('10'));
 
 			// 2. Mine blocks and let Owner burn their accrued FLUX to get a 2x multiplier
 			let currentBlock = await mineBlocks(10000);
@@ -190,8 +176,7 @@ describe('FluxToken - Attack Scenarios', function () {
 
 			// 4. Attacker locks 1 wei of DAM
 			await damToken.connect(owner).transfer(attackerAccount.address, 1n);
-			await damToken.connect(attackerAccount).authorizeOperator(fluxToken.target);
-			await fluxToken.connect(attackerAccount).lock(attackerAccount.address, 1n);
+			await lockTokens(fluxToken, damToken, attackerAccount, 1n);
 
 			// Attacker burns their FLUX to dilute the global ratio
 			await fluxToken.connect(attackerAccount).burnToAddress(attackerAccount.address, attackerFluxBalance);
@@ -206,8 +191,7 @@ describe('FluxToken - Attack Scenarios', function () {
 			const { fluxToken, damToken, owner } = await loadFixture(deployFluxTokenAttackFixture);
 
 			// 1. Owner locks 10 DAM
-			await damToken.connect(owner).authorizeOperator(fluxToken.target);
-			await fluxToken.connect(owner).lock(owner.address, parseUnits('10'));
+			await lockTokens(fluxToken, damToken, owner, parseUnits('10'));
 
 			// 2. Mine blocks to accumulate rewards and get some initial FLUX to burn
 			let currentBlock = await mineBlocks(1000);
@@ -222,11 +206,7 @@ describe('FluxToken - Attack Scenarios', function () {
 			const expectedAmountBase = await fluxToken.getMintAmount(owner.address, currentBlock);
 			expect(expectedAmountBase).to.be.gt(0);
 
-			const ethers = await getEthers();
-			// Disable automine to execute transactions in the same block.
-			await ethers.provider.send('evm_setAutomine', [false]);
-
-			try {
+			await runInSameBlock(async () => {
 				// Send burn transaction to increase the multiplier in the same block
 				const burnTx = await fluxToken.connect(owner).burnToAddress(owner.address, ownerFluxBalance);
 
@@ -247,10 +227,7 @@ describe('FluxToken - Attack Scenarios', function () {
 				// Verify that the minted amount is significantly higher than the expected base amount
 				// because the new burn multiplier applies retrospectively to the entire 1000 blocks.
 				expect(finalBalance).to.be.gt(expectedAmountBase);
-			} finally {
-				// Re-enable automine
-				await ethers.provider.send('evm_setAutomine', [true]);
-			}
+			});
 		});
 	});
 });
