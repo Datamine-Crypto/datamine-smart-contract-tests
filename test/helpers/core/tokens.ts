@@ -51,3 +51,25 @@ export async function getERC1820Registry() {
 	];
 	return await ethers.getContractAt(abi, '0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24');
 }
+
+/**
+ * A generic helper that transfers DAM tokens from owner to user, then locks them in the token contract.
+ * @param token The token contract to lock into (e.g., FluxToken, LockquidityToken).
+ * @param damToken The DAM token contract instance.
+ * @param owner The owner/signer account performing the transfer.
+ * @param user The user/signer account performing the lock.
+ * @param amount The amount of DAM to transfer and lock.
+ * @param minterAddress Optional address to be designated as the minter.
+ * @returns The block number after the lock transaction.
+ */
+export async function transferAndLockTokens(
+	token: any,
+	damToken: any,
+	owner: any,
+	user: any,
+	amount: any,
+	minterAddress?: any
+) {
+	await damToken.connect(owner).transfer(user.address, amount);
+	return await lockTokens(token, damToken, user, amount, minterAddress);
+}

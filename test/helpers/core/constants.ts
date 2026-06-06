@@ -40,6 +40,7 @@ export enum ContractNames {
 	DamHolder = 'DamHolder',
 	LockToken = 'LockToken',
 	BatchMinter = 'BatchMinter',
+	HodlClickerRush = 'HodlClickerRush',
 }
 
 /**

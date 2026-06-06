@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { mineBlocks } from '../helpers/core/blockchain';
-import { lockTokens } from '../helpers/core/tokens';
+import { transferAndLockTokens } from '../helpers/core/tokens';
 import { mintTokens } from '../helpers/setup/setupHelpers';
 import { testSuccessfulBurn } from '../helpers/commonTests/burnTests';
 import { deployLockTokenAndLockFixture } from '../helpers/fixtures/lockToken';
@@ -25,8 +25,7 @@ describe('LockToken Multipliers', function () {
 			// who actively participate in the token ecosystem by burning tokens, thereby influencing their future rewards
 			// and contributing to the token's deflationary mechanics. Its correctness is essential for the intended economic incentives.
 			// Lock tokens for addrB
-			await damToken.connect(owner).transfer(addrB.address, lockAmount); // Transfer DAM from owner to addrB
-			await lockTokens(lockquidityToken, damToken, addrB, lockAmount);
+			await transferAndLockTokens(lockquidityToken, damToken, owner, addrB, lockAmount);
 
 			const blocksToAdvance = 10000;
 			await mintTokens(lockquidityToken, owner, owner.address, blocksToAdvance);

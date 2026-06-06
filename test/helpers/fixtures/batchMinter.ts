@@ -1,10 +1,7 @@
-import { deployFluxToken } from '../setup/deployHelpers';
-import { ContractNames } from '../core/constants';
+import { deployFluxToken, deployBatchMinter } from '../setup/deployHelpers';
 import { deployBaseFixture } from './base';
-import { getEthers } from '../core/getEthers';
 
 export async function deployBatchMinterFixture() {
-	const ethers = await getEthers();
 	const { damToken, owner, addr1, addr2, addr3 } = await deployBaseFixture();
 
 	// Map signers to user roles expected by tests
@@ -13,9 +10,7 @@ export async function deployBatchMinterFixture() {
 	const user3 = addr3;
 
 	const fluxToken = await deployFluxToken(damToken.target, 5760, 161280, 0);
-
-	const BatchMinter = await ethers.getContractFactory(ContractNames.BatchMinter);
-	const batchMinter = await BatchMinter.deploy(fluxToken.target);
+	const batchMinter = await deployBatchMinter(fluxToken.target);
 
 	return {
 		damToken,

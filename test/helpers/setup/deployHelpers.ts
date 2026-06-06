@@ -118,3 +118,48 @@ export async function deployLockquidityToken(
 	);
 	return lockquidityToken;
 }
+
+/**
+ * Deploys the BatchMinter contract.
+ * @param fluxTokenAddress The address of the FluxToken contract.
+ * @returns The deployed BatchMinter contract instance.
+ */
+export async function deployBatchMinter(fluxTokenAddress: string) {
+	const ethers = await getEthers();
+	const BatchMinter = await ethers.getContractFactory(ContractNames.BatchMinter);
+	const batchMinter = await BatchMinter.deploy(fluxTokenAddress);
+	return batchMinter;
+}
+
+/**
+ * Deploys the HodlClickerRush contract.
+ * @param fluxTokenAddress The address of the FluxToken contract.
+ * @returns The deployed HodlClickerRush contract instance.
+ */
+export async function deployHodlClickerRush(fluxTokenAddress: string) {
+	const ethers = await getEthers();
+	const HodlClickerRush = await ethers.getContractFactory(ContractNames.HodlClickerRush);
+	const hodlClickerRush = await HodlClickerRush.deploy(fluxTokenAddress);
+	return hodlClickerRush;
+}
+
+/**
+ * Deploys the malicious UnlockAttacker contract and transfers DAM to the attacker account.
+ * @param damToken The DAM token contract instance.
+ * @param owner The owner/signer account that transfers DAM.
+ * @param attackerAddress The address of the attacker account.
+ * @param amount The amount of DAM to transfer.
+ * @returns The deployed UnlockAttacker contract instance.
+ */
+export async function deployUnlockAttackerAndTransferDAM(
+	damToken: any,
+	owner: any,
+	attackerAddress: string,
+	amount: bigint
+) {
+	const ethers = await getEthers();
+	const UnlockAttacker = await ethers.getContractFactory('UnlockAttacker');
+	const unlockAttacker = await UnlockAttacker.deploy();
+	await damToken.connect(owner).transfer(attackerAddress, amount);
+	return unlockAttacker;
+}

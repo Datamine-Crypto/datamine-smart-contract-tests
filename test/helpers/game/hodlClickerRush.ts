@@ -1,6 +1,6 @@
 import { hodlClickerRushFixture } from '../fixtures/hodlClickerRush';
 import { mineBlocks } from '../core/blockchain';
-import { lockTokens } from '../core/tokens';
+import { transferAndLockTokens } from '../core/tokens';
 import { getEthers } from '../core/getEthers';
 
 /**
@@ -46,8 +46,7 @@ export async function setupBurnableAddress(
 	amount: any,
 	hodlClickerRush: any
 ) {
-	await damToken.connect(owner).transfer(user.address, amount);
-	await lockTokens(fluxToken, damToken, user, amount, hodlClickerRush.target);
+	await transferAndLockTokens(fluxToken, damToken, owner, user, amount, hodlClickerRush.target);
 	await mineBlocks(1000);
 }
 
@@ -119,8 +118,7 @@ export async function setupPlayerForHodlClickerRush(
 ) {
 	const ethers = await getEthers();
 	const [owner] = await ethers.getSigners();
-	await damToken.connect(owner).transfer(user.address, damAmount);
-	await lockTokens(fluxToken, damToken, user, damAmount, minterAddress);
+	await transferAndLockTokens(fluxToken, damToken, owner, user, damAmount, minterAddress);
 	await mineBlocks(1000);
 	const currentBlock = await ethers.provider.getBlockNumber();
 	await fluxToken.connect(user).mintToAddress(user.address, user.address, currentBlock);

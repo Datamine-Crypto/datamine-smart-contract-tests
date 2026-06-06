@@ -1,4 +1,3 @@
-import { parseUnits } from '../helpers/core/tokens';
 import { RevertMessages } from '../helpers/core/constants';
 import {
 	testReentrancyOnBurn,
@@ -7,33 +6,7 @@ import {
 } from '../helpers/commonTests/burnTests';
 import { testRevertLockZeroAmount } from '../helpers/commonTests/lockTests';
 import { loadFixture } from '../helpers/fixtures/fixtureRunner';
-import { deployBaseFixture } from '../helpers/fixtures/base';
-import { deployLockquidityToken } from '../helpers/setup/deployHelpers';
-import { getEthers } from '../helpers/core/getEthers';
-
-async function deployLockTokenAttackFixture() {
-	const { damToken, owner, addr1, addr2 } = await deployBaseFixture();
-
-	// Deploy LockquidityToken with failsafe target block set to 0.
-	const lockquidityToken = await deployLockquidityToken(damToken.target, 5760, 161280, 0, owner.address);
-
-	// Deploy the malicious UnlockAttacker contract, which is designed to attempt re-entrancy.
-	const ethers = await getEthers();
-	const UnlockAttacker = await ethers.getContractFactory('UnlockAttacker');
-	const unlockAttacker = await UnlockAttacker.deploy();
-
-	// Transfer DAM to attackerAccount for locking.
-	await damToken.connect(owner).transfer(addr1.address, parseUnits('1000'));
-
-	return {
-		lockquidityToken,
-		damToken,
-		unlockAttacker,
-		owner,
-		attackerAccount: addr1,
-		otherAccount: addr2,
-	};
-}
+import { deployLockTokenAttackFixture } from '../helpers/fixtures/lockToken';
 
 describe('LockToken - Attack Scenarios', function () {
 	describe('Re-entrancy on burnToAddress', function () {

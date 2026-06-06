@@ -1,7 +1,6 @@
-import { deployFluxToken } from '../setup/deployHelpers';
+import { deployFluxToken, deployUnlockAttackerAndTransferDAM } from '../setup/deployHelpers';
 import { lockTokens, parseUnits } from '../core/tokens';
 import { deployBaseFixture } from './base';
-import { getEthers } from '../core/getEthers';
 
 export async function deployFluxTokenFixture() {
 	const { damToken, owner, addr1 } = await deployBaseFixture();
@@ -22,13 +21,8 @@ export async function deployFluxTokenAttackFixture() {
 	// Deploy FluxToken with failsafe disabled (0) to simplify attack scenario setup.
 	const fluxToken = await deployFluxToken(damToken.target, 5760, 161280, 0);
 
-	// Deploy the malicious UnlockAttacker contract, which is designed to attempt re-entrancy.
-	const ethers = await getEthers();
-	const UnlockAttacker = await ethers.getContractFactory('UnlockAttacker');
-	const unlockAttacker = await UnlockAttacker.deploy();
-
-	// Transfer DAM to attackerAccount for locking, so the attacker has tokens to interact with FluxToken.
-	await damToken.connect(owner).transfer(addr1.address, parseUnits('1000'));
+	// Deploy malicious attacker contract and transfer DAM
+	const unlockAttacker = await deployUnlockAttackerAndTransferDAM(damToken, owner, addr1.address, parseUnits('1000'));
 
 	return {
 		fluxToken,
