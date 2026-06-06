@@ -6,7 +6,7 @@
 
 To run tests, use the command: `yarn hardhat test` or `yarn test`
 
-Example of testing a single test file: `yarn hardhat test test/DamBlockingHolder/DamBlockingHolderContractTests.ts`
+Example of testing a single test file: `yarn hardhat test test/Holders/DamBlockingHolderContractTests.ts`
 
 ## 🚀 Getting Started
 
@@ -57,7 +57,7 @@ npx hardhat test --show-stack-traces
 To run a specific test file:
 
 ```bash
-npx hardhat test test/DamBlockingHolder/DamBlockingHolderContractTests.ts
+npx hardhat test test/Holders/DamBlockingHolderContractTests.ts
 ```
 
 ### Linting and Formatting
@@ -131,7 +131,7 @@ Our tests rigorously cover the following aspects of the Datamine Network smart c
 
 The test suite is organized logically within the `test/` directory, mirroring the contract structure to provide clear navigation and understanding of test coverage.
 
-- **`test/<ContractName>/`**: Each primary contract (e.g., `DamToken`, `FluxToken`, `LockToken`, `DamHolder`, `DamBlockingHolder`) has its own subdirectory. These directories contain test files (`.ts`) dedicated to that contract's functionalities, deployment, migration, and specific attack scenarios.
+- **`test/<ContractName>/`**: Each primary contract (or group of related contracts, like `Holders` for `DamHolder` and `DamBlockingHolder`) has its own subdirectory. These directories contain test files (`.ts`) dedicated to that contract's functionalities, deployment, migration, and specific attack scenarios.
 - **`test/helpers/`**: This directory centralizes reusable code, utility functions, and common test setups. It includes:
   - `common.ts`: Defines constants, enums for contract names, event names, and revert messages, along with general utility functions like `mineBlocks` and `parseUnits`.
   - `deployHelpers.ts`: Contains functions to deploy various contracts consistently across tests.
@@ -192,7 +192,7 @@ Tests covering the core ERC777/ERC20 functionality of the base `DamToken` contra
   - `Should revert when sending more tokens than balance`: Verifies balance constraint revert.
   - `Should revert when sending tokens to the zero address`: Verifies sending to zero address is disallowed.
 
-### 2. DamHolder (`test/DamHolder`)
+### 2. DamHolder (`test/Holders`)
 
 Tests for the `DamHolder` contract, representing an on-chain entity holding DAM and interacting with Lockquidity:
 
@@ -214,7 +214,7 @@ Tests for the `DamHolder` contract, representing an on-chain entity holding DAM 
   - `Should emit TokensReceivedCalled event with correct arguments when receiving tokens`: Verifies `TokensReceived` hook.
   - `Should emit TokensToSendCalled event with correct arguments when sending tokens`: Verifies `TokensToSend` hook.
 
-### 3. DamBlockingHolder (`test/DamBlockingHolder`)
+### 3. DamBlockingHolder (`test/Holders`)
 
 Advanced tests demonstrating the contract's resilience against re-entrancy attacks using ERC777 hooks:
 
