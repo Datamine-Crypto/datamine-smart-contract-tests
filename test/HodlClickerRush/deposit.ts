@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { hodlClickerRushFixture } from '../helpers/fixtures/hodlClickerRush';
 import { setupPlayerForHodlClickerRush, depositFor, setupBurnableAddress } from '../helpers/game/hodlClickerRush';
 import { loadFixture } from '../helpers/fixtures/fixtureRunner';
+import { EventNames, RevertMessages } from '../helpers/core/constants';
 
 describe('HodlClickerRush Deposit', () => {
 	it('should allow depositing and calculate actualAmountToDeposit correctly when contract is empty', async () => {
@@ -17,7 +18,7 @@ describe('HodlClickerRush Deposit', () => {
 		);
 
 		await expect(hodlClickerRush.connect(addr1).deposit(addr1FluxBalance, 10000, 0, 0))
-			.to.emit(hodlClickerRush, 'Deposited')
+			.to.emit(hodlClickerRush, EventNames.Deposited)
 			.withArgs(addr1.address, addr1FluxBalance, 10000, addr1FluxBalance, 0, 0, addr1FluxBalance);
 
 		const addr1Lock = await hodlClickerRush.addressLocks(addr1.address);
@@ -53,7 +54,7 @@ describe('HodlClickerRush Deposit', () => {
 		const expectedActualAmount = (addr1FluxBalance * totalContractLockedAmount) / totalContractRewardsAmount;
 
 		await expect(hodlClickerRush.connect(addr1).deposit(addr1FluxBalance, 500, 0, 0))
-			.to.emit(hodlClickerRush, 'Deposited')
+			.to.emit(hodlClickerRush, EventNames.Deposited)
 			.withArgs(addr1.address, addr1FluxBalance, 500, expectedActualAmount, 0, 0, expectedActualAmount);
 
 		const addr1Lock = await hodlClickerRush.addressLocks(addr1.address);
@@ -73,7 +74,7 @@ describe('HodlClickerRush Deposit', () => {
 		);
 
 		await expect(hodlClickerRush.connect(addr1).deposit(addr1FluxBalance, 10001, 0, 0)).to.be.revertedWith(
-			'Rewards % must be <= 10000'
+			RevertMessages.REWARDS_PERCENT_MUST_BE_LESS_OR_EQUAL_10000
 		);
 	});
 
@@ -110,7 +111,7 @@ describe('HodlClickerRush Deposit', () => {
 		// 2. Perform a burn to generate rewards and create a reward-to-locked ratio > 1
 		await setupBurnableAddress(damToken, fluxToken, owner, addr2, ethers.parseEther('10'), hodlClickerRush);
 		const burnTx = await hodlClickerRush.connect(owner).burnTokens(0, addr2.address);
-		await expect(burnTx).to.emit(hodlClickerRush, 'TokensBurned');
+		await expect(burnTx).to.emit(hodlClickerRush, EventNames.TokensBurned);
 
 		// Verify rewards are greater than locked
 		const totalContractLockedAmount = await hodlClickerRush.totalContractLockedAmount();
@@ -128,7 +129,7 @@ describe('HodlClickerRush Deposit', () => {
 
 		// Deposit 1 wei
 		await expect(hodlClickerRush.connect(addr1).deposit(depositAmount, 500, 0, 0))
-			.to.emit(hodlClickerRush, 'Deposited')
+			.to.emit(hodlClickerRush, EventNames.Deposited)
 			.withArgs(addr1.address, depositAmount, 500, 0, 0, 0, 0);
 
 		// AddressLock.rewardsAmount should be 0 because actualAmountToDeposit was 0.

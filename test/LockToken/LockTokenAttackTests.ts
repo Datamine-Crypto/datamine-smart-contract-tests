@@ -27,7 +27,12 @@ describe('LockToken - Attack Scenarios', function () {
 
 		it('Should revert if burn amount is 0', async function () {
 			const { lockquidityToken, damToken, owner } = await loadFixture(deployLockTokenAttackFixture);
-			await testRevertBurnZeroAmount(lockquidityToken, damToken, owner, 'You must burn > 0 LOCK');
+			await testRevertBurnZeroAmount(
+				lockquidityToken,
+				damToken,
+				owner,
+				RevertMessages.YOU_MUST_BURN_GREATER_THAN_ZERO_LOCK
+			);
 		});
 
 		it('Should revert if burning to an unlocked address', async function () {

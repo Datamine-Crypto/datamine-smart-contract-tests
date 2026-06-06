@@ -157,5 +157,5 @@ export async function testSuccessfulBurn(
 		expect(await token.balanceOf(vaultAddress)).to.equal(initialVaultBalance + burnAmount);
 	}
 
-	await expect(tx).to.emit(token, 'BurnedToAddress').withArgs(burner.address, targetAddress, burnAmount);
+	await expect(tx).to.emit(token, EventNames.BurnedToAddress).withArgs(burner.address, targetAddress, burnAmount);
 }

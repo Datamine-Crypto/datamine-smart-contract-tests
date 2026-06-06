@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { hodlClickerRushFixture } from '../helpers/fixtures/hodlClickerRush';
 import { depositFor, setupBurnableAddress } from '../helpers/game/hodlClickerRush';
 import { loadFixture } from '../helpers/fixtures/fixtureRunner';
+import { EventNames, RevertMessages } from '../helpers/core/constants';
 
 describe('HodlClickerRush Withdraw', () => {
 	it('should allow a user to withdraw their proportional share of rewards', async () => {
@@ -30,7 +31,7 @@ describe('HodlClickerRush Withdraw', () => {
 		// 5. Withdraw
 		const withdrawTx = await hodlClickerRush.connect(addr2).withdrawAll();
 		await expect(withdrawTx)
-			.to.emit(hodlClickerRush, 'Withdrawn')
+			.to.emit(hodlClickerRush, EventNames.Withdrawn)
 			.withArgs(addr2.address, expectedWithdrawAmount, initialRewardsAmount);
 
 		// 6. Check final state
@@ -58,11 +59,15 @@ describe('HodlClickerRush Withdraw', () => {
 		await hodlClickerRush.connect(addr2).withdrawAll();
 		const addr2RewardsAfter = (await hodlClickerRush.addressLocks(addr2.address)).rewardsAmount;
 		expect(addr2RewardsAfter).to.equal(0);
-		await expect(hodlClickerRush.connect(addr2).withdrawAll()).to.be.revertedWith('No rewards to withdraw');
+		await expect(hodlClickerRush.connect(addr2).withdrawAll()).to.be.revertedWith(
+			RevertMessages.NO_REWARDS_TO_WITHDRAW
+		);
 	});
 
 	it('should not allow withdrawing zero amount', async () => {
 		const { hodlClickerRush, addr1 } = await loadFixture(hodlClickerRushFixture);
-		await expect(hodlClickerRush.connect(addr1).withdrawAll()).to.be.revertedWith('No rewards to withdraw');
+		await expect(hodlClickerRush.connect(addr1).withdrawAll()).to.be.revertedWith(
+			RevertMessages.NO_REWARDS_TO_WITHDRAW
+		);
 	});
 });

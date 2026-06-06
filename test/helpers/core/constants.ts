@@ -60,6 +60,11 @@ export enum EventNames {
 	RevokedOperator = 'RevokedOperator',
 	TokensReceivedCalled = 'TokensReceivedCalled',
 	TokensToSendCalled = 'TokensToSendCalled',
+	Withdrawn = 'Withdrawn',
+	PausedChanged = 'PausedChanged',
+	Deposited = 'Deposited',
+	TokensBurned = 'TokensBurned',
+	BurnedToAddress = 'BurnedToAddress',
 }
 
 /**
@@ -87,6 +92,10 @@ export enum RevertMessages {
 	ONLY_FLUX_CONTRACT_CAN_SEND_ITSELF_DAM_TOKENS = 'Only FLUX contract can send itself DAM tokens',
 	YOU_MUST_HAVE_UNLOCKED_YOUR_ARBI_FLUX_TOKENS = 'You must have unlocked your ArbiFLUX tokens',
 	YOU_CAN_NOT_LOCK_UNLOCK_MINT_IN_THE_SAME_BLOCK = 'You can not lock/unlock/mint in the same block',
+	NO_REWARDS_TO_WITHDRAW = 'No rewards to withdraw',
+	REWARDS_PERCENT_MUST_BE_LESS_OR_EQUAL_10000 = 'Rewards % must be <= 10000',
+	YOU_MUST_BURN_GREATER_THAN_ZERO_FLUX = 'You must burn > 0 FLUX',
+	YOU_MUST_BURN_GREATER_THAN_ZERO_LOCK = 'You must burn > 0 LOCK',
 }
 
 /**

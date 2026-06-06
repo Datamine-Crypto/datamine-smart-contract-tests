@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { hodlClickerRushFixture } from '../helpers/fixtures/hodlClickerRush';
 import { setupDefaultScenario } from '../helpers/game/hodlClickerRush';
-import { BurnResultCode } from '../helpers/core/constants';
+import { BurnResultCode, EventNames } from '../helpers/core/constants';
 import { loadFixture } from '../helpers/fixtures/fixtureRunner';
 
 describe('HodlClickerRush Pause', () => {
@@ -52,11 +52,11 @@ describe('HodlClickerRush Pause', () => {
 	it('should emit PausedChanged event', async () => {
 		const { hodlClickerRush, addr1 } = await loadFixture(hodlClickerRushFixture);
 		await expect(hodlClickerRush.connect(addr1).setPaused(true))
-			.to.emit(hodlClickerRush, 'PausedChanged')
+			.to.emit(hodlClickerRush, EventNames.PausedChanged)
 			.withArgs(addr1.address, true);
 
 		await expect(hodlClickerRush.connect(addr1).setPaused(false))
-			.to.emit(hodlClickerRush, 'PausedChanged')
+			.to.emit(hodlClickerRush, EventNames.PausedChanged)
 			.withArgs(addr1.address, false);
 	});
 });

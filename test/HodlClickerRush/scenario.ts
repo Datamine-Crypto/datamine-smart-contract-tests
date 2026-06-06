@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { hodlClickerRushFixture } from '../helpers/fixtures/hodlClickerRush';
 import { depositFor, setupBurnableAddress } from '../helpers/game/hodlClickerRush';
 import { loadFixture } from '../helpers/fixtures/fixtureRunner';
+import { EventNames } from '../helpers/core/constants';
 
 describe('HodlClickerRush Scenarios', () => {
 	it('should correctly handle the user-specified reward scenario', async () => {
@@ -45,7 +46,7 @@ describe('HodlClickerRush Scenarios', () => {
 
 		const withdrawTx = await hodlClickerRush.connect(addr1).withdrawAll();
 		await expect(withdrawTx)
-			.to.emit(hodlClickerRush, 'Withdrawn')
+			.to.emit(hodlClickerRush, EventNames.Withdrawn)
 			.withArgs(addr1.address, expectedWithdrawAmountA, userA_rewards_after_deposit);
 
 		// 6. Verify final state

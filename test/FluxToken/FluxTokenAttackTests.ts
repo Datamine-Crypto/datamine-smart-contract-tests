@@ -40,7 +40,7 @@ describe('FluxToken - Attack Scenarios', function () {
 
 		it('Should revert if burn amount is 0', async function () {
 			const { fluxToken, damToken, owner } = await loadFixture(deployFluxTokenAttackFixture);
-			await testRevertBurnZeroAmount(fluxToken, damToken, owner, 'You must burn > 0 FLUX');
+			await testRevertBurnZeroAmount(fluxToken, damToken, owner, RevertMessages.YOU_MUST_BURN_GREATER_THAN_ZERO_FLUX);
 		});
 
 		it('Should revert if trying to unlock without locked tokens', async function () {
