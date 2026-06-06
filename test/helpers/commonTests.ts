@@ -1,3 +1,3 @@
-export * from './burnTests';
-export * from './lockTests';
-export * from './mintTests';
+export * from './commonTests/burnTests';
+export * from './commonTests/lockTests';
+export * from './commonTests/mintTests';
