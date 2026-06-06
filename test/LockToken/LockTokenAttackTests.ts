@@ -9,13 +9,7 @@ async function deployLockTokenAttackFixture() {
 	const { damToken, owner, addr1, addr2 } = await deployBaseFixture();
 
 	// Deploy LockquidityToken with failsafe target block set to 0.
-	const lockquidityToken = await deployLockquidityToken(
-		damToken.target,
-		5760,
-		161280,
-		0,
-		owner.address
-	);
+	const lockquidityToken = await deployLockquidityToken(damToken.target, 5760, 161280, 0, owner.address);
 
 	// Deploy the malicious UnlockAttacker contract, which is designed to attempt re-entrancy.
 	const ethers = await getEthers();
@@ -89,18 +83,18 @@ describe('LockToken - Attack Scenarios', function () {
 	describe('Direct validation checks', function () {
 		it('Should revert if lock amount is 0', async function () {
 			const { lockquidityToken, owner } = await loadFixture(deployLockTokenAttackFixture);
-			await expect(
-				lockquidityToken.connect(owner).lock(owner.address, 0)
-			).to.be.revertedWith(RevertMessages.YOU_MUST_PROVIDE_A_POSITIVE_AMOUNT_TO_LOCK_IN);
+			await expect(lockquidityToken.connect(owner).lock(owner.address, 0)).to.be.revertedWith(
+				RevertMessages.YOU_MUST_PROVIDE_A_POSITIVE_AMOUNT_TO_LOCK_IN
+			);
 		});
 
 		it('Should revert if burn amount is 0', async function () {
 			const { lockquidityToken, damToken, owner } = await loadFixture(deployLockTokenAttackFixture);
 			await damToken.connect(owner).authorizeOperator(lockquidityToken.target);
 			await lockquidityToken.connect(owner).lock(owner.address, parseUnits('100'));
-			await expect(
-				lockquidityToken.connect(owner).burnToAddress(owner.address, 0)
-			).to.be.revertedWith('You must burn > 0 LOCK');
+			await expect(lockquidityToken.connect(owner).burnToAddress(owner.address, 0)).to.be.revertedWith(
+				'You must burn > 0 LOCK'
+			);
 		});
 
 		it('Should revert if burning to an unlocked address', async function () {

@@ -118,14 +118,7 @@ describe('HodlClickerRush Deposit', () => {
 		expect(totalContractRewardsAmount).to.be.gt(totalContractLockedAmount);
 
 		// 3. Addr1 tries to deposit 1 wei of FLUX
-		await setupPlayerForHodlClickerRush(
-			hodlClickerRush,
-			fluxToken,
-			damToken,
-			addr1,
-			damAmount,
-			addr1.address
-		);
+		await setupPlayerForHodlClickerRush(hodlClickerRush, fluxToken, damToken, addr1, damAmount, addr1.address);
 		const depositAmount = 1n; // 1 wei
 
 		// actualAmountToDeposit = (depositAmount * totalContractLockedAmount) / totalContractRewardsAmount

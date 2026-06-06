@@ -1,5 +1,7 @@
 Before starting read contents of docs/deck.md thoroughly to understand how the Datamine ecosystem works. This project is unit testing the smart contracts from Datamine Network ecosystem.
 
+IMPORTANT: Always add new tests to README.md to explain what they do
+
 This is a project to test Datamine Network ecosystem smart contracts.
 
 We're using `yarn hardhat` here so use `yarn hardhat test` to run tests
