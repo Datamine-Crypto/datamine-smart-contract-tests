@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { hodlClickerRushFixture } from '../helpers/fixtures/hodlClickerRush';
-import { depositFor, setupBurnableAddress } from '../helpers/hodlClickerRush';
-import { loadFixture } from '../helpers/fixtureRunner';
+import { depositFor, setupBurnableAddress } from '../helpers/game/hodlClickerRush';
+import { loadFixture } from '../helpers/fixtures/fixtureRunner';
 
 describe('HodlClickerRush Withdraw', () => {
 	it('should allow a user to withdraw their proportional share of rewards', async () => {

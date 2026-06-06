@@ -1,5 +1,5 @@
-import { deployDamToken } from '../deployHelpers';
-import { getEthers } from '../getEthers';
+import { deployDamToken } from '../setup/deployHelpers';
+import { getEthers } from '../core/getEthers';
 import { deployBaseFixture } from './base';
 
 export async function deployDamTokenFixture() {

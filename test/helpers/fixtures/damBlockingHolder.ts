@@ -1,4 +1,4 @@
-import { deployLockquidityToken, deployDamBlockingHolder } from '../deployHelpers';
+import { deployLockquidityToken, deployDamBlockingHolder } from '../setup/deployHelpers';
 import { deployBaseFixture } from './base';
 
 export async function deployReentrancyTestFixture() {

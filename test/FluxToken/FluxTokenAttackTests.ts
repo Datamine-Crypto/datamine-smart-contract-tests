@@ -1,14 +1,15 @@
 import { expect } from 'chai';
 import { deployFluxTokenAttackFixture } from '../helpers/fixtures/fluxToken';
-import { parseUnits, mineBlocks, RevertMessages, lockTokens, runInSameBlock } from '../helpers/common';
+import { mineBlocks, runInSameBlock } from '../helpers/core/blockchain';
+import { parseUnits, lockTokens } from '../helpers/core/tokens';
+import { RevertMessages } from '../helpers/core/constants';
 import {
 	testReentrancyOnBurn,
-	testRevertLockZeroAmount,
 	testRevertBurnZeroAmount,
-	testRevertUnlockWithoutLockedTokens,
 	testRevertBurnToUnlockedAddress,
-} from '../helpers/commonTests';
-import { loadFixture } from '../helpers/fixtureRunner';
+} from '../helpers/commonTests/burnTests';
+import { testRevertLockZeroAmount, testRevertUnlockWithoutLockedTokens } from '../helpers/commonTests/lockTests';
+import { loadFixture } from '../helpers/fixtures/fixtureRunner';
 
 /**
  * @dev Test suite specifically designed to verify the FluxToken contract's resilience against

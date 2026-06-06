@@ -1,6 +1,6 @@
-import { deployLockquidityContracts } from '../deployHelpers';
-import { lockTokens, parseUnits } from '../common';
-import { mintTokens } from '../setupHelpers';
+import { deployLockquidityContracts } from '../setup/deployHelpers';
+import { lockTokens, parseUnits } from '../core/tokens';
+import { mintTokens } from '../setup/setupHelpers';
 import { deployBaseFixture } from './base';
 
 export async function deployLockTokenFixture() {

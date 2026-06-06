@@ -1,5 +1,5 @@
-import { deployDamToken } from '../deployHelpers';
-import { getEthers } from '../getEthers';
+import { deployDamToken } from '../setup/deployHelpers';
+import { getEthers } from '../core/getEthers';
 
 // Base fixture for deploying DAM token and getting signers
 export async function deployBaseFixture() {

@@ -1,7 +1,7 @@
-import { parseUnits } from '../helpers/common';
-import { testMintPastLockPeriodAfterReLock } from '../helpers/commonTests';
+import { parseUnits } from '../helpers/core/tokens';
+import { testMintPastLockPeriodAfterReLock } from '../helpers/commonTests/mintTests';
 import { deployFluxTokenFixture } from '../helpers/fixtures/fluxToken';
-import { loadFixture } from '../helpers/fixtureRunner';
+import { loadFixture } from '../helpers/fixtures/fixtureRunner';
 
 describe('FluxToken Attack Scenarios', function () {
 	describe('Attack Scenarios', function () {

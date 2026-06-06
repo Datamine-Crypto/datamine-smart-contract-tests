@@ -1,8 +1,9 @@
 import { expect } from 'chai';
-import { parseUnits, EventNames, RevertMessages, UnitTestCases } from '../helpers/common';
-import { setupDamBlockingHolderTest } from '../helpers/setupHelpers';
+import { parseUnits } from '../helpers/core/tokens';
+import { EventNames, RevertMessages, UnitTestCases } from '../helpers/core/constants';
+import { setupDamBlockingHolderTest } from '../helpers/setup/setupHelpers';
 import { deployReentrancyTestFixture } from '../helpers/fixtures/damBlockingHolder';
-import { loadFixture } from '../helpers/fixtureRunner';
+import { loadFixture } from '../helpers/fixtures/fixtureRunner';
 
 /**
  * @dev This test suite focuses on re-entrancy attack vectors using ERC777 hooks within the DamBlockingHolder contract.

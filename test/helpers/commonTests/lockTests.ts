@@ -1,5 +1,7 @@
 import { expect } from 'chai';
-import { RevertMessages, EventNames, lockTokens, parseUnits, mineBlocks } from '../common';
+import { RevertMessages, EventNames } from '../core/constants';
+import { lockTokens, parseUnits } from '../core/tokens';
+import { mineBlocks } from '../core/blockchain';
 
 /**
  * Common validation test: Should revert if lock amount is 0

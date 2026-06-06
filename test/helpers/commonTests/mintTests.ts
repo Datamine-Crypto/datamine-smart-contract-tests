@@ -1,12 +1,13 @@
 import { expect } from 'chai';
-import { RevertMessages, mineBlocks } from '../common';
+import { RevertMessages } from '../core/constants';
+import { mineBlocks } from '../core/blockchain';
 
 /**
  * A generic helper to test that it is not possible to mint tokens for a past lock period after re-locking.
  */
 export async function testMintPastLockPeriodAfterReLock(token: any, damToken: any, owner: any, lockAmount: bigint) {
-	const { mintTokens } = await import('../setupHelpers');
-	const { lockTokens } = await import('../common');
+	const { mintTokens } = await import('../setup/setupHelpers');
+	const { lockTokens } = await import('../core/tokens');
 
 	// First lock to establish an initial state.
 	await lockTokens(token, damToken, owner, lockAmount);
@@ -39,7 +40,7 @@ export async function testMintRevertFutureBlock(token: any, owner: any, ethers: 
  * A generic helper to test that minting reverts if targetBlock is before lastMintBlockNumber.
  */
 export async function testMintRevertBeforeLastMint(token: any, owner: any) {
-	const { mintTokens } = await import('../setupHelpers');
+	const { mintTokens } = await import('../setup/setupHelpers');
 	const blockAfterLock = await mintTokens(token, owner, owner.address, 1);
 	await expect(token.connect(owner).mintToAddress(owner.address, owner.address, blockAfterLock)).to.be.revertedWith(
 		RevertMessages.YOU_CAN_ONLY_MINT_AHEAD_OF_LAST_MINT_BLOCK

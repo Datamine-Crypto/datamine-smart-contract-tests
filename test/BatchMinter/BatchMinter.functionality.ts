@@ -1,8 +1,9 @@
 import { expect } from 'chai';
 
-import { lockTokens, mineBlocks, parseUnits } from '../helpers/common';
+import { mineBlocks } from '../helpers/core/blockchain';
+import { lockTokens, parseUnits } from '../helpers/core/tokens';
 import { deployBatchMinterFixture } from '../helpers/fixtures/batchMinter';
-import { loadFixture } from '../helpers/fixtureRunner';
+import { loadFixture } from '../helpers/fixtures/fixtureRunner';
 
 describe('BatchMinter Functionality', function () {
 	it('should allow a user to batch burn when no delegated minter is set', async function () {

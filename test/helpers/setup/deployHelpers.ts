@@ -1,5 +1,5 @@
-import { ContractNames } from '../common';
-import { getEthers } from '../getEthers';
+import { ContractNames } from '../core/constants';
+import { getEthers } from '../core/getEthers';
 
 /**
  * @dev This file centralizes helper functions for deploying various smart contracts

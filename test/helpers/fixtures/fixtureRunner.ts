@@ -1,6 +1,6 @@
 import fs from 'fs';
-import { getHreConnection } from '../getHreConnection';
-import { getEthers } from '../getEthers';
+import { getHreConnection } from '../core/getHreConnection';
+import { getEthers } from '../core/getEthers';
 
 // Map to store wrapped fixtures to preserve identity for loadFixture caching
 const wrappedFixtures = new Map<any, () => Promise<any>>();

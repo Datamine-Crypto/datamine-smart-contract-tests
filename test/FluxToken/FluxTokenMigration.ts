@@ -1,9 +1,15 @@
 import { expect } from 'chai';
-import { mineBlocks, parseUnits, ContractNames, RevertMessages, lockTokens, runInSameBlock } from '../helpers/common';
-import { testRevertLockWhenAlreadyLocked, testLockAndUnlock, testFailsafeLifecycle } from '../helpers/commonTests';
+import { mineBlocks, runInSameBlock } from '../helpers/core/blockchain';
+import { parseUnits, lockTokens } from '../helpers/core/tokens';
+import { ContractNames, RevertMessages } from '../helpers/core/constants';
+import {
+	testRevertLockWhenAlreadyLocked,
+	testLockAndUnlock,
+	testFailsafeLifecycle,
+} from '../helpers/commonTests/lockTests';
 import { deployFluxTokenMigrationFixture } from '../helpers/fixtures/fluxToken';
-import { mintTokens } from '../helpers/setupHelpers';
-import { loadFixture } from '../helpers/fixtureRunner';
+import { mintTokens } from '../helpers/setup/setupHelpers';
+import { loadFixture } from '../helpers/fixtures/fixtureRunner';
 
 /**
  * @dev Test suite for the FLUX Token migration and core functionalities.

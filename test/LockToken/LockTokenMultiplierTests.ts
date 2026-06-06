@@ -1,8 +1,9 @@
 import { expect } from 'chai';
-import { mineBlocks, lockTokens } from '../helpers/common';
-import { mintTokens } from '../helpers/setupHelpers';
+import { mineBlocks } from '../helpers/core/blockchain';
+import { lockTokens } from '../helpers/core/tokens';
+import { mintTokens } from '../helpers/setup/setupHelpers';
 import { deployLockTokenAndLockFixture } from '../helpers/fixtures/lockToken';
-import { loadFixture } from '../helpers/fixtureRunner';
+import { loadFixture } from '../helpers/fixtures/fixtureRunner';
 
 describe('LockToken Multipliers', function () {
 	describe('Multipliers', function () {

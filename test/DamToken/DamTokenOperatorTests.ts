@@ -1,7 +1,8 @@
 import { expect } from 'chai';
 import { deployDamTokenFixture } from '../helpers/fixtures/damToken';
-import { parseUnits, EventNames, RevertMessages, EMPTY_BYTES } from '../helpers/common';
-import { loadFixture } from '../helpers/fixtureRunner';
+import { parseUnits } from '../helpers/core/tokens';
+import { EventNames, RevertMessages, EMPTY_BYTES } from '../helpers/core/constants';
+import { loadFixture } from '../helpers/fixtures/fixtureRunner';
 
 describe('DamToken Operator Operations', function () {
 	describe('authorizeOperator and revokeOperator tests', function () {

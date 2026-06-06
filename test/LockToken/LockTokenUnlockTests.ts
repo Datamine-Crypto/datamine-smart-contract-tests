@@ -1,11 +1,11 @@
-import { RevertMessages } from '../helpers/common';
+import { RevertMessages } from '../helpers/core/constants';
 import {
 	testRevertUnlockWithoutLockedTokens,
 	testRevertLockWhenAlreadyLocked,
 	testLockAndUnlock,
-} from '../helpers/commonTests';
+} from '../helpers/commonTests/lockTests';
 import { deployLockTokenFixture } from '../helpers/fixtures/lockToken';
-import { loadFixture } from '../helpers/fixtureRunner';
+import { loadFixture } from '../helpers/fixtures/fixtureRunner';
 
 describe('LockToken Unlock', function () {
 	describe('Unlock', function () {

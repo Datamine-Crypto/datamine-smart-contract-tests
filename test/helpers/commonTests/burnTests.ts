@@ -1,5 +1,7 @@
 import { expect } from 'chai';
-import { ZERO_ADDRESS, EMPTY_BYTES, EventNames, lockTokens, parseUnits, mineBlocks } from '../common';
+import { ZERO_ADDRESS, EMPTY_BYTES, EventNames } from '../core/constants';
+import { lockTokens, parseUnits } from '../core/tokens';
+import { mineBlocks } from '../core/blockchain';
 
 /**
  * A generic helper to test the `operatorBurn` functionality of the DAM token.

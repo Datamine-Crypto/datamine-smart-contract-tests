@@ -1,6 +1,7 @@
-import { lockTokens, mineBlocks, parseUnits } from '../helpers/common';
+import { mineBlocks } from '../helpers/core/blockchain';
+import { lockTokens, parseUnits } from '../helpers/core/tokens';
 import { deployBatchMinterFixture } from '../helpers/fixtures/batchMinter';
-import { loadFixture } from '../helpers/fixtureRunner';
+import { loadFixture } from '../helpers/fixtures/fixtureRunner';
 
 describe('BatchMinter Yield Comparison', function () {
 	it('should calculate total burned amount for normal minting', async function () {

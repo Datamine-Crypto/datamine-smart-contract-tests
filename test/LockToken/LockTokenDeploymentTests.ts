@@ -1,8 +1,10 @@
 import { expect } from 'chai';
-import { ZERO_ADDRESS, lockTokens, mineBlocks } from '../helpers/common';
-import { testLockTokens } from '../helpers/commonTests';
+import { ZERO_ADDRESS } from '../helpers/core/constants';
+import { lockTokens } from '../helpers/core/tokens';
+import { mineBlocks } from '../helpers/core/blockchain';
+import { testLockTokens } from '../helpers/commonTests/lockTests';
 import { deployLockTokenFixture } from '../helpers/fixtures/lockToken';
-import { loadFixture } from '../helpers/fixtureRunner';
+import { loadFixture } from '../helpers/fixtures/fixtureRunner';
 
 describe('LockToken Deployment', function () {
 	describe('Deployment', function () {

@@ -1,7 +1,7 @@
-import { deployFluxToken } from '../deployHelpers';
-import { ContractNames } from '../common';
+import { deployFluxToken } from '../setup/deployHelpers';
+import { ContractNames } from '../core/constants';
 import { deployBaseFixture } from './base';
-import { getEthers } from '../getEthers';
+import { getEthers } from '../core/getEthers';
 
 export async function deployBatchMinterFixture() {
 	const ethers = await getEthers();

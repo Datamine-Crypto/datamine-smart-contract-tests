@@ -1,13 +1,15 @@
 import { expect } from 'chai';
-import { RevertMessages, mineBlocks, lockTokens } from '../helpers/common';
+import { RevertMessages } from '../helpers/core/constants';
+import { mineBlocks } from '../helpers/core/blockchain';
+import { lockTokens } from '../helpers/core/tokens';
 import { deployFluxTokenFixture, deployFluxTokenAndLockFixture } from '../helpers/fixtures/fluxToken';
-import { loadFixture } from '../helpers/fixtureRunner';
+import { loadFixture } from '../helpers/fixtures/fixtureRunner';
 import {
 	testSuccessfulMint,
 	testMintRevertFutureBlock,
 	testMintRevertBeforeLastMint,
 	testMintRevertNotMinter,
-} from '../helpers/commonTests';
+} from '../helpers/commonTests/mintTests';
 
 describe('FluxToken Mint', function () {
 	describe('mintToAddress', function () {

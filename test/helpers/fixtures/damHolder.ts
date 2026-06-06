@@ -1,4 +1,4 @@
-import { deployLockquidityContracts, deployDamHolder } from '../deployHelpers';
+import { deployLockquidityContracts, deployDamHolder } from '../setup/deployHelpers';
 import { deployBaseFixture } from './base';
 
 export async function deployDamHolderFixture() {

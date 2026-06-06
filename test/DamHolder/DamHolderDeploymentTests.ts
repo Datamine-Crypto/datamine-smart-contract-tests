@@ -1,13 +1,9 @@
 import { expect } from 'chai';
-import {
-	getERC1820Registry,
-	EventNames,
-	TOKENS_SENDER_INTERFACE_HASH,
-	TOKENS_RECIPIENT_INTERFACE_HASH,
-} from '../helpers/common';
-import { setupHolderForLocking } from '../helpers/setupHelpers';
+import { getERC1820Registry } from '../helpers/core/tokens';
+import { EventNames, TOKENS_SENDER_INTERFACE_HASH, TOKENS_RECIPIENT_INTERFACE_HASH } from '../helpers/core/constants';
+import { setupHolderForLocking } from '../helpers/setup/setupHelpers';
 import { deployDamHolderFixture } from '../helpers/fixtures/damHolder';
-import { loadFixture } from '../helpers/fixtureRunner';
+import { loadFixture } from '../helpers/fixtures/fixtureRunner';
 
 describe('DamHolder Deployment', function () {
 	describe('Deployment', function () {

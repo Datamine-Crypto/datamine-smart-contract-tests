@@ -1,14 +1,15 @@
-import { parseUnits, RevertMessages } from '../helpers/common';
+import { parseUnits } from '../helpers/core/tokens';
+import { RevertMessages } from '../helpers/core/constants';
 import {
 	testReentrancyOnBurn,
-	testRevertLockZeroAmount,
 	testRevertBurnZeroAmount,
 	testRevertBurnToUnlockedAddress,
-} from '../helpers/commonTests';
-import { loadFixture } from '../helpers/fixtureRunner';
+} from '../helpers/commonTests/burnTests';
+import { testRevertLockZeroAmount } from '../helpers/commonTests/lockTests';
+import { loadFixture } from '../helpers/fixtures/fixtureRunner';
 import { deployBaseFixture } from '../helpers/fixtures/base';
-import { deployLockquidityToken } from '../helpers/deployHelpers';
-import { getEthers } from '../helpers/getEthers';
+import { deployLockquidityToken } from '../helpers/setup/deployHelpers';
+import { getEthers } from '../helpers/core/getEthers';
 
 async function deployLockTokenAttackFixture() {
 	const { damToken, owner, addr1, addr2 } = await deployBaseFixture();

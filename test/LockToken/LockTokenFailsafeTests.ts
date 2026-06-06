@@ -1,7 +1,7 @@
-import { RevertMessages, ContractNames } from '../helpers/common';
-import { testFailsafeLifecycle } from '../helpers/commonTests';
+import { RevertMessages, ContractNames } from '../helpers/core/constants';
+import { testFailsafeLifecycle } from '../helpers/commonTests/lockTests';
 import { deployLockTokenFixture } from '../helpers/fixtures/lockToken';
-import { loadFixture } from '../helpers/fixtureRunner';
+import { loadFixture } from '../helpers/fixtures/fixtureRunner';
 
 describe('LockToken Failsafe', function () {
 	describe('Failsafe', function () {

@@ -1,6 +1,6 @@
-import { testMintPastLockPeriodAfterReLock } from '../helpers/commonTests';
+import { testMintPastLockPeriodAfterReLock } from '../helpers/commonTests/mintTests';
 import { deployLockTokenFixture } from '../helpers/fixtures/lockToken';
-import { loadFixture } from '../helpers/fixtureRunner';
+import { loadFixture } from '../helpers/fixtures/fixtureRunner';
 
 describe('LockToken Attack Scenarios', function () {
 	describe('Attack Scenarios', function () {

@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { mineBlocks } from '../common';
+import { mineBlocks } from '../core/blockchain';
 
 /**
  * @dev This file centralizes helper functions for setting up specific test scenarios.

@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import { hodlClickerRushFixture } from '../helpers/fixtures/hodlClickerRush';
-import { depositFor, setupBurnableAddress } from '../helpers/hodlClickerRush';
-import { loadFixture } from '../helpers/fixtureRunner';
-import { mineBlocks, runInSameBlock } from '../helpers/common';
+import { depositFor, setupBurnableAddress } from '../helpers/game/hodlClickerRush';
+import { loadFixture } from '../helpers/fixtures/fixtureRunner';
+import { mineBlocks, runInSameBlock } from '../helpers/core/blockchain';
 
 describe('HodlClickerRush Front-running', () => {
 	it('should allow a player to front-run validator normalMintToAddress and claim the jackpot, causing validator to revert', async () => {

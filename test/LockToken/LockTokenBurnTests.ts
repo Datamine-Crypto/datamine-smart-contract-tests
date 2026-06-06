@@ -1,7 +1,7 @@
 import { expect } from 'chai';
-import { RevertMessages } from '../helpers/common';
+import { RevertMessages } from '../helpers/core/constants';
 import { deployLockTokenAndMintFixture } from '../helpers/fixtures/lockToken';
-import { loadFixture } from '../helpers/fixtureRunner';
+import { loadFixture } from '../helpers/fixtures/fixtureRunner';
 
 describe('LockToken Burn', function () {
 	describe('burnToAddress', function () {

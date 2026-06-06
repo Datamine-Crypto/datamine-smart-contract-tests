@@ -1,12 +1,13 @@
 import { expect } from 'chai';
-import { mineBlocks, RevertMessages } from '../helpers/common';
+import { mineBlocks } from '../helpers/core/blockchain';
+import { RevertMessages } from '../helpers/core/constants';
 import { deployLockTokenAndLockFixture, deployLockTokenFixture } from '../helpers/fixtures/lockToken';
-import { loadFixture } from '../helpers/fixtureRunner';
+import { loadFixture } from '../helpers/fixtures/fixtureRunner';
 import {
 	testMintRevertFutureBlock,
 	testMintRevertBeforeLastMint,
 	testMintRevertNotMinter,
-} from '../helpers/commonTests';
+} from '../helpers/commonTests/mintTests';
 
 describe('LockToken Mint', function () {
 	describe('mintToAddress', function () {

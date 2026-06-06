@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { deployDamTokenFixture } from '../helpers/fixtures/damToken';
-import { parseUnits } from '../helpers/common';
-import { loadFixture } from '../helpers/fixtureRunner';
+import { parseUnits } from '../helpers/core/tokens';
+import { loadFixture } from '../helpers/fixtures/fixtureRunner';
 
 describe('DamToken Deployment', function () {
 	describe('Deployment', function () {

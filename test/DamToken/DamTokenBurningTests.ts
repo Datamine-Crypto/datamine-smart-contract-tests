@@ -1,7 +1,7 @@
-import { parseUnits } from '../helpers/common';
-import { testTokenBurn } from '../helpers/commonTests';
+import { parseUnits } from '../helpers/core/tokens';
+import { testTokenBurn } from '../helpers/commonTests/burnTests';
 import { deployDamTokenFixture } from '../helpers/fixtures/damToken';
-import { loadFixture } from '../helpers/fixtureRunner';
+import { loadFixture } from '../helpers/fixtures/fixtureRunner';
 
 describe('DamToken Burning', function () {
 	describe('Burning', function () {

@@ -1,8 +1,10 @@
 import { expect } from 'chai';
-import { parseUnits, mineBlocks, RevertMessages } from '../helpers/common';
-import { setupHolderForLocking } from '../helpers/setupHelpers';
+import { parseUnits } from '../helpers/core/tokens';
+import { mineBlocks } from '../helpers/core/blockchain';
+import { RevertMessages } from '../helpers/core/constants';
+import { setupHolderForLocking } from '../helpers/setup/setupHelpers';
 import { deployDamHolderFixture } from '../helpers/fixtures/damHolder';
-import { loadFixture } from '../helpers/fixtureRunner';
+import { loadFixture } from '../helpers/fixtures/fixtureRunner';
 
 describe('DamHolder Functionality', function () {
 	describe('Functionality', function () {
