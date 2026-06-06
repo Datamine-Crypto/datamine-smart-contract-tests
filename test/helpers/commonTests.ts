@@ -250,3 +250,46 @@ export async function testFailsafeLifecycle(
 	// 4. Locking above failsafe limit should now succeed
 	await lockTokens(tokenWithFailsafe, damToken, user, lockInAmount);
 }
+
+/**
+ * A generic helper to test that minting reverts if targetBlock is in the future.
+ */
+export async function testMintRevertFutureBlock(token: any, owner: any, ethers: any) {
+	const futureBlock = (await ethers.provider.getBlockNumber()) + 100;
+	await expect(token.connect(owner).mintToAddress(owner.address, owner.address, futureBlock)).to.be.revertedWith(
+		RevertMessages.YOU_CAN_ONLY_MINT_UP_TO_CURRENT_BLOCK
+	);
+}
+
+/**
+ * A generic helper to test that minting reverts if targetBlock is before lastMintBlockNumber.
+ */
+export async function testMintRevertBeforeLastMint(token: any, owner: any) {
+	const { mintTokens } = await import('./setupHelpers');
+	const blockAfterLock = await mintTokens(token, owner, owner.address, 1);
+	await expect(token.connect(owner).mintToAddress(owner.address, owner.address, blockAfterLock)).to.be.revertedWith(
+		RevertMessages.YOU_CAN_ONLY_MINT_AHEAD_OF_LAST_MINT_BLOCK
+	);
+}
+
+/**
+ * A generic helper to test that minting reverts if caller is not the minterAddress.
+ */
+export async function testMintRevertNotMinter(token: any, owner: any, otherAccount: any) {
+	const block = await mineBlocks(1);
+	await expect(
+		token.connect(otherAccount).mintToAddress(owner.address, otherAccount.address, block)
+	).to.be.revertedWith(RevertMessages.YOU_MUST_BE_THE_DELEGATED_MINTER_OF_THE_SOURCE_ADDRESS);
+}
+
+/**
+ * A generic helper to test successful token minting based on time progression.
+ */
+export async function testSuccessfulMint(token: any, owner: any) {
+	const mintBlock = await mineBlocks(1);
+	const expectedMintAmount = await token.getMintAmount(owner.address, mintBlock);
+	await token.connect(owner).mintToAddress(owner.address, owner.address, mintBlock);
+
+	const balance = await token.balanceOf(owner.address);
+	expect(balance).to.equal(expectedMintAmount);
+}

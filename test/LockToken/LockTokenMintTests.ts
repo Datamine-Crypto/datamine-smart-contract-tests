@@ -1,41 +1,29 @@
 import { expect } from 'chai';
 import { mineBlocks, RevertMessages } from '../helpers/common';
-import { mintTokens } from '../helpers/setupHelpers';
 import { deployLockTokenAndLockFixture, deployLockTokenFixture } from '../helpers/fixtures/lockToken';
 import { loadFixture } from '../helpers/fixtureRunner';
+import {
+	testMintRevertFutureBlock,
+	testMintRevertBeforeLastMint,
+	testMintRevertNotMinter,
+} from '../helpers/commonTests';
 
 describe('LockToken Mint', function () {
 	describe('mintToAddress', function () {
 		describe('With locked tokens', function () {
 			it('Should revert if targetBlock is in the future', async function () {
-				const { lockquidityToken, owner } = await loadFixture(deployLockTokenAndLockFixture);
-				const futureBlock = (await mineBlocks(1)) + 100;
-
-				await expect(
-					lockquidityToken.connect(owner).mintToAddress(owner.address, owner.address, futureBlock)
-				).to.be.revertedWith(RevertMessages.YOU_CAN_ONLY_MINT_UP_TO_CURRENT_BLOCK);
+				const { lockquidityToken, owner, ethers } = await loadFixture(deployLockTokenAndLockFixture);
+				await testMintRevertFutureBlock(lockquidityToken, owner, ethers);
 			});
 
 			it('Should revert if targetBlock is before lastMintBlockNumber', async function () {
 				const { lockquidityToken, owner } = await loadFixture(deployLockTokenAndLockFixture);
-				// This test verifies that `mintToAddress` enforces a strictly increasing `targetBlock` number.
-				// This prevents users from re-minting for past blocks, which could lead to double-counting rewards
-				// or manipulating the minting history, thereby safeguarding the chronological integrity of token distribution.
-				const blockAfterLock = await mintTokens(lockquidityToken, owner, owner.address, 1);
-				const currentBlock = await mineBlocks(1);
-
-				await expect(
-					lockquidityToken.connect(owner).mintToAddress(owner.address, owner.address, blockAfterLock)
-				).to.be.revertedWith(RevertMessages.YOU_CAN_ONLY_MINT_AHEAD_OF_LAST_MINT_BLOCK);
+				await testMintRevertBeforeLastMint(lockquidityToken, owner);
 			});
 
 			it('Should revert if caller is not the minterAddress', async function () {
 				const { lockquidityToken, owner, addrB } = await loadFixture(deployLockTokenAndLockFixture);
-				const block = await mineBlocks(1);
-
-				await expect(
-					lockquidityToken.connect(addrB).mintToAddress(owner.address, addrB.address, block)
-				).to.be.revertedWith(RevertMessages.YOU_MUST_BE_THE_DELEGATED_MINTER_OF_THE_SOURCE_ADDRESS);
+				await testMintRevertNotMinter(lockquidityToken, owner, addrB);
 			});
 		});
 
