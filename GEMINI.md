@@ -78,4 +78,6 @@ Refactor all tests to use best hardhat practices. Do not remove any unit tests. 
 Ok there must be more code that is shared between all the unit tests. Find ways to refactor code that is shared between the 100+ tests.
 
 Remember that LockToken is based on FluxToken (most of the code is repeated)
+
+Example of a good refactor: A function for functionality that would be used by 3+ tests.
 ```

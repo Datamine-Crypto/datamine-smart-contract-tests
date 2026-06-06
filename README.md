@@ -6,7 +6,7 @@
 
 To run tests, use the command: `yarn hardhat test` or `yarn test`
 
-Example of testing a single test file: `yarn hardhat test test/DamBlockingHolderContractTests.ts`
+Example of testing a single test file: `yarn hardhat test test/DamBlockingHolder/DamBlockingHolderContractTests.ts`
 
 ## 🚀 Getting Started
 
@@ -57,7 +57,7 @@ npx hardhat test --show-stack-traces
 To run a specific test file:
 
 ```bash
-npx hardhat test test/DamBlockingHolderContractTests.ts
+npx hardhat test test/DamBlockingHolder/DamBlockingHolderContractTests.ts
 ```
 
 ### Linting and Formatting

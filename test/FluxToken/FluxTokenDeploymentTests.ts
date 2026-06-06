@@ -1,6 +1,6 @@
-import { expect } from 'chai';
 import { deployFluxTokenFixture } from '../helpers/fixtures/fluxToken';
-import { parseUnits, lockTokens } from '../helpers/common';
+import { parseUnits } from '../helpers/common';
+import { testLockTokens } from '../helpers/commonTests';
 import { loadFixture } from '../helpers/fixtureRunner';
 
 describe('FluxToken Deployment', function () {
@@ -9,14 +9,7 @@ describe('FluxToken Deployment', function () {
 			const { fluxToken, damToken, owner } = await loadFixture(deployFluxTokenFixture);
 			const lockAmount = parseUnits('1');
 
-			// This test verifies the core functionality of locking DAM tokens within the FluxToken contract.
-			// This is fundamental because Flux tokens are minted based on these locked DAM tokens, making the successful
-			// and secure locking process crucial for the entire ecosystem's operation and the integrity of the token supply.
-			await lockTokens(fluxToken, damToken, owner, lockAmount);
-
-			// Check if the tokens are correctly locked in the FluxToken contract's balance.
-			const lockedBalance = await damToken.balanceOf(fluxToken.target);
-			expect(lockedBalance).to.equal(lockAmount);
+			await testLockTokens(fluxToken, damToken, owner, lockAmount);
 		});
 	});
 });

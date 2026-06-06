@@ -1,6 +1,9 @@
-import { expect } from 'chai';
-import { lockTokens, RevertMessages } from '../helpers/common';
-import { testRevertUnlockWithoutLockedTokens, testRevertLockWhenAlreadyLocked } from '../helpers/commonTests';
+import { RevertMessages } from '../helpers/common';
+import {
+	testRevertUnlockWithoutLockedTokens,
+	testRevertLockWhenAlreadyLocked,
+	testLockAndUnlock,
+} from '../helpers/commonTests';
 import { deployLockTokenFixture } from '../helpers/fixtures/lockToken';
 import { loadFixture } from '../helpers/fixtureRunner';
 
@@ -10,13 +13,7 @@ describe('LockToken Unlock', function () {
 			const { ethers, lockquidityToken, damToken, owner } = await loadFixture(deployLockTokenFixture);
 			const lockAmount = ethers.parseUnits('100', 18);
 
-			await lockTokens(lockquidityToken, damToken, owner, lockAmount);
-
-			// Unlock tokens
-			await lockquidityToken.connect(owner).unlock();
-
-			// Verify that the user's DAM token balance is restored
-			expect(await damToken.balanceOf(owner.address)).to.equal(ethers.parseUnits('25000000', 18)); // Initial balance
+			await testLockAndUnlock(lockquidityToken, damToken, owner, lockAmount);
 		});
 
 		/**

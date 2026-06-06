@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { ZERO_ADDRESS, lockTokens, mineBlocks } from '../helpers/common';
+import { testLockTokens } from '../helpers/commonTests';
 import { deployLockTokenFixture } from '../helpers/fixtures/lockToken';
 import { loadFixture } from '../helpers/fixtureRunner';
 
@@ -24,10 +25,7 @@ describe('LockToken Deployment', function () {
 
 			const lockAmount = ethers.parseUnits('100', 18);
 
-			await lockTokens(lockquidityToken, damToken, owner, lockAmount);
-
-			// Verify that the LockquidityToken contract holds the locked DAM tokens
-			expect(await damToken.balanceOf(lockquidityToken.target)).to.equal(lockAmount);
+			await testLockTokens(lockquidityToken, damToken, owner, lockAmount);
 		});
 
 		it('Should allow locking, minting, and burning LOCK tokens', async function () {
