@@ -239,6 +239,8 @@ Tests covering the Lockquidity factory, vault, and ERC20/ERC777 token (`Lockquid
   - `Should dilute other validators multipliers if an attacker locks 1 wei and burns a massive amount`: Multiplier Dilution Attack test for LockToken — mirrors the FluxToken test. Verifies that an attacker locking 1 wei and burning massive LOCK dilutes the honest validator's burn multiplier. LockToken uses `_percentBurnMultiplier=1` so the base multiplier is 10001 (vs FluxToken's 20000).
   - `Should allow multiplier retroactivity / supercharging in the same block`: Verifies that burning LOCK and minting in the same block applies the boosted burn multiplier retrospectively to the entire accrual period on LockToken.
   - `Should not allow double-minting in the same block by stepping block target`: Prevents calling `mintToAddress` twice in the same block on LockToken by shifting target blocks. Confirms `lastMintBlockNumber` state update prevents double-extraction.
+  - `Should preserve burned amount across unlock/re-lock cycles (no free multiplier reset)`: Verifies that `burnedAmount` persists across unlock/re-lock cycles, confirming this is by design — the ecosystem rewards long-term participation by preserving burn history and multiplier state.
+  - `Should replicate Hacken PoC F-2026-17966: lock/unlock/lock cycle allows replaying dilution for free`: Replicates the exact Hacken PoC scenario where an attacker locks 1 wei, burns tokens, and unlocks to toggle/replay dilution for free by re-injecting stored burn history on subsequent locks.
 - **`LockToken Burn`**
   - `Should revert if a user tries to burn more tokens than they have`: Prevents burning more LOCK than the user possesses.
 - **`LockToken Deployment`**
@@ -279,6 +281,7 @@ Tests covering `FluxToken`, the primary utility token minted by locking DAM:
   - `Should revert if a locked attacker tries to mint from another users locked tokens (minter delegation theft)`: A locked attacker (validator) attempts `mintToAddress(victim, attacker, block)` to steal the victim's accrued FLUX rewards. Reverts because the attacker is not the victim's delegated minter.
   - `Should revert if someone tries to send DAM directly to the FluxToken contract (bypassing lock)`: An attacker uses ERC777 `send()` to inject DAM directly into the FluxToken contract, bypassing `lock()`. The `tokensReceived` hook blocks this because only the FluxToken contract itself (as operator) can receive DAM.
   - `Should preserve burned amount across unlock/re-lock cycles (no free multiplier reset)`: Verifies that `burnedAmount` persists across unlock/re-lock cycles, confirming this is by design — the ecosystem rewards long-term participation by preserving burn history and multiplier state.
+  - `Should replicate Hacken PoC F-2026-17966: lock/unlock/lock cycle allows replaying dilution for free`: Replicates the exact Hacken PoC scenario where an attacker locks 1 wei, burns tokens, and unlocks to toggle/replay dilution for free by re-injecting stored burn history on subsequent locks.
 - **`FluxToken Deployment`**
   - `Should lock DAM tokens`: Verifies deploying/locking DAM works and moves tokens to FluxToken contract.
 - **`FLUX Token Migration Tests`**

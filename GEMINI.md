@@ -1,3 +1,5 @@
+IMPORTANT: Read all hacken audit report files in docs/hacken/ first.
+
 Before starting read contents of docs/deck.md thoroughly to understand how the Datamine ecosystem works. This project is unit testing the smart contracts from Datamine Network ecosystem.
 
 IMPORTANT: Always add new tests to README.md to explain what they do
